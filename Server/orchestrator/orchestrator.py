@@ -23,7 +23,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool
 
 
 # LangGraph imports
@@ -71,6 +71,11 @@ class OrchestratorState(TypedDict):
     needs_follow_up: bool
     follow_up_action: Optional[str]
     
+    # Fallback handling
+    needs_fallback: bool
+    fallback_from_tool: Optional[str]
+    fallback_count: int
+    
     # Output
     tool_result: Optional[dict]
     error: Optional[str]
@@ -96,12 +101,14 @@ AVAILABLE TOOLS:
 
 5. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand". This tool provides comprehensive teaching strategies and tips.
 
+6. "expert_teacher" - Use when the teacher asks about topics, concepts, or questions that may NOT be in NCERT textbooks, or when they need deeper explanations beyond curriculum. This acts as a knowledgeable expert teacher with broad subject knowledge. Use this as a fallback when content_explainer might not have the answer, or for advanced/non-standard topics.
+
 FUTURE TOOLS (not yet available, do NOT select these):
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation" or "content_explainer" or "classroom_guidance",
+    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation" or "content_explainer" or "classroom_guidance" or "expert_teacher",
     "reasoning": "Brief explanation of why this tool was selected",
     "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge",
     "confidence": 0.95
@@ -154,12 +161,22 @@ Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describi
 Query: "How can I make my lessons more interactive?"
 Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95}
 
+Query: "What is quantum mechanics?"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Advanced topic likely not in NCERT textbooks - needs expert explanation", "extracted_topic": "quantum mechanics", "confidence": 0.92}
+
+Query: "Explain the concept of artificial intelligence"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Modern topic not in standard curriculum - expert knowledge needed", "extracted_topic": "artificial intelligence", "confidence": 0.93}
+
+Query: "What are fractals and how do they work?"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Advanced mathematical concept beyond standard curriculum", "extracted_topic": "fractals", "confidence": 0.90}
+
 RULES:
 - Return ONLY valid JSON
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
 - Use "activity_generator" for teaching concepts and learning activities  
 - Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed, needing support
-- Use "content_explainer" for content questions, explanations, "what is", "explain", "tell me about" queries
+- Use "content_explainer" for NCERT curriculum content questions, standard textbook topics
+- Use "expert_teacher" for advanced topics, non-NCERT content, or when broader expert knowledge is needed
 - Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategy questions
 - Extract the topic/concept or crisis situation or motivation issue or teaching challenge clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
@@ -258,7 +275,8 @@ class ChanakyaOrchestrator:
             "crisis_handler": CrisisHandlerTool(api_key=api_key),
             "teacher_motivation": TeacherMotivationTool(api_key=api_key),
             "content_explainer": ContentExplainerTool(),
-            "classroom_guidance": ClassroomGuidanceTool(api_key=api_key)
+            "classroom_guidance": ClassroomGuidanceTool(api_key=api_key),
+            "expert_teacher": ExpertTeacherTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -384,6 +402,7 @@ class ChanakyaOrchestrator:
         workflow.add_node("retry", self._retry_node)
         workflow.add_node("execute_tool", self._execute_tool_node)
         workflow.add_node("validate_output", self._validate_output_node)
+        workflow.add_node("fallback", self._fallback_node)
         workflow.add_node("check_hallucination", self._check_hallucination_node)
         workflow.add_node("handle_follow_up", self._handle_follow_up_node)
         
@@ -407,7 +426,19 @@ class ChanakyaOrchestrator:
         workflow.add_edge("retry", "select_tool")
         
         workflow.add_edge("execute_tool", "validate_output")
-        workflow.add_edge("validate_output", "check_hallucination")
+        
+        # Conditional routing after validation - check for fallback
+        workflow.add_conditional_edges(
+            "validate_output",
+            self._route_after_validation,
+            {
+                "fallback": "fallback",
+                "check_hallucination": "check_hallucination",
+            }
+        )
+        
+        # Fallback goes to execute_tool with new tool selection
+        workflow.add_edge("fallback", "execute_tool")
         
         # Conditional routing after hallucination check
         workflow.add_conditional_edges(
@@ -753,6 +784,40 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             "retry_count": retry_count + 1,
         }
     
+    async def _fallback_node(self, state: OrchestratorState) -> dict:
+        """
+        Node: Handle fallback from content_explainer to expert_teacher.
+        """
+        self.logger.info("executing_fallback", 
+            from_tool="content_explainer",
+            to_tool="expert_teacher"
+        )
+        
+        # Override tool selection
+        return {
+            "selected_tool": "expert_teacher",
+            "tool_reasoning": "Fallback from RAG - content not found in NCERT",
+            "needs_fallback": False,
+        }
+    
+    def _route_after_validation(self, state: OrchestratorState) -> str:
+        """
+        Route after validation: check if fallback is needed.
+        """
+        needs_fallback = state.get("needs_fallback", False)
+        fallback_from_tool = state.get("fallback_from_tool")
+        
+        # If RAG failed, fallback to expert_teacher
+        if needs_fallback and fallback_from_tool == "content_explainer":
+            self.logger.info("routing_to_fallback", 
+                from_tool="content_explainer",
+                to_tool="expert_teacher"
+            )
+            return "fallback"
+        
+        # Otherwise proceed to hallucination check
+        return "check_hallucination"
+    
     def _route_based_on_confidence(self, state: OrchestratorState) -> str:
         """
         Conditional routing: Check if confidence is high enough.
@@ -855,6 +920,29 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
         validation_message = "Output validated successfully"
         needs_follow_up = False
         follow_up_action = None
+        needs_fallback = False
+        fallback_from_tool = None
+        
+        # Check if content_explainer failed to find content - trigger fallback to expert_teacher
+        fallback_count = state.get("fallback_count", 0)
+        if selected_tool == "content_explainer" and fallback_count < 1:
+            confidence = tool_result.get("confidence", 1.0)
+            coverage = tool_result.get("coverage", "")
+            retrieved_passages = tool_result.get("retrieved_passages", 0)
+            
+            # If RAG couldn't find good content, fallback to expert_teacher
+            if (confidence < 0.4 or 
+                coverage == "insufficient" or 
+                retrieved_passages == 0):
+                self.logger.info("rag_fallback_triggered",
+                    confidence=confidence,
+                    coverage=coverage,
+                    retrieved_passages=retrieved_passages
+                )
+                needs_fallback = True
+                fallback_from_tool = "content_explainer"
+                is_valid = False  # Mark as invalid to trigger fallback
+                validation_message = "RAG found insufficient content - falling back to expert teacher"
         
         # Crisis handler follow-up: after managing crisis, suggest activity
         if selected_tool == "crisis_handler":
@@ -869,6 +957,9 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             "validation_message": validation_message,
             "needs_follow_up": needs_follow_up,
             "follow_up_action": follow_up_action,
+            "needs_fallback": needs_fallback,
+            "fallback_from_tool": fallback_from_tool,
+            "fallback_count": fallback_count + 1 if needs_fallback else fallback_count,
         }
     
     async def _check_hallucination_node(self, state: OrchestratorState) -> dict:
