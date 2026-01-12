@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import toast from "react-hot-toast";
 function SignUp() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -12,7 +12,7 @@ function SignUp() {
     classesHandled: [],
     subjects: [],
     schoolLocation: "",
-    preferredLanguage: "",
+    preferredLanguage: [],
   });
 
   const [subjectInput, setSubjectInput] = useState("");
@@ -60,6 +60,25 @@ function SignUp() {
     "Class 11",
     "Class 12",
   ];
+
+  const knownLanguages = [
+    "English",
+    "Hindi",
+    "Telugu",
+    "Tamil",
+    "Kannada",
+    "Malayalam",
+    "Sanskrit",
+    "Urdu",
+    "Bengali",
+    "Marathi",
+    "Gujarati",
+    "Odia",
+    "Punjabi",
+  ];
+
+  const [languageInput, setLanguageInput] = useState("");
+  const [showLanguageSuggestions, setShowLanguageSuggestions] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -125,6 +144,40 @@ function SignUp() {
     setShowSuggestions(false);
   };
 
+  const addLanguage = (language) => {
+    if (!formData.preferredLanguage.includes(language)) {
+      setFormData({
+        ...formData,
+        preferredLanguage: [...formData.preferredLanguage, language],
+      });
+    }
+    setLanguageInput("");
+    setShowLanguageSuggestions(false);
+  };
+
+  const removeLanguage = (languageToRemove) => {
+    setFormData({
+      ...formData,
+      preferredLanguage: formData.preferredLanguage.filter(
+        (l) => l !== languageToRemove
+      ),
+    });
+  };
+
+  const handleLanguageInputChange = (e) => {
+    const value = e.target.value;
+    setLanguageInput(value);
+    setShowLanguageSuggestions(value.length > 0);
+  };
+
+  const handleLanguageKeyDown = (e) => {
+    if (e.key === "Enter" && languageInput.trim()) {
+      e.preventDefault();
+      const trimmedInput = languageInput.trim();
+      addLanguage(trimmedInput);
+    }
+  };
+
   const removeSubject = (subjectToRemove) => {
     setFormData({
       ...formData,
@@ -154,11 +207,16 @@ function SignUp() {
       className.toLowerCase().includes(classInput.toLowerCase()) &&
       !formData.classesHandled.includes(className)
   );
+  const filteredLanguageSuggestions = knownLanguages.filter(
+    (lang) =>
+      lang.toLowerCase().includes(languageInput.toLowerCase()) &&
+      !formData.preferredLanguage.includes(lang)
+  );
 
   const handleStep1Submit = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
     setStep(2);
@@ -167,15 +225,20 @@ function SignUp() {
   const handleStep2Submit = (e) => {
     e.preventDefault();
     if (formData.classesHandled.length === 0) {
-      alert("Please add at least one class!");
+      toast.error("Please add at least one class!");
       return;
     }
     if (formData.subjects.length === 0) {
-      alert("Please add at least one subject!");
+      toast.error("Please add at least one subject!");
+      return;
+    }
+    if (formData.preferredLanguage.length === 0) {
+      toast.error("Please select at least one preferred teaching language!");
       return;
     }
     // Handle final submission
     console.log("Form submitted:", formData);
+    toast.success("Signed up successfully!");
   };
 
   return (
@@ -429,16 +492,64 @@ function SignUp() {
                   <label className="block text-sm font-bold text-[#000000] mb-2">
                     Language you prefer for teaching
                   </label>
-                  <input
-                    type="text"
-                    name="preferredLanguage"
-                    value={formData.preferredLanguage}
-                    onChange={handleChange}
-                    placeholder="e.g., English, Hindi, Telugu"
-                    className="w-full px-4 py-3 bg-white border-2 border-[#000000] text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#000000]"
-                    required
-                    disabled={step !== 2}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={languageInput}
+                      onChange={handleLanguageInputChange}
+                      onKeyDown={handleLanguageKeyDown}
+                      placeholder="Type to search languages..."
+                      className="w-full px-4 py-3 bg-white border-2 border-[#000000] text-[#000000] focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                      disabled={step !== 2}
+                      onFocus={() =>
+                        languageInput && setShowLanguageSuggestions(true)
+                      }
+                      onBlur={() =>
+                        setTimeout(() => setShowLanguageSuggestions(false), 200)
+                      }
+                    />
+                    {showLanguageSuggestions &&
+                      filteredLanguageSuggestions.length > 0 &&
+                      step === 2 && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border-2 border-[#000000] max-h-48 overflow-y-auto">
+                          {filteredLanguageSuggestions.map((lang) => (
+                            <div
+                              key={lang}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                addLanguage(lang);
+                              }}
+                              className="px-4 py-2 hover:bg-[#D4F1C5] cursor-pointer text-[#000000] border-b border-[#000000] last:border-b-0"
+                            >
+                              {lang}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                  {formData.preferredLanguage.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {formData.preferredLanguage.map((lang, index) => (
+                        <div
+                          key={`${lang}-${index}`}
+                          className="bg-[#E8D5FF] border-2 border-[#000000] px-3 py-1.5 flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]"
+                        >
+                          <span className="text-sm font-bold text-[#000000] whitespace-nowrap">
+                            {lang}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeLanguage(lang)}
+                            className="bg-white border-2 border-[#000000] text-[#000000] font-bold text-lg leading-none w-5 h-5 flex items-center justify-center rounded-full hover:text-red-600 disabled:opacity-50"
+                            disabled={step !== 2}
+                            aria-label={`Remove ${lang}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-4">
