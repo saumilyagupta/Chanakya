@@ -10,6 +10,7 @@ __pycache__/
 .Python
 env/
 venv/
+feedback_system/backend/venv/
 ENV/
 .venv
 
@@ -29,5 +30,6 @@ progress_state.json
 *~
 
 # OS
+feedback_system/frontend/node_modules/
 .DS_Store
 Thumbs.db
