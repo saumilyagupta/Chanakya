@@ -23,7 +23,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool
 
 
 # LangGraph imports
@@ -92,15 +92,18 @@ AVAILABLE TOOLS:
 
 3. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
 
+4. "content_explainer" - Use when the teacher asks questions about NCERT curriculum content, wants explanations of concepts, asks "what is", "explain", "tell me about", or needs subject matter clarification. This tool retrieves information from NCERT textbooks and provides grounded explanations.
+
+5. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand". This tool provides comprehensive teaching strategies and tips.
+
 FUTURE TOOLS (not yet available, do NOT select these):
-- "content_explainer" - For explaining concepts
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation",
+    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation" or "content_explainer" or "classroom_guidance",
     "reasoning": "Brief explanation of why this tool was selected",
-    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue",
+    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge",
     "confidence": 0.95
 }
 
@@ -133,12 +136,32 @@ Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressi
 Query: "बच्चे शोर मचा रहे हैं"
 Response: {"selected_tool": "crisis_handler", "reasoning": "Children making noise - immediate crisis intervention needed", "extracted_topic": "noise and chaos", "confidence": 0.96}
 
+Query: "What is photosynthesis?"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for concept explanation from curriculum", "extracted_topic": "photosynthesis", "confidence": 0.97}
+
+Query: "Explain Pythagoras theorem to me"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher wants explanation of mathematical concept", "extracted_topic": "Pythagoras theorem", "confidence": 0.98}
+
+Query: "Tell me about the water cycle"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for content explanation", "extracted_topic": "water cycle", "confidence": 0.96}
+
+Query: "Students are unable to interpret maps and graphs systematically"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing a pedagogical challenge about student learning skills", "extracted_topic": "interpreting visual data", "confidence": 0.96}
+
+Query: "Only 2-3 students answer questions in class"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing student engagement issue needing teaching strategies", "extracted_topic": "low participation", "confidence": 0.97}
+
+Query: "How can I make my lessons more interactive?"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95}
+
 RULES:
 - Return ONLY valid JSON
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
-- Use "activity_generator" for teaching concepts and learning activities
+- Use "activity_generator" for teaching concepts and learning activities  
 - Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed, needing support
-- Extract the topic/concept or crisis situation or motivation issue clearly
+- Use "content_explainer" for content questions, explanations, "what is", "explain", "tell me about" queries
+- Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategy questions
+- Extract the topic/concept or crisis situation or motivation issue or teaching challenge clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
 
 
@@ -233,7 +256,9 @@ class ChanakyaOrchestrator:
         self.tools = {
             "activity_generator": ActivityGeneratorTool(api_key=api_key),
             "crisis_handler": CrisisHandlerTool(api_key=api_key),
-            "teacher_motivation": TeacherMotivationTool(api_key=api_key)
+            "teacher_motivation": TeacherMotivationTool(api_key=api_key),
+            "content_explainer": ContentExplainerTool(),
+            "classroom_guidance": ClassroomGuidanceTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
