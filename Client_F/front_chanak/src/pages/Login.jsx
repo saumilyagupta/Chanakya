@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ function Login() {
     e.preventDefault();
     // Handle login
     console.log("Login submitted:", formData);
+    toast.success("Logged in successfully");
   };
 
   return (

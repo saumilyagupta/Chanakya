@@ -155,3 +155,8 @@ button:focus-visible {
   position: relative;
   z-index: 2;
 }
+
+/* Hide the global header while viewing the chat page */
+.chat-page header {
+  display: none !important;
+}
