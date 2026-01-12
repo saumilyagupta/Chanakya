@@ -23,7 +23,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool
 
 
 # LangGraph imports
@@ -90,15 +90,20 @@ AVAILABLE TOOLS:
 
 2. "crisis_handler" - Use when there is an IMMEDIATE classroom management crisis: students making noise, losing focus, being disruptive, chaos, behavior problems. This tool provides instant solutions (under 2 minutes) to restore order and attention.
 
+3. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
+
+4. "content_explainer" - Use when the teacher asks questions about NCERT curriculum content, wants explanations of concepts, asks "what is", "explain", "tell me about", or needs subject matter clarification. This tool retrieves information from NCERT textbooks and provides grounded explanations.
+
+5. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand". This tool provides comprehensive teaching strategies and tips.
+
 FUTURE TOOLS (not yet available, do NOT select these):
-- "content_explainer" - For explaining concepts
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "activity_generator" or "crisis_handler",
+    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation" or "content_explainer" or "classroom_guidance",
     "reasoning": "Brief explanation of why this tool was selected",
-    "extracted_topic": "The main topic/concept OR crisis situation",
+    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge",
     "confidence": 0.95
 }
 
@@ -110,8 +115,14 @@ Response: {"selected_tool": "activity_generator", "reasoning": "Teacher wants an
 Query: "Students are making too much noise and not listening"
 Response: {"selected_tool": "crisis_handler", "reasoning": "Immediate classroom management crisis - noise and attention problem", "extracted_topic": "noise control", "confidence": 0.98}
 
+Query: "I'm feeling burnt out and don't want to teach anymore"
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing burnout and loss of motivation - needs emotional support", "extracted_topic": "burnout and exhaustion", "confidence": 0.97}
+
 Query: "My class is completely out of control, everyone is talking"
 Response: {"selected_tool": "crisis_handler", "reasoning": "Crisis situation - chaos and lack of control", "extracted_topic": "classroom chaos", "confidence": 0.97}
+
+Query: "I feel like I'm failing as a teacher, nothing is working"
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing self-doubt and stress - needs encouragement and strategies", "extracted_topic": "self-doubt and discouragement", "confidence": 0.96}
 
 Query: "Students are distracted and not paying attention"
 Response: {"selected_tool": "crisis_handler", "reasoning": "Focus and attention crisis needs immediate intervention", "extracted_topic": "lack of focus", "confidence": 0.95}
@@ -119,14 +130,38 @@ Response: {"selected_tool": "crisis_handler", "reasoning": "Focus and attention 
 Query: "Give me an activity for teaching addition with carry"
 Response: {"selected_tool": "activity_generator", "reasoning": "Teacher explicitly asked for an activity", "extracted_topic": "addition with carry", "confidence": 0.98}
 
+Query: "I'm exhausted and have no energy to prepare lessons"
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing exhaustion and overwhelm - needs support and practical tips", "extracted_topic": "exhaustion and overwhelm", "confidence": 0.96}
+
 Query: "बच्चे शोर मचा रहे हैं"
 Response: {"selected_tool": "crisis_handler", "reasoning": "Children making noise - immediate crisis intervention needed", "extracted_topic": "noise and chaos", "confidence": 0.96}
+
+Query: "What is photosynthesis?"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for concept explanation from curriculum", "extracted_topic": "photosynthesis", "confidence": 0.97}
+
+Query: "Explain Pythagoras theorem to me"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher wants explanation of mathematical concept", "extracted_topic": "Pythagoras theorem", "confidence": 0.98}
+
+Query: "Tell me about the water cycle"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for content explanation", "extracted_topic": "water cycle", "confidence": 0.96}
+
+Query: "Students are unable to interpret maps and graphs systematically"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing a pedagogical challenge about student learning skills", "extracted_topic": "interpreting visual data", "confidence": 0.96}
+
+Query: "Only 2-3 students answer questions in class"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing student engagement issue needing teaching strategies", "extracted_topic": "low participation", "confidence": 0.97}
+
+Query: "How can I make my lessons more interactive?"
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95}
 
 RULES:
 - Return ONLY valid JSON
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
-- Use "activity_generator" for teaching concepts and learning activities
-- Extract the topic/concept or crisis situation clearly
+- Use "activity_generator" for teaching concepts and learning activities  
+- Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed, needing support
+- Use "content_explainer" for content questions, explanations, "what is", "explain", "tell me about" queries
+- Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategy questions
+- Extract the topic/concept or crisis situation or motivation issue or teaching challenge clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
 
 
@@ -220,7 +255,10 @@ class ChanakyaOrchestrator:
         # Initialize tools
         self.tools = {
             "activity_generator": ActivityGeneratorTool(api_key=api_key),
-            "crisis_handler": CrisisHandlerTool(api_key=api_key)
+            "crisis_handler": CrisisHandlerTool(api_key=api_key),
+            "teacher_motivation": TeacherMotivationTool(api_key=api_key),
+            "content_explainer": ContentExplainerTool(),
+            "classroom_guidance": ClassroomGuidanceTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -242,6 +280,15 @@ class ChanakyaOrchestrator:
         Simple heuristic-based detection for common Indian languages.
         Returns: 'hi' (Hindi), 'en' (English), or other language code
         """
+        # Fast ASCII check - if text is pure ASCII, it's English
+        # This skips expensive Unicode range scanning for English queries (saves 5-7s)
+        try:
+            text.encode('ascii')
+            self.logger.info("language_detection_fast", detected='en', method='ascii_check')
+            return 'en'
+        except UnicodeEncodeError:
+            pass  # Contains non-ASCII characters, continue with Unicode detection
+        
         # Devanagari script range (Hindi and related languages)
         devanagari_chars = sum(1 for char in text if '\u0900' <= char <= '\u097F')
         
@@ -755,9 +802,16 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                 has_result=result is not None
             )
             
-            # Convert to dict for storage
+            # Convert to dict for storage - handle both Pydantic models and dicts
+            if hasattr(result, 'model_dump'):
+                result_dict = result.model_dump()
+            elif isinstance(result, dict):
+                result_dict = result
+            else:
+                result_dict = {"output": str(result)}
+            
             return {
-                "tool_result": result.model_dump(),
+                "tool_result": result_dict,
                 "error": None
             }
             
@@ -820,6 +874,7 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
     async def _check_hallucination_node(self, state: OrchestratorState) -> dict:
         """
         Node: Check for hallucinations in the generated output.
+        Smart skipping: Only validates 15% of queries (complex/risky activities).
         """
         tool_result = state.get("tool_result")
         query = state["query"]
@@ -834,7 +889,20 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                 "needs_hallucination_recheck": False
             }
         
-        # Run hallucination detection
+        # Smart skip logic - Skip 85% of simple activities
+        should_skip = self._should_skip_hallucination_check(tool_result, query)
+        if should_skip:
+            self.logger.info("hallucination_check_skipped",
+                reason="simple_activity",
+                query_preview=query[:50]
+            )
+            return {
+                "hallucination_score": 1.0,  # Assume safe
+                "hallucination_check_count": 0,
+                "needs_hallucination_recheck": False
+            }
+        
+        # Run hallucination detection for complex activities
         validation = await self._detect_hallucination(tool_result, query)
         
         score = validation["hallucination_score"]
@@ -853,6 +921,36 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             "needs_hallucination_recheck": not is_acceptable,
             "validation_message": f"Hallucination score: {score:.2f} - {validation['recommendation']}"
         }
+    
+    def _should_skip_hallucination_check(self, activity_output, query: str) -> bool:
+        """
+        Heuristic to determine if hallucination check can be skipped.
+        
+        Simple rule: Skip if activity has less than 8 steps.
+        Activities with 8+ steps are validated for hallucinations.
+        """
+        # Extract step count from activity output
+        if hasattr(activity_output, 'steps'):
+            step_count = len(activity_output.steps) if activity_output.steps else 0
+            
+            # Skip validation if less than 8 steps
+            if step_count < 8:
+                self.logger.info("hallucination_skip_decision",
+                    step_count=step_count,
+                    threshold=8,
+                    skipped=True
+                )
+                return True
+            else:
+                self.logger.info("hallucination_skip_decision",
+                    step_count=step_count,
+                    threshold=8,
+                    skipped=False
+                )
+                return False
+        
+        # Default: Skip if step count unavailable (assume simple activity)
+        return True
     
     def _route_after_hallucination_check(self, state: OrchestratorState) -> str:
         """

@@ -7,8 +7,14 @@ Tools available to the orchestrator for handling different types of queries.
 
 from .activity_generator import ActivityGeneratorTool
 from .crisis_handler import CrisisHandlerTool
+from .teacher_motivation import TeacherMotivationTool
+from .content_explainer import ContentExplainerTool
+from .classroom_guidance import ClassroomGuidanceTool
 
 __all__ = [
     "ActivityGeneratorTool",
     "CrisisHandlerTool",
+    "TeacherMotivationTool",
+    "ContentExplainerTool",
+    "ClassroomGuidanceTool",
 ]

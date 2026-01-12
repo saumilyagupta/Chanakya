@@ -73,6 +73,90 @@ class ActivityOutput(BaseModel):
     )
 
 
+class ContentExplanationOutput(BaseModel):
+    """
+    Output from the Content Explainer tool.
+    """
+    
+    explanation: str = Field(
+        ...,
+        description="Clear explanation based on NCERT content"
+    )
+    
+    key_points: List[str] = Field(
+        default_factory=list,
+        description="Important takeaways from the explanation"
+    )
+    
+    examples: List[str] = Field(
+        default_factory=list,
+        description="Practical examples for classroom use"
+    )
+    
+    sources: List[str] = Field(
+        default_factory=list,
+        description="NCERT sources used (Class|Subject|Book format)"
+    )
+    
+    confidence: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Confidence that retrieved content answers the question"
+    )
+    
+    coverage: str = Field(
+        default="partial",
+        description="Coverage level: complete, partial, or insufficient"
+    )
+    
+    retrieved_passages: int = Field(
+        default=0,
+        description="Number of NCERT passages retrieved"
+    )
+    
+    filters_applied: Optional[dict] = Field(
+        default=None,
+        description="Filters applied during retrieval (class, subject, etc.)"
+    )
+
+
+class ClassroomGuidanceOutput(BaseModel):
+    """
+    Output from the Classroom Guidance tool.
+    """
+    
+    situation_analysis: str = Field(
+        ...,
+        description="Understanding of the teaching challenge"
+    )
+    
+    immediate_tips: List[str] = Field(
+        default_factory=list,
+        description="Quick tips teacher can use today"
+    )
+    
+    step_by_step_strategies: List[dict] = Field(
+        default_factory=list,
+        description="Detailed strategies with steps and reasoning"
+    )
+    
+    long_term_approach: str = Field(
+        default="",
+        description="Sustainable practices for preventing the issue"
+    )
+    
+    rural_adaptations: str = Field(
+        default="",
+        description="How to implement with limited resources"
+    )
+    
+    encouragement: str = Field(
+        default="",
+        description="Supportive message for the teacher"
+    )
+
+
 class OrchestratorOutput(BaseModel):
     """
     Output from the orchestrator layer.
