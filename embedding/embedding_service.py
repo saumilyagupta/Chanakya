@@ -1,5 +1,5 @@
 """
-Embedding generation service using multilingual-e5-base model
+Embedding generation service using sentence-t5-large model
 """
 
 import logging
@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class EmbeddingService:
-    """Service for generating embeddings using multilingual-e5-base model"""
+    """Service for generating embeddings using sentence-t5-large model"""
     
-    def __init__(self, model_name: str = "intfloat/multilingual-e5-base"):
+    def __init__(self, model_name: str = "sentence-transformers/sentence-t5-large"):
         """
         Initialize the embedding service
         
@@ -50,10 +50,8 @@ class EmbeddingService:
             return np.zeros(self.model.get_sentence_embedding_dimension())
         
         try:
-            # For E5 models, we need to prepend "query: " or "passage: "
-            # Since we're embedding document passages, we use "passage: "
-            formatted_text = f"passage: {text}"
-            embedding = self.model.encode(formatted_text, convert_to_numpy=True)
+            # Sentence-T5 models don't require prefixes, encode directly
+            embedding = self.model.encode(text, convert_to_numpy=True)
             return embedding.astype(np.float32)
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
@@ -77,11 +75,9 @@ class EmbeddingService:
         valid_texts = [text if text and text.strip() else "" for text in texts]
         
         try:
-            # Format texts for E5 model
-            formatted_texts = [f"passage: {text}" for text in valid_texts]
-            
+            # Sentence-T5 models don't require prefixes, encode directly
             embeddings = self.model.encode(
-                formatted_texts,
+                valid_texts,
                 batch_size=batch_size,
                 convert_to_numpy=True,
                 show_progress_bar=len(texts) > 100
@@ -94,7 +90,7 @@ class EmbeddingService:
     
     def generate_query_embedding(self, query: str) -> np.ndarray:
         """
-        Generate embedding for a query (uses "query: " prefix for E5 models)
+        Generate embedding for a query
         
         Args:
             query: Query text to embed
@@ -107,9 +103,8 @@ class EmbeddingService:
             return np.zeros(self.model.get_sentence_embedding_dimension())
         
         try:
-            # For E5 models, queries should be prefixed with "query: "
-            formatted_query = f"query: {query}"
-            embedding = self.model.encode(formatted_query, convert_to_numpy=True)
+            # Sentence-T5 models don't require prefixes, encode directly
+            embedding = self.model.encode(query, convert_to_numpy=True)
             return embedding.astype(np.float32)
         except Exception as e:
             logger.error(f"Error generating query embedding: {e}")

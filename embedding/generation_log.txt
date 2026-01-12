@@ -1910,3 +1910,1222 @@ ValueError: Invalid LlamaParse API key. Please set a valid API key in .env file.
 2026-01-11 21:12:17,831 - INFO - 
 Processing completed successfully!
 2026-01-11 21:12:17,831 - INFO - Total documents in database: 1287
+2026-01-12 22:00:07,641 - INFO - ============================================================
+2026-01-12 22:00:07,642 - INFO - NCERT Books Embedding Generation
+2026-01-12 22:00:07,642 - INFO - ============================================================
+2026-01-12 22:00:07,642 - INFO - Books directory: Finaldata
+2026-01-12 22:00:07,642 - INFO - Database path: embedding/ncert_books.db
+2026-01-12 22:00:07,642 - INFO - Skip existing: True
+2026-01-12 22:00:07,642 - INFO - ============================================================
+2026-01-12 22:00:07,642 - INFO - PDF extractor initialized with LlamaParse Fast model
+2026-01-12 22:00:07,642 - INFO - Loading embedding model: intfloat/multilingual-e5-base
+2026-01-12 22:00:07,736 - INFO - Use pytorch device_name: mps
+2026-01-12 22:00:07,736 - INFO - Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+2026-01-12 22:00:14,221 - INFO - Model loaded successfully
+2026-01-12 22:00:14,231 - INFO - Connected to database: embedding/ncert_books.db
+2026-01-12 22:00:14,239 - INFO - Database schema created/verified
+2026-01-12 22:00:14,239 - INFO - Book processor initialized. Books directory: Finaldata
+2026-01-12 22:00:14,242 - INFO - Found 116 PDF files
+2026-01-12 22:00:14,242 - INFO - Starting to process 116 PDF files
+2026-01-12 22:00:14,263 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess205.pdf
+2026-01-12 22:00:14,267 - INFO - Extracting text from: fess205.pdf
+2026-01-12 22:00:15,486 - INFO - 
+Processing interrupted by user
+2026-01-12 22:02:16,501 - INFO - ============================================================
+2026-01-12 22:02:16,501 - INFO - NCERT Books Embedding Generation
+2026-01-12 22:02:16,501 - INFO - ============================================================
+2026-01-12 22:02:16,501 - INFO - Books directory: Finaldata
+2026-01-12 22:02:16,501 - INFO - Database path: embedding/ncert_books.db
+2026-01-12 22:02:16,501 - INFO - Skip existing: False
+2026-01-12 22:02:16,501 - INFO - ============================================================
+2026-01-12 22:02:16,501 - INFO - PDF extractor initialized with LlamaParse Fast model
+2026-01-12 22:02:16,501 - INFO - Loading embedding model: sentence-transformers/sentence-t5-large
+2026-01-12 22:02:16,543 - INFO - Use pytorch device_name: mps
+2026-01-12 22:02:16,543 - INFO - Load pretrained SentenceTransformer: sentence-transformers/sentence-t5-large
+2026-01-12 22:03:47,459 - INFO - Model loaded successfully
+2026-01-12 22:03:47,512 - INFO - Connected to database: embedding/ncert_books.db
+2026-01-12 22:03:47,515 - INFO - Database schema created/verified
+2026-01-12 22:03:47,515 - INFO - Book processor initialized. Books directory: Finaldata
+2026-01-12 22:03:47,523 - INFO - Found 116 PDF files
+2026-01-12 22:03:47,523 - INFO - Starting to process 116 PDF files
+2026-01-12 22:03:47,524 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess205.pdf
+2026-01-12 22:03:47,524 - INFO - Extracting text from: fess205.pdf
+2026-01-12 22:03:53,673 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:03:55,144 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/88670629-1832-411b-b58b-cb8ef084d085 "HTTP/1.1 200 OK"
+2026-01-12 22:03:57,601 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/88670629-1832-411b-b58b-cb8ef084d085 "HTTP/1.1 200 OK"
+2026-01-12 22:04:01,257 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/88670629-1832-411b-b58b-cb8ef084d085 "HTTP/1.1 200 OK"
+2026-01-12 22:04:01,867 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/88670629-1832-411b-b58b-cb8ef084d085/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:02,913 - INFO - Extracted 9 pages from fess205.pdf
+2026-01-12 22:04:05,831 - INFO - Inserted 9 documents in batch
+2026-01-12 22:04:05,834 - INFO - Processed fess205.pdf: 9 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:05,835 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess204.pdf
+2026-01-12 22:04:05,835 - INFO - Extracting text from: fess204.pdf
+2026-01-12 22:04:07,504 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:04:08,970 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/cc3b0aca-7f2e-46f0-a70e-9ccc0b67a28b "HTTP/1.1 200 OK"
+2026-01-12 22:04:11,401 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/cc3b0aca-7f2e-46f0-a70e-9ccc0b67a28b "HTTP/1.1 200 OK"
+2026-01-12 22:04:12,018 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/cc3b0aca-7f2e-46f0-a70e-9ccc0b67a28b/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:12,047 - INFO - Extracted 7 pages from fess204.pdf
+2026-01-12 22:04:13,837 - INFO - Inserted 7 documents in batch
+2026-01-12 22:04:13,838 - INFO - Processed fess204.pdf: 7 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:13,839 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess206.pdf
+2026-01-12 22:04:13,840 - INFO - Extracting text from: fess206.pdf
+2026-01-12 22:04:14,893 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:04:16,367 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/15b19b5b-67c7-4260-9f95-1f958418a89f "HTTP/1.1 200 OK"
+2026-01-12 22:04:18,780 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/15b19b5b-67c7-4260-9f95-1f958418a89f "HTTP/1.1 200 OK"
+2026-01-12 22:04:22,270 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/15b19b5b-67c7-4260-9f95-1f958418a89f "HTTP/1.1 200 OK"
+2026-01-12 22:04:22,883 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/15b19b5b-67c7-4260-9f95-1f958418a89f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:25,854 - INFO - Extracted 8 pages from fess206.pdf
+2026-01-12 22:04:28,642 - INFO - Inserted 8 documents in batch
+2026-01-12 22:04:28,649 - INFO - Processed fess206.pdf: 8 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:28,651 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess207.pdf
+2026-01-12 22:04:28,653 - INFO - Extracting text from: fess207.pdf
+2026-01-12 22:04:32,112 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:04:33,590 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4084408e-59a2-47e6-9403-0b56812e596d "HTTP/1.1 200 OK"
+2026-01-12 22:04:36,085 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4084408e-59a2-47e6-9403-0b56812e596d "HTTP/1.1 200 OK"
+2026-01-12 22:04:39,497 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4084408e-59a2-47e6-9403-0b56812e596d "HTTP/1.1 200 OK"
+2026-01-12 22:04:40,103 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4084408e-59a2-47e6-9403-0b56812e596d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:40,481 - INFO - Extracted 9 pages from fess207.pdf
+2026-01-12 22:04:42,767 - INFO - Inserted 9 documents in batch
+2026-01-12 22:04:42,770 - INFO - Processed fess207.pdf: 9 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:42,772 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess203.pdf
+2026-01-12 22:04:42,774 - INFO - Extracting text from: fess203.pdf
+2026-01-12 22:04:44,604 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:04:46,059 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ed5be25-8def-454a-9855-f4299b29ed43 "HTTP/1.1 200 OK"
+2026-01-12 22:04:48,459 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ed5be25-8def-454a-9855-f4299b29ed43 "HTTP/1.1 200 OK"
+2026-01-12 22:04:49,025 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ed5be25-8def-454a-9855-f4299b29ed43/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:49,048 - INFO - Extracted 5 pages from fess203.pdf
+2026-01-12 22:04:50,540 - INFO - Inserted 5 documents in batch
+2026-01-12 22:04:50,541 - INFO - Processed fess203.pdf: 5 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:50,542 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess202.pdf
+2026-01-12 22:04:50,544 - INFO - Extracting text from: fess202.pdf
+2026-01-12 22:04:51,604 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:04:53,070 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56b4e034-527c-48be-9e0a-e300f095356a "HTTP/1.1 200 OK"
+2026-01-12 22:04:55,491 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56b4e034-527c-48be-9e0a-e300f095356a "HTTP/1.1 200 OK"
+2026-01-12 22:04:56,064 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56b4e034-527c-48be-9e0a-e300f095356a/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:04:56,388 - INFO - Extracted 8 pages from fess202.pdf
+2026-01-12 22:04:58,235 - INFO - Inserted 8 documents in batch
+2026-01-12 22:04:58,236 - INFO - Processed fess202.pdf: 8 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:04:58,237 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess201.pdf
+2026-01-12 22:04:58,239 - INFO - Extracting text from: fess201.pdf
+2026-01-12 22:05:00,485 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:05:01,891 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7de89730-76e4-471c-9b61-38e352911b4f "HTTP/1.1 200 OK"
+2026-01-12 22:05:04,210 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7de89730-76e4-471c-9b61-38e352911b4f "HTTP/1.1 200 OK"
+2026-01-12 22:05:07,736 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7de89730-76e4-471c-9b61-38e352911b4f "HTTP/1.1 200 OK"
+2026-01-12 22:05:12,346 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7de89730-76e4-471c-9b61-38e352911b4f "HTTP/1.1 200 OK"
+2026-01-12 22:05:12,956 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7de89730-76e4-471c-9b61-38e352911b4f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:05:13,301 - INFO - Extracted 9 pages from fess201.pdf
+2026-01-12 22:05:15,674 - INFO - Inserted 9 documents in batch
+2026-01-12 22:05:16,092 - INFO - Processed fess201.pdf: 9 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:05:16,123 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess2ps.pdf
+2026-01-12 22:05:16,141 - INFO - Extracting text from: fess2ps.pdf
+2026-01-12 22:05:19,842 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:05:21,319 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f4795a4-cff3-4540-8b2a-2891d2a79b54 "HTTP/1.1 200 OK"
+2026-01-12 22:05:23,818 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f4795a4-cff3-4540-8b2a-2891d2a79b54 "HTTP/1.1 200 OK"
+2026-01-12 22:05:27,264 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f4795a4-cff3-4540-8b2a-2891d2a79b54 "HTTP/1.1 200 OK"
+2026-01-12 22:05:27,825 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f4795a4-cff3-4540-8b2a-2891d2a79b54/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:05:28,177 - INFO - Extracted 8 pages from fess2ps.pdf
+2026-01-12 22:05:30,411 - INFO - Inserted 8 documents in batch
+2026-01-12 22:05:30,424 - INFO - Processed fess2ps.pdf: 8 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:05:30,436 - INFO - Processing: Finaldata/Class 6/Class 6 Geography - The earth_Our Habitat/fess208.pdf
+2026-01-12 22:05:30,449 - INFO - Extracting text from: fess208.pdf
+2026-01-12 22:05:33,866 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:05:35,334 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bca4b445-5665-42a2-80d9-d7ddb7cd1c81 "HTTP/1.1 200 OK"
+2026-01-12 22:05:37,873 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bca4b445-5665-42a2-80d9-d7ddb7cd1c81 "HTTP/1.1 200 OK"
+2026-01-12 22:05:41,332 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bca4b445-5665-42a2-80d9-d7ddb7cd1c81 "HTTP/1.1 200 OK"
+2026-01-12 22:05:45,805 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bca4b445-5665-42a2-80d9-d7ddb7cd1c81 "HTTP/1.1 200 OK"
+2026-01-12 22:05:46,445 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bca4b445-5665-42a2-80d9-d7ddb7cd1c81/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:05:46,789 - INFO - Extracted 12 pages from fess208.pdf
+2026-01-12 22:05:49,758 - INFO - Inserted 12 documents in batch
+2026-01-12 22:05:49,762 - INFO - Processed fess208.pdf: 12 pages (Class: Class_6, Subject: Geography - The earth_Our Habitat, Language: English)
+2026-01-12 22:05:49,763 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc116.pdf
+2026-01-12 22:05:49,768 - INFO - Extracting text from: fesc116.pdf
+2026-01-12 22:05:51,637 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:05:53,182 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/58f8e6e7-10b8-47c4-b2da-d434887fd5e8 "HTTP/1.1 200 OK"
+2026-01-12 22:05:55,705 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/58f8e6e7-10b8-47c4-b2da-d434887fd5e8 "HTTP/1.1 200 OK"
+2026-01-12 22:05:59,149 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/58f8e6e7-10b8-47c4-b2da-d434887fd5e8 "HTTP/1.1 200 OK"
+2026-01-12 22:05:59,653 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/58f8e6e7-10b8-47c4-b2da-d434887fd5e8/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:06:00,029 - INFO - Extracted 11 pages from fesc116.pdf
+2026-01-12 22:06:02,691 - INFO - Inserted 11 documents in batch
+2026-01-12 22:06:02,693 - INFO - Processed fesc116.pdf: 11 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:06:02,701 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc102.pdf
+2026-01-12 22:06:02,703 - INFO - Extracting text from: fesc102.pdf
+2026-01-12 22:06:04,436 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:06:06,306 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7cc13dbd-3658-4cf4-9aa6-1473c7bb0113 "HTTP/1.1 200 OK"
+2026-01-12 22:06:08,704 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7cc13dbd-3658-4cf4-9aa6-1473c7bb0113 "HTTP/1.1 200 OK"
+2026-01-12 22:06:12,122 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7cc13dbd-3658-4cf4-9aa6-1473c7bb0113 "HTTP/1.1 200 OK"
+2026-01-12 22:06:12,721 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7cc13dbd-3658-4cf4-9aa6-1473c7bb0113/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:06:13,460 - INFO - Extracted 10 pages from fesc102.pdf
+2026-01-12 22:06:16,600 - INFO - Inserted 10 documents in batch
+2026-01-12 22:06:16,636 - INFO - Processed fesc102.pdf: 10 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:06:16,649 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc103.pdf
+2026-01-12 22:06:16,655 - INFO - Extracting text from: fesc103.pdf
+2026-01-12 22:06:18,157 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:06:19,731 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d71fc3a2-4b2f-45ed-a738-89a96def1911 "HTTP/1.1 200 OK"
+2026-01-12 22:06:22,215 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d71fc3a2-4b2f-45ed-a738-89a96def1911 "HTTP/1.1 200 OK"
+2026-01-12 22:06:25,641 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d71fc3a2-4b2f-45ed-a738-89a96def1911 "HTTP/1.1 200 OK"
+2026-01-12 22:06:26,242 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d71fc3a2-4b2f-45ed-a738-89a96def1911/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:06:27,856 - INFO - Extracted 8 pages from fesc103.pdf
+2026-01-12 22:06:29,907 - INFO - Inserted 8 documents in batch
+2026-01-12 22:06:29,907 - INFO - Processed fesc103.pdf: 8 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:06:29,909 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc101.pdf
+2026-01-12 22:06:29,921 - INFO - Extracting text from: fesc101.pdf
+2026-01-12 22:06:32,069 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:06:33,496 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9eae2782-287d-4370-9a65-77b925bf3baa "HTTP/1.1 200 OK"
+2026-01-12 22:06:36,002 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9eae2782-287d-4370-9a65-77b925bf3baa "HTTP/1.1 200 OK"
+2026-01-12 22:06:39,480 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9eae2782-287d-4370-9a65-77b925bf3baa "HTTP/1.1 200 OK"
+2026-01-12 22:06:40,064 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9eae2782-287d-4370-9a65-77b925bf3baa/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:06:40,667 - INFO - Extracted 7 pages from fesc101.pdf
+2026-01-12 22:06:42,561 - INFO - Inserted 7 documents in batch
+2026-01-12 22:06:42,565 - INFO - Processed fesc101.pdf: 7 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:06:42,567 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc115.pdf
+2026-01-12 22:06:42,569 - INFO - Extracting text from: fesc115.pdf
+2026-01-12 22:06:44,025 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:06:45,489 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a20acbf8-9f1b-4083-93a8-c9eed90bf3ea "HTTP/1.1 200 OK"
+2026-01-12 22:06:48,097 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a20acbf8-9f1b-4083-93a8-c9eed90bf3ea "HTTP/1.1 200 OK"
+2026-01-12 22:06:51,501 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a20acbf8-9f1b-4083-93a8-c9eed90bf3ea "HTTP/1.1 200 OK"
+2026-01-12 22:06:52,108 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a20acbf8-9f1b-4083-93a8-c9eed90bf3ea/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:06:55,263 - INFO - Extracted 8 pages from fesc115.pdf
+2026-01-12 22:06:57,218 - INFO - Inserted 8 documents in batch
+2026-01-12 22:06:57,219 - INFO - Processed fesc115.pdf: 8 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:06:57,222 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc114.pdf
+2026-01-12 22:06:57,224 - INFO - Extracting text from: fesc114.pdf
+2026-01-12 22:06:59,541 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:07:01,068 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b4911598-1faa-46e3-abed-78527785b15a "HTTP/1.1 200 OK"
+2026-01-12 22:07:03,558 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b4911598-1faa-46e3-abed-78527785b15a "HTTP/1.1 200 OK"
+2026-01-12 22:07:06,981 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b4911598-1faa-46e3-abed-78527785b15a "HTTP/1.1 200 OK"
+2026-01-12 22:07:07,565 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b4911598-1faa-46e3-abed-78527785b15a/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:07:12,578 - INFO - Extracted 11 pages from fesc114.pdf
+2026-01-12 22:07:15,289 - INFO - Inserted 11 documents in batch
+2026-01-12 22:07:15,311 - INFO - Processed fesc114.pdf: 11 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:07:15,315 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc104.pdf
+2026-01-12 22:07:15,320 - INFO - Extracting text from: fesc104.pdf
+2026-01-12 22:07:16,922 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:07:18,881 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f227b90-d819-40a6-bae4-a0f136b4c388 "HTTP/1.1 200 OK"
+2026-01-12 22:07:21,359 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f227b90-d819-40a6-bae4-a0f136b4c388 "HTTP/1.1 200 OK"
+2026-01-12 22:07:24,946 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f227b90-d819-40a6-bae4-a0f136b4c388 "HTTP/1.1 200 OK"
+2026-01-12 22:07:25,537 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7f227b90-d819-40a6-bae4-a0f136b4c388/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:07:29,654 - INFO - Extracted 9 pages from fesc104.pdf
+2026-01-12 22:07:32,188 - INFO - Inserted 9 documents in batch
+2026-01-12 22:07:32,192 - INFO - Processed fesc104.pdf: 9 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:07:32,196 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc110.pdf
+2026-01-12 22:07:32,197 - INFO - Extracting text from: fesc110.pdf
+2026-01-12 22:07:33,753 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:07:35,233 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8cb61e38-cd87-48ca-96de-feb5292c13b6 "HTTP/1.1 200 OK"
+2026-01-12 22:07:37,662 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8cb61e38-cd87-48ca-96de-feb5292c13b6 "HTTP/1.1 200 OK"
+2026-01-12 22:07:41,118 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8cb61e38-cd87-48ca-96de-feb5292c13b6 "HTTP/1.1 200 OK"
+2026-01-12 22:07:41,729 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8cb61e38-cd87-48ca-96de-feb5292c13b6/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:07:47,375 - INFO - Extracted 12 pages from fesc110.pdf
+2026-01-12 22:07:49,913 - INFO - Inserted 12 documents in batch
+2026-01-12 22:07:49,914 - INFO - Processed fesc110.pdf: 12 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:07:49,915 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc111.pdf
+2026-01-12 22:07:49,918 - INFO - Extracting text from: fesc111.pdf
+2026-01-12 22:07:51,465 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:07:52,927 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4ad28b60-578f-4429-ae08-b40026eea126 "HTTP/1.1 200 OK"
+2026-01-12 22:07:55,431 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4ad28b60-578f-4429-ae08-b40026eea126 "HTTP/1.1 200 OK"
+2026-01-12 22:07:58,904 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4ad28b60-578f-4429-ae08-b40026eea126 "HTTP/1.1 200 OK"
+2026-01-12 22:07:59,497 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4ad28b60-578f-4429-ae08-b40026eea126/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:08:02,238 - INFO - Extracted 9 pages from fesc111.pdf
+2026-01-12 22:08:04,346 - INFO - Inserted 9 documents in batch
+2026-01-12 22:08:04,347 - INFO - Processed fesc111.pdf: 9 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:08:04,348 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc105.pdf
+2026-01-12 22:08:04,349 - INFO - Extracting text from: fesc105.pdf
+2026-01-12 22:08:06,341 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:08:07,732 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0836ccab-14e2-4f24-9a5c-44dff4690d4f "HTTP/1.1 200 OK"
+2026-01-12 22:08:10,234 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0836ccab-14e2-4f24-9a5c-44dff4690d4f "HTTP/1.1 200 OK"
+2026-01-12 22:08:13,707 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0836ccab-14e2-4f24-9a5c-44dff4690d4f "HTTP/1.1 200 OK"
+2026-01-12 22:08:14,299 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0836ccab-14e2-4f24-9a5c-44dff4690d4f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:08:16,358 - INFO - Extracted 11 pages from fesc105.pdf
+2026-01-12 22:08:18,737 - INFO - Inserted 11 documents in batch
+2026-01-12 22:08:18,738 - INFO - Processed fesc105.pdf: 11 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:08:18,739 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc113.pdf
+2026-01-12 22:08:18,740 - INFO - Extracting text from: fesc113.pdf
+2026-01-12 22:08:20,510 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:08:21,938 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fa1c2458-0865-4e0a-8ed3-2be4f092e595 "HTTP/1.1 200 OK"
+2026-01-12 22:08:24,424 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fa1c2458-0865-4e0a-8ed3-2be4f092e595 "HTTP/1.1 200 OK"
+2026-01-12 22:08:27,866 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fa1c2458-0865-4e0a-8ed3-2be4f092e595 "HTTP/1.1 200 OK"
+2026-01-12 22:08:28,380 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fa1c2458-0865-4e0a-8ed3-2be4f092e595/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:08:29,698 - INFO - Extracted 11 pages from fesc113.pdf
+2026-01-12 22:08:32,121 - INFO - Inserted 11 documents in batch
+2026-01-12 22:08:32,122 - INFO - Processed fesc113.pdf: 11 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:08:32,125 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc107.pdf
+2026-01-12 22:08:32,130 - INFO - Extracting text from: fesc107.pdf
+2026-01-12 22:08:33,662 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:08:35,136 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bf49e3e6-87b6-4072-8895-448e2230eaaf "HTTP/1.1 200 OK"
+2026-01-12 22:08:37,568 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bf49e3e6-87b6-4072-8895-448e2230eaaf "HTTP/1.1 200 OK"
+2026-01-12 22:08:40,992 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bf49e3e6-87b6-4072-8895-448e2230eaaf "HTTP/1.1 200 OK"
+2026-01-12 22:08:45,647 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bf49e3e6-87b6-4072-8895-448e2230eaaf "HTTP/1.1 200 OK"
+2026-01-12 22:08:46,331 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/bf49e3e6-87b6-4072-8895-448e2230eaaf/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:08:48,723 - INFO - Extracted 14 pages from fesc107.pdf
+2026-01-12 22:08:51,864 - INFO - Inserted 14 documents in batch
+2026-01-12 22:08:51,866 - INFO - Processed fesc107.pdf: 14 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:08:51,867 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc106.pdf
+2026-01-12 22:08:51,870 - INFO - Extracting text from: fesc106.pdf
+2026-01-12 22:08:53,275 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:08:54,730 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/25e11d43-f44c-4820-b37d-1d7d8ced1f6c "HTTP/1.1 200 OK"
+2026-01-12 22:08:57,229 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/25e11d43-f44c-4820-b37d-1d7d8ced1f6c "HTTP/1.1 200 OK"
+2026-01-12 22:09:00,728 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/25e11d43-f44c-4820-b37d-1d7d8ced1f6c "HTTP/1.1 200 OK"
+2026-01-12 22:09:01,318 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/25e11d43-f44c-4820-b37d-1d7d8ced1f6c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:09:01,992 - INFO - Extracted 6 pages from fesc106.pdf
+2026-01-12 22:09:04,891 - INFO - Inserted 6 documents in batch
+2026-01-12 22:09:04,898 - INFO - Processed fesc106.pdf: 6 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:09:04,960 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc112.pdf
+2026-01-12 22:09:04,968 - INFO - Extracting text from: fesc112.pdf
+2026-01-12 22:09:07,208 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:09:08,693 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1848bb6b-ee37-4ac6-a886-b12c8f296fd8 "HTTP/1.1 200 OK"
+2026-01-12 22:09:11,134 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1848bb6b-ee37-4ac6-a886-b12c8f296fd8 "HTTP/1.1 200 OK"
+2026-01-12 22:09:14,573 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1848bb6b-ee37-4ac6-a886-b12c8f296fd8 "HTTP/1.1 200 OK"
+2026-01-12 22:09:15,102 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1848bb6b-ee37-4ac6-a886-b12c8f296fd8/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:09:15,732 - INFO - Extracted 9 pages from fesc112.pdf
+2026-01-12 22:09:17,869 - INFO - Inserted 9 documents in batch
+2026-01-12 22:09:17,870 - INFO - Processed fesc112.pdf: 9 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:09:17,871 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc1ps.pdf
+2026-01-12 22:09:17,874 - INFO - Extracting text from: fesc1ps.pdf
+2026-01-12 22:09:19,279 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:09:20,755 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b33056b7-c063-49fd-bc98-1170fc18a8d4 "HTTP/1.1 200 OK"
+2026-01-12 22:09:23,186 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b33056b7-c063-49fd-bc98-1170fc18a8d4 "HTTP/1.1 200 OK"
+2026-01-12 22:09:23,723 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b33056b7-c063-49fd-bc98-1170fc18a8d4/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:09:23,744 - INFO - Extracted 2 pages from fesc1ps.pdf
+2026-01-12 22:09:24,985 - INFO - Inserted 2 documents in batch
+2026-01-12 22:09:24,988 - INFO - Processed fesc1ps.pdf: 2 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:09:24,988 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc108.pdf
+2026-01-12 22:09:24,994 - INFO - Extracting text from: fesc108.pdf
+2026-01-12 22:09:26,163 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:09:27,564 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0f38862f-f3f5-47c9-8713-bece47a7525d "HTTP/1.1 200 OK"
+2026-01-12 22:09:29,994 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0f38862f-f3f5-47c9-8713-bece47a7525d "HTTP/1.1 200 OK"
+2026-01-12 22:09:33,596 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0f38862f-f3f5-47c9-8713-bece47a7525d "HTTP/1.1 200 OK"
+2026-01-12 22:09:34,535 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0f38862f-f3f5-47c9-8713-bece47a7525d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:09:36,191 - INFO - Extracted 13 pages from fesc108.pdf
+2026-01-12 22:09:39,138 - INFO - Inserted 13 documents in batch
+2026-01-12 22:09:39,139 - INFO - Processed fesc108.pdf: 13 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:09:39,143 - INFO - Processing: Finaldata/Class 6/Class 6 Science/fesc109.pdf
+2026-01-12 22:09:39,146 - INFO - Extracting text from: fesc109.pdf
+2026-01-12 22:09:40,894 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:09:42,268 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/78e3f37c-c517-4025-b96b-abbf1b70121d "HTTP/1.1 200 OK"
+2026-01-12 22:09:44,686 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/78e3f37c-c517-4025-b96b-abbf1b70121d "HTTP/1.1 200 OK"
+2026-01-12 22:09:48,147 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/78e3f37c-c517-4025-b96b-abbf1b70121d "HTTP/1.1 200 OK"
+2026-01-12 22:09:48,729 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/78e3f37c-c517-4025-b96b-abbf1b70121d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:09:51,472 - INFO - Extracted 16 pages from fesc109.pdf
+2026-01-12 22:09:55,318 - INFO - Inserted 16 documents in batch
+2026-01-12 22:09:55,321 - INFO - Processed fesc109.pdf: 16 pages (Class: Class_6, Subject: Science, Language: English)
+2026-01-12 22:09:55,325 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess306.pdf
+2026-01-12 22:09:55,331 - INFO - Extracting text from: fess306.pdf
+2026-01-12 22:09:58,376 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:09:59,861 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/82857dd5-22d3-48b0-a770-098df252e88d "HTTP/1.1 200 OK"
+2026-01-12 22:10:02,316 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/82857dd5-22d3-48b0-a770-098df252e88d "HTTP/1.1 200 OK"
+2026-01-12 22:10:05,978 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/82857dd5-22d3-48b0-a770-098df252e88d "HTTP/1.1 200 OK"
+2026-01-12 22:10:06,655 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/82857dd5-22d3-48b0-a770-098df252e88d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:10:09,771 - INFO - Extracted 8 pages from fess306.pdf
+2026-01-12 22:10:12,142 - INFO - Inserted 8 documents in batch
+2026-01-12 22:10:12,143 - INFO - Processed fess306.pdf: 8 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:10:12,147 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess307.pdf
+2026-01-12 22:10:12,151 - INFO - Extracting text from: fess307.pdf
+2026-01-12 22:10:13,851 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:10:15,261 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a2388048-f507-4eb3-ae32-6bb72b7fcdb7 "HTTP/1.1 200 OK"
+2026-01-12 22:10:17,742 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a2388048-f507-4eb3-ae32-6bb72b7fcdb7 "HTTP/1.1 200 OK"
+2026-01-12 22:10:21,218 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a2388048-f507-4eb3-ae32-6bb72b7fcdb7 "HTTP/1.1 200 OK"
+2026-01-12 22:10:21,982 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a2388048-f507-4eb3-ae32-6bb72b7fcdb7/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:10:24,536 - INFO - Extracted 8 pages from fess307.pdf
+2026-01-12 22:10:26,469 - INFO - Inserted 8 documents in batch
+2026-01-12 22:10:26,470 - INFO - Processed fess307.pdf: 8 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:10:26,471 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess305.pdf
+2026-01-12 22:10:26,473 - INFO - Extracting text from: fess305.pdf
+2026-01-12 22:10:28,535 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:10:29,981 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28ea6a0e-f996-4633-8091-3b268c7561e2 "HTTP/1.1 200 OK"
+2026-01-12 22:10:32,547 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28ea6a0e-f996-4633-8091-3b268c7561e2 "HTTP/1.1 200 OK"
+2026-01-12 22:10:35,875 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28ea6a0e-f996-4633-8091-3b268c7561e2 "HTTP/1.1 200 OK"
+2026-01-12 22:10:36,422 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28ea6a0e-f996-4633-8091-3b268c7561e2/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:10:39,100 - INFO - Extracted 6 pages from fess305.pdf
+2026-01-12 22:10:41,029 - INFO - Inserted 6 documents in batch
+2026-01-12 22:10:41,030 - INFO - Processed fess305.pdf: 6 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:10:41,032 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess304.pdf
+2026-01-12 22:10:41,034 - INFO - Extracting text from: fess304.pdf
+2026-01-12 22:10:42,497 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:10:43,935 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28c9d19d-4570-4ad8-a509-1c5cd4bd736f "HTTP/1.1 200 OK"
+2026-01-12 22:10:46,382 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28c9d19d-4570-4ad8-a509-1c5cd4bd736f "HTTP/1.1 200 OK"
+2026-01-12 22:10:49,767 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28c9d19d-4570-4ad8-a509-1c5cd4bd736f "HTTP/1.1 200 OK"
+2026-01-12 22:10:54,326 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28c9d19d-4570-4ad8-a509-1c5cd4bd736f "HTTP/1.1 200 OK"
+2026-01-12 22:10:54,972 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/28c9d19d-4570-4ad8-a509-1c5cd4bd736f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:10:57,384 - INFO - Extracted 6 pages from fess304.pdf
+2026-01-12 22:10:59,198 - INFO - Inserted 6 documents in batch
+2026-01-12 22:10:59,201 - INFO - Processed fess304.pdf: 6 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:10:59,203 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess301.pdf
+2026-01-12 22:10:59,206 - INFO - Extracting text from: fess301.pdf
+2026-01-12 22:11:00,842 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:11:02,298 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ad46744b-c235-4fa2-aa98-8d6487759f95 "HTTP/1.1 200 OK"
+2026-01-12 22:11:04,751 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ad46744b-c235-4fa2-aa98-8d6487759f95 "HTTP/1.1 200 OK"
+2026-01-12 22:11:08,102 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ad46744b-c235-4fa2-aa98-8d6487759f95 "HTTP/1.1 200 OK"
+2026-01-12 22:11:12,577 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ad46744b-c235-4fa2-aa98-8d6487759f95 "HTTP/1.1 200 OK"
+2026-01-12 22:11:13,145 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ad46744b-c235-4fa2-aa98-8d6487759f95/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:11:16,861 - INFO - Extracted 10 pages from fess301.pdf
+2026-01-12 22:11:19,175 - INFO - Inserted 10 documents in batch
+2026-01-12 22:11:19,176 - INFO - Processed fess301.pdf: 10 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:11:19,176 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess303.pdf
+2026-01-12 22:11:19,177 - INFO - Extracting text from: fess303.pdf
+2026-01-12 22:11:20,819 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:11:22,366 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fbfff154-5881-4cc4-bbc2-d6d1472f6555 "HTTP/1.1 200 OK"
+2026-01-12 22:11:24,883 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fbfff154-5881-4cc4-bbc2-d6d1472f6555 "HTTP/1.1 200 OK"
+2026-01-12 22:11:28,353 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fbfff154-5881-4cc4-bbc2-d6d1472f6555 "HTTP/1.1 200 OK"
+2026-01-12 22:11:28,863 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fbfff154-5881-4cc4-bbc2-d6d1472f6555/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:11:30,139 - INFO - Extracted 8 pages from fess303.pdf
+2026-01-12 22:11:32,492 - INFO - Inserted 8 documents in batch
+2026-01-12 22:11:32,493 - INFO - Processed fess303.pdf: 8 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:11:32,495 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess302.pdf
+2026-01-12 22:11:32,498 - INFO - Extracting text from: fess302.pdf
+2026-01-12 22:11:34,094 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:11:35,563 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/84f98f79-16b3-49da-b6fe-2faf324afdb3 "HTTP/1.1 200 OK"
+2026-01-12 22:11:38,559 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/84f98f79-16b3-49da-b6fe-2faf324afdb3 "HTTP/1.1 200 OK"
+2026-01-12 22:11:41,976 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/84f98f79-16b3-49da-b6fe-2faf324afdb3 "HTTP/1.1 200 OK"
+2026-01-12 22:11:46,429 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/84f98f79-16b3-49da-b6fe-2faf324afdb3 "HTTP/1.1 200 OK"
+2026-01-12 22:11:47,049 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/84f98f79-16b3-49da-b6fe-2faf324afdb3/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:11:51,224 - INFO - Extracted 12 pages from fess302.pdf
+2026-01-12 22:11:54,138 - INFO - Inserted 12 documents in batch
+2026-01-12 22:11:54,138 - INFO - Processed fess302.pdf: 12 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:11:54,140 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess309.pdf
+2026-01-12 22:11:54,141 - INFO - Extracting text from: fess309.pdf
+2026-01-12 22:11:55,680 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:11:57,152 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/eba841fb-6b8d-4518-802b-231ff5382191 "HTTP/1.1 200 OK"
+2026-01-12 22:11:59,672 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/eba841fb-6b8d-4518-802b-231ff5382191 "HTTP/1.1 200 OK"
+2026-01-12 22:12:03,138 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/eba841fb-6b8d-4518-802b-231ff5382191 "HTTP/1.1 200 OK"
+2026-01-12 22:12:03,736 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/eba841fb-6b8d-4518-802b-231ff5382191/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:12:05,738 - INFO - Extracted 10 pages from fess309.pdf
+2026-01-12 22:12:08,058 - INFO - Inserted 10 documents in batch
+2026-01-12 22:12:08,059 - INFO - Processed fess309.pdf: 10 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:12:08,061 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess308.pdf
+2026-01-12 22:12:08,062 - INFO - Extracting text from: fess308.pdf
+2026-01-12 22:12:11,146 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:12:12,578 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0cb7d4ec-93db-41fa-b536-5d5c5d1d073c "HTTP/1.1 200 OK"
+2026-01-12 22:12:15,065 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0cb7d4ec-93db-41fa-b536-5d5c5d1d073c "HTTP/1.1 200 OK"
+2026-01-12 22:12:18,552 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0cb7d4ec-93db-41fa-b536-5d5c5d1d073c "HTTP/1.1 200 OK"
+2026-01-12 22:12:19,956 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0cb7d4ec-93db-41fa-b536-5d5c5d1d073c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:12:23,356 - INFO - Extracted 9 pages from fess308.pdf
+2026-01-12 22:12:25,367 - INFO - Inserted 9 documents in batch
+2026-01-12 22:12:25,368 - INFO - Processed fess308.pdf: 9 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:12:25,369 - INFO - Processing: Finaldata/Class 6/Class 6 Social and Political Life/fess3ps.pdf
+2026-01-12 22:12:25,370 - INFO - Extracting text from: fess3ps.pdf
+2026-01-12 22:12:26,924 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:12:28,413 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5081f664-a3ae-4113-ae1c-107618642552 "HTTP/1.1 200 OK"
+2026-01-12 22:12:30,892 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5081f664-a3ae-4113-ae1c-107618642552 "HTTP/1.1 200 OK"
+2026-01-12 22:12:34,273 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5081f664-a3ae-4113-ae1c-107618642552 "HTTP/1.1 200 OK"
+2026-01-12 22:12:38,744 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5081f664-a3ae-4113-ae1c-107618642552 "HTTP/1.1 200 OK"
+2026-01-12 22:12:39,567 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5081f664-a3ae-4113-ae1c-107618642552/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:12:42,998 - INFO - Extracted 14 pages from fess3ps.pdf
+2026-01-12 22:12:45,955 - INFO - Inserted 14 documents in batch
+2026-01-12 22:12:45,956 - INFO - Processed fess3ps.pdf: 14 pages (Class: Class_6, Subject: Social and Political Life, Language: English)
+2026-01-12 22:12:45,959 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess308.pdf
+2026-01-12 22:12:45,960 - INFO - Extracting text from: hess308.pdf
+2026-01-12 22:12:47,628 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:12:49,040 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ba8b5dd-2a6b-4be4-b779-3f11245b8636 "HTTP/1.1 200 OK"
+2026-01-12 22:12:51,499 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ba8b5dd-2a6b-4be4-b779-3f11245b8636 "HTTP/1.1 200 OK"
+2026-01-12 22:12:54,984 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ba8b5dd-2a6b-4be4-b779-3f11245b8636 "HTTP/1.1 200 OK"
+2026-01-12 22:12:55,684 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ba8b5dd-2a6b-4be4-b779-3f11245b8636/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:12:57,903 - INFO - Extracted 10 pages from hess308.pdf
+2026-01-12 22:12:59,952 - INFO - Inserted 10 documents in batch
+2026-01-12 22:12:59,953 - INFO - Processed hess308.pdf: 10 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:12:59,953 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess3ps.pdf
+2026-01-12 22:12:59,955 - INFO - Extracting text from: hess3ps.pdf
+2026-01-12 22:13:01,589 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:13:03,020 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/559580aa-c7a9-4e33-a4c4-7037536a82d1 "HTTP/1.1 200 OK"
+2026-01-12 22:13:05,485 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/559580aa-c7a9-4e33-a4c4-7037536a82d1 "HTTP/1.1 200 OK"
+2026-01-12 22:13:08,946 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/559580aa-c7a9-4e33-a4c4-7037536a82d1 "HTTP/1.1 200 OK"
+2026-01-12 22:13:09,535 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/559580aa-c7a9-4e33-a4c4-7037536a82d1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:13:10,709 - INFO - Extracted 10 pages from hess3ps.pdf
+2026-01-12 22:13:12,850 - INFO - Inserted 10 documents in batch
+2026-01-12 22:13:12,851 - INFO - Processed hess3ps.pdf: 10 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:13:12,853 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess309.pdf
+2026-01-12 22:13:12,854 - INFO - Extracting text from: hess309.pdf
+2026-01-12 22:13:14,431 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:13:15,916 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/af30f53d-32a7-42f0-9b2b-48aa3d94ee2c "HTTP/1.1 200 OK"
+2026-01-12 22:13:18,380 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/af30f53d-32a7-42f0-9b2b-48aa3d94ee2c "HTTP/1.1 200 OK"
+2026-01-12 22:13:21,837 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/af30f53d-32a7-42f0-9b2b-48aa3d94ee2c "HTTP/1.1 200 OK"
+2026-01-12 22:13:22,429 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/af30f53d-32a7-42f0-9b2b-48aa3d94ee2c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:13:23,458 - INFO - Extracted 16 pages from hess309.pdf
+2026-01-12 22:13:26,990 - INFO - Inserted 16 documents in batch
+2026-01-12 22:13:26,991 - INFO - Processed hess309.pdf: 16 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:13:26,993 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess304.pdf
+2026-01-12 22:13:26,995 - INFO - Extracting text from: hess304.pdf
+2026-01-12 22:13:29,592 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:13:31,047 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f6d4c198-b7a8-477f-8558-e2d6205f5470 "HTTP/1.1 200 OK"
+2026-01-12 22:13:33,515 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f6d4c198-b7a8-477f-8558-e2d6205f5470 "HTTP/1.1 200 OK"
+2026-01-12 22:13:36,961 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f6d4c198-b7a8-477f-8558-e2d6205f5470 "HTTP/1.1 200 OK"
+2026-01-12 22:13:37,928 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f6d4c198-b7a8-477f-8558-e2d6205f5470/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:13:38,529 - INFO - Extracted 10 pages from hess304.pdf
+2026-01-12 22:13:40,724 - INFO - Inserted 10 documents in batch
+2026-01-12 22:13:40,725 - INFO - Processed hess304.pdf: 10 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:13:40,726 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess310.pdf
+2026-01-12 22:13:40,728 - INFO - Extracting text from: hess310.pdf
+2026-01-12 22:13:42,586 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:13:44,016 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f9464494-b8b2-456f-8f4b-9acf4d2a73c7 "HTTP/1.1 200 OK"
+2026-01-12 22:13:46,432 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f9464494-b8b2-456f-8f4b-9acf4d2a73c7 "HTTP/1.1 200 OK"
+2026-01-12 22:13:49,940 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f9464494-b8b2-456f-8f4b-9acf4d2a73c7 "HTTP/1.1 200 OK"
+2026-01-12 22:13:50,647 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f9464494-b8b2-456f-8f4b-9acf4d2a73c7/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:13:51,325 - INFO - Extracted 15 pages from hess310.pdf
+2026-01-12 22:13:54,089 - INFO - Inserted 15 documents in batch
+2026-01-12 22:13:54,090 - INFO - Processed hess310.pdf: 15 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:13:54,092 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess305.pdf
+2026-01-12 22:13:54,093 - INFO - Extracting text from: hess305.pdf
+2026-01-12 22:13:56,774 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:13:58,216 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ff81e22f-3dee-4d93-a580-e785b86efe2b "HTTP/1.1 200 OK"
+2026-01-12 22:14:00,588 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ff81e22f-3dee-4d93-a580-e785b86efe2b "HTTP/1.1 200 OK"
+2026-01-12 22:14:04,055 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ff81e22f-3dee-4d93-a580-e785b86efe2b "HTTP/1.1 200 OK"
+2026-01-12 22:14:08,578 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ff81e22f-3dee-4d93-a580-e785b86efe2b "HTTP/1.1 200 OK"
+2026-01-12 22:14:09,146 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ff81e22f-3dee-4d93-a580-e785b86efe2b/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:14:09,835 - INFO - Extracted 14 pages from hess305.pdf
+2026-01-12 22:14:12,509 - INFO - Inserted 14 documents in batch
+2026-01-12 22:14:12,509 - INFO - Processed hess305.pdf: 14 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:14:12,509 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess307.pdf
+2026-01-12 22:14:12,511 - INFO - Extracting text from: hess307.pdf
+2026-01-12 22:14:14,021 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:14:15,414 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8831834e-18f5-4a92-bbee-a076ce46b7ab "HTTP/1.1 200 OK"
+2026-01-12 22:14:17,888 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8831834e-18f5-4a92-bbee-a076ce46b7ab "HTTP/1.1 200 OK"
+2026-01-12 22:14:22,072 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8831834e-18f5-4a92-bbee-a076ce46b7ab "HTTP/1.1 200 OK"
+2026-01-12 22:14:26,560 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8831834e-18f5-4a92-bbee-a076ce46b7ab "HTTP/1.1 200 OK"
+2026-01-12 22:14:27,180 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8831834e-18f5-4a92-bbee-a076ce46b7ab/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:14:28,232 - INFO - Extracted 16 pages from hess307.pdf
+2026-01-12 22:14:31,582 - INFO - Inserted 16 documents in batch
+2026-01-12 22:14:31,583 - INFO - Processed hess307.pdf: 16 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:14:31,584 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess306.pdf
+2026-01-12 22:14:31,586 - INFO - Extracting text from: hess306.pdf
+2026-01-12 22:14:33,348 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:14:34,802 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ceb9f548-8244-4f2f-8724-3afd17cb80ef "HTTP/1.1 200 OK"
+2026-01-12 22:14:37,228 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ceb9f548-8244-4f2f-8724-3afd17cb80ef "HTTP/1.1 200 OK"
+2026-01-12 22:14:40,738 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ceb9f548-8244-4f2f-8724-3afd17cb80ef "HTTP/1.1 200 OK"
+2026-01-12 22:14:45,225 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ceb9f548-8244-4f2f-8724-3afd17cb80ef "HTTP/1.1 200 OK"
+2026-01-12 22:14:45,863 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ceb9f548-8244-4f2f-8724-3afd17cb80ef/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:14:46,895 - INFO - Extracted 12 pages from hess306.pdf
+2026-01-12 22:14:49,371 - INFO - Inserted 12 documents in batch
+2026-01-12 22:14:49,371 - INFO - Processed hess306.pdf: 12 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:14:49,372 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess302.pdf
+2026-01-12 22:14:49,374 - INFO - Extracting text from: hess302.pdf
+2026-01-12 22:14:51,144 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:14:52,600 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9401940a-d7d1-416d-ad21-377c39bd5eb1 "HTTP/1.1 200 OK"
+2026-01-12 22:14:55,070 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9401940a-d7d1-416d-ad21-377c39bd5eb1 "HTTP/1.1 200 OK"
+2026-01-12 22:14:58,489 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9401940a-d7d1-416d-ad21-377c39bd5eb1 "HTTP/1.1 200 OK"
+2026-01-12 22:14:59,056 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9401940a-d7d1-416d-ad21-377c39bd5eb1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:14:59,420 - INFO - Extracted 10 pages from hess302.pdf
+2026-01-12 22:15:01,249 - INFO - Inserted 10 documents in batch
+2026-01-12 22:15:01,250 - INFO - Processed hess302.pdf: 10 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:15:01,251 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess303.pdf
+2026-01-12 22:15:01,254 - INFO - Extracting text from: hess303.pdf
+2026-01-12 22:15:02,868 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:15:04,298 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ee10013b-d1be-4a1a-9226-c11c4fa9ddd2 "HTTP/1.1 200 OK"
+2026-01-12 22:15:06,837 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ee10013b-d1be-4a1a-9226-c11c4fa9ddd2 "HTTP/1.1 200 OK"
+2026-01-12 22:15:10,249 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ee10013b-d1be-4a1a-9226-c11c4fa9ddd2 "HTTP/1.1 200 OK"
+2026-01-12 22:15:14,770 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ee10013b-d1be-4a1a-9226-c11c4fa9ddd2 "HTTP/1.1 200 OK"
+2026-01-12 22:15:15,308 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ee10013b-d1be-4a1a-9226-c11c4fa9ddd2/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:15:15,903 - INFO - Extracted 14 pages from hess303.pdf
+2026-01-12 22:15:18,561 - INFO - Inserted 14 documents in batch
+2026-01-12 22:15:18,562 - INFO - Processed hess303.pdf: 14 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:15:18,562 - INFO - Processing: Finaldata/Class 8/Class 8 Social and Political Life/hess301.pdf
+2026-01-12 22:15:18,563 - INFO - Extracting text from: hess301.pdf
+2026-01-12 22:15:20,051 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:15:21,519 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/feaf3fe9-743b-443b-ab02-6a36d9974cf9 "HTTP/1.1 200 OK"
+2026-01-12 22:15:23,946 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/feaf3fe9-743b-443b-ab02-6a36d9974cf9 "HTTP/1.1 200 OK"
+2026-01-12 22:15:27,420 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/feaf3fe9-743b-443b-ab02-6a36d9974cf9 "HTTP/1.1 200 OK"
+2026-01-12 22:15:31,870 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/feaf3fe9-743b-443b-ab02-6a36d9974cf9 "HTTP/1.1 200 OK"
+2026-01-12 22:15:32,434 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/feaf3fe9-743b-443b-ab02-6a36d9974cf9/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:15:33,811 - INFO - Extracted 17 pages from hess301.pdf
+2026-01-12 22:15:37,491 - INFO - Inserted 17 documents in batch
+2026-01-12 22:15:37,497 - INFO - Processed hess301.pdf: 17 pages (Class: Class_8, Subject: Social and Political Life, Language: English)
+2026-01-12 22:15:37,501 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc109.pdf
+2026-01-12 22:15:37,503 - INFO - Extracting text from: hesc109.pdf
+2026-01-12 22:15:39,457 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:15:40,934 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4c4494f7-679d-49f0-83e6-f19c33d0c656 "HTTP/1.1 200 OK"
+2026-01-12 22:15:43,405 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4c4494f7-679d-49f0-83e6-f19c33d0c656 "HTTP/1.1 200 OK"
+2026-01-12 22:15:44,957 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/4c4494f7-679d-49f0-83e6-f19c33d0c656/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:15:47,715 - INFO - Extracted 13 pages from hesc109.pdf
+2026-01-12 22:15:50,461 - INFO - Inserted 13 documents in batch
+2026-01-12 22:15:50,461 - INFO - Processed hesc109.pdf: 13 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:15:50,461 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc1ps.pdf
+2026-01-12 22:15:50,462 - INFO - Extracting text from: hesc1ps.pdf
+2026-01-12 22:15:52,397 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:15:53,872 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e16eb67b-8e6e-41b6-bb4f-91718c32c1b5 "HTTP/1.1 200 OK"
+2026-01-12 22:15:56,355 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e16eb67b-8e6e-41b6-bb4f-91718c32c1b5 "HTTP/1.1 200 OK"
+2026-01-12 22:15:59,816 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e16eb67b-8e6e-41b6-bb4f-91718c32c1b5 "HTTP/1.1 200 OK"
+2026-01-12 22:16:00,471 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e16eb67b-8e6e-41b6-bb4f-91718c32c1b5/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:16:02,392 - INFO - Extracted 14 pages from hesc1ps.pdf
+2026-01-12 22:16:04,864 - INFO - Inserted 14 documents in batch
+2026-01-12 22:16:04,865 - INFO - Processed hesc1ps.pdf: 14 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:16:04,866 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc108.pdf
+2026-01-12 22:16:04,866 - INFO - Extracting text from: hesc108.pdf
+2026-01-12 22:16:06,931 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:16:08,353 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4607d20-3b1a-4971-bc1c-5d3aba623c8a "HTTP/1.1 200 OK"
+2026-01-12 22:16:10,775 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4607d20-3b1a-4971-bc1c-5d3aba623c8a "HTTP/1.1 200 OK"
+2026-01-12 22:16:11,344 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4607d20-3b1a-4971-bc1c-5d3aba623c8a/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:16:14,426 - INFO - Extracted 10 pages from hesc108.pdf
+2026-01-12 22:16:16,099 - INFO - Inserted 10 documents in batch
+2026-01-12 22:16:16,100 - INFO - Processed hesc108.pdf: 10 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:16:16,100 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc118.pdf
+2026-01-12 22:16:16,103 - INFO - Extracting text from: hesc118.pdf
+2026-01-12 22:16:17,935 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:16:19,522 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5b66f3ea-bd54-4053-844f-9e96bd187730 "HTTP/1.1 200 OK"
+2026-01-12 22:16:22,817 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5b66f3ea-bd54-4053-844f-9e96bd187730 "HTTP/1.1 200 OK"
+2026-01-12 22:16:23,401 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5b66f3ea-bd54-4053-844f-9e96bd187730/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:16:29,561 - INFO - Extracted 14 pages from hesc118.pdf
+2026-01-12 22:16:32,197 - INFO - Inserted 14 documents in batch
+2026-01-12 22:16:32,199 - INFO - Processed hesc118.pdf: 14 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:16:32,200 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc114.pdf
+2026-01-12 22:16:32,202 - INFO - Extracting text from: hesc114.pdf
+2026-01-12 22:16:34,459 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:16:35,966 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8805a4d4-2e85-48ce-8f8b-4768d975a776 "HTTP/1.1 200 OK"
+2026-01-12 22:16:38,415 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8805a4d4-2e85-48ce-8f8b-4768d975a776 "HTTP/1.1 200 OK"
+2026-01-12 22:16:39,064 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8805a4d4-2e85-48ce-8f8b-4768d975a776/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:16:50,476 - INFO - Extracted 12 pages from hesc114.pdf
+2026-01-12 22:16:53,084 - INFO - Inserted 12 documents in batch
+2026-01-12 22:16:53,085 - INFO - Processed hesc114.pdf: 12 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:16:53,085 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc115.pdf
+2026-01-12 22:16:53,087 - INFO - Extracting text from: hesc115.pdf
+2026-01-12 22:16:54,624 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:16:56,034 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/587bf89d-ca82-40f1-bcb0-4e3eb2b34bfa "HTTP/1.1 200 OK"
+2026-01-12 22:16:58,530 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/587bf89d-ca82-40f1-bcb0-4e3eb2b34bfa "HTTP/1.1 200 OK"
+2026-01-12 22:17:01,960 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/587bf89d-ca82-40f1-bcb0-4e3eb2b34bfa "HTTP/1.1 200 OK"
+2026-01-12 22:17:03,289 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/587bf89d-ca82-40f1-bcb0-4e3eb2b34bfa/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:17:10,343 - INFO - Extracted 15 pages from hesc115.pdf
+2026-01-12 22:17:13,797 - INFO - Inserted 15 documents in batch
+2026-01-12 22:17:13,802 - INFO - Processed hesc115.pdf: 15 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:17:13,807 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc101.pdf
+2026-01-12 22:17:13,810 - INFO - Extracting text from: hesc101.pdf
+2026-01-12 22:17:15,667 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:17:17,113 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/90264a55-3bfa-4380-b8bd-e7ae3d499b02 "HTTP/1.1 200 OK"
+2026-01-12 22:17:19,573 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/90264a55-3bfa-4380-b8bd-e7ae3d499b02 "HTTP/1.1 200 OK"
+2026-01-12 22:17:23,035 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/90264a55-3bfa-4380-b8bd-e7ae3d499b02 "HTTP/1.1 200 OK"
+2026-01-12 22:17:27,515 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/90264a55-3bfa-4380-b8bd-e7ae3d499b02 "HTTP/1.1 200 OK"
+2026-01-12 22:17:28,191 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/90264a55-3bfa-4380-b8bd-e7ae3d499b02/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:17:30,270 - INFO - Extracted 16 pages from hesc101.pdf
+2026-01-12 22:17:33,626 - INFO - Inserted 16 documents in batch
+2026-01-12 22:17:33,627 - INFO - Processed hesc101.pdf: 16 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:17:33,629 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc117.pdf
+2026-01-12 22:17:33,631 - INFO - Extracting text from: hesc117.pdf
+2026-01-12 22:17:37,375 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:17:38,823 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d6b148ab-a9c0-4050-a93f-0b79ffc04106 "HTTP/1.1 200 OK"
+2026-01-12 22:17:41,256 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d6b148ab-a9c0-4050-a93f-0b79ffc04106 "HTTP/1.1 200 OK"
+2026-01-12 22:17:44,728 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d6b148ab-a9c0-4050-a93f-0b79ffc04106 "HTTP/1.1 200 OK"
+2026-01-12 22:17:45,419 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d6b148ab-a9c0-4050-a93f-0b79ffc04106/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:17:46,828 - INFO - Extracted 24 pages from hesc117.pdf
+2026-01-12 22:17:51,325 - INFO - Inserted 24 documents in batch
+2026-01-12 22:17:51,327 - INFO - Processed hesc117.pdf: 24 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:17:51,331 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc103.pdf
+2026-01-12 22:17:51,333 - INFO - Extracting text from: hesc103.pdf
+2026-01-12 22:17:53,085 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:17:54,547 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/692ab89a-d7ba-47dc-9f0a-7589c731026c "HTTP/1.1 200 OK"
+2026-01-12 22:17:56,947 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/692ab89a-d7ba-47dc-9f0a-7589c731026c "HTTP/1.1 200 OK"
+2026-01-12 22:17:57,830 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/692ab89a-d7ba-47dc-9f0a-7589c731026c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:17:59,198 - INFO - Extracted 12 pages from hesc103.pdf
+2026-01-12 22:18:01,748 - INFO - Inserted 12 documents in batch
+2026-01-12 22:18:01,748 - INFO - Processed hesc103.pdf: 12 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:18:01,749 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc102.pdf
+2026-01-12 22:18:01,749 - INFO - Extracting text from: hesc102.pdf
+2026-01-12 22:18:02,790 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:18:04,275 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d51529c0-c08f-44c7-a817-ec97508ee95d "HTTP/1.1 200 OK"
+2026-01-12 22:18:06,740 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d51529c0-c08f-44c7-a817-ec97508ee95d "HTTP/1.1 200 OK"
+2026-01-12 22:18:07,254 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d51529c0-c08f-44c7-a817-ec97508ee95d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:18:09,137 - INFO - Extracted 15 pages from hesc102.pdf
+2026-01-12 22:18:12,446 - INFO - Inserted 15 documents in batch
+2026-01-12 22:18:12,448 - INFO - Processed hesc102.pdf: 15 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:18:12,449 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc116.pdf
+2026-01-12 22:18:12,452 - INFO - Extracting text from: hesc116.pdf
+2026-01-12 22:18:14,096 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:18:15,613 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/40859140-1edc-4009-9783-e03901f5f202 "HTTP/1.1 200 OK"
+2026-01-12 22:18:18,038 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/40859140-1edc-4009-9783-e03901f5f202 "HTTP/1.1 200 OK"
+2026-01-12 22:18:18,555 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/40859140-1edc-4009-9783-e03901f5f202/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:18:20,567 - INFO - Extracted 16 pages from hesc116.pdf
+2026-01-12 22:18:23,855 - INFO - Inserted 16 documents in batch
+2026-01-12 22:18:23,856 - INFO - Processed hesc116.pdf: 16 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:18:23,857 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc112.pdf
+2026-01-12 22:18:23,860 - INFO - Extracting text from: hesc112.pdf
+2026-01-12 22:18:25,500 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:18:26,924 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/30759e99-1dbf-447d-b801-29133345ee27 "HTTP/1.1 200 OK"
+2026-01-12 22:18:29,312 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/30759e99-1dbf-447d-b801-29133345ee27 "HTTP/1.1 200 OK"
+2026-01-12 22:18:29,961 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/30759e99-1dbf-447d-b801-29133345ee27/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:18:31,262 - INFO - Extracted 12 pages from hesc112.pdf
+2026-01-12 22:18:33,777 - INFO - Inserted 12 documents in batch
+2026-01-12 22:18:33,777 - INFO - Processed hesc112.pdf: 12 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:18:33,777 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc106.pdf
+2026-01-12 22:18:33,780 - INFO - Extracting text from: hesc106.pdf
+2026-01-12 22:18:36,209 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:18:37,970 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/598791d2-5af1-402b-a010-2086a6f6cc40 "HTTP/1.1 200 OK"
+2026-01-12 22:18:40,472 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/598791d2-5af1-402b-a010-2086a6f6cc40 "HTTP/1.1 200 OK"
+2026-01-12 22:18:41,087 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/598791d2-5af1-402b-a010-2086a6f6cc40/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:18:42,104 - INFO - Extracted 13 pages from hesc106.pdf
+2026-01-12 22:18:44,885 - INFO - Inserted 13 documents in batch
+2026-01-12 22:18:44,885 - INFO - Processed hesc106.pdf: 13 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:18:44,885 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc107.pdf
+2026-01-12 22:18:44,886 - INFO - Extracting text from: hesc107.pdf
+2026-01-12 22:18:45,945 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:18:47,409 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/76b7c2dc-c560-4dd3-b079-e4dbffa280d2 "HTTP/1.1 200 OK"
+2026-01-12 22:18:49,865 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/76b7c2dc-c560-4dd3-b079-e4dbffa280d2 "HTTP/1.1 200 OK"
+2026-01-12 22:18:54,489 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/76b7c2dc-c560-4dd3-b079-e4dbffa280d2 "HTTP/1.1 200 OK"
+2026-01-12 22:18:55,048 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/76b7c2dc-c560-4dd3-b079-e4dbffa280d2/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:19:04,797 - INFO - Extracted 13 pages from hesc107.pdf
+2026-01-12 22:19:07,470 - INFO - Inserted 13 documents in batch
+2026-01-12 22:19:07,471 - INFO - Processed hesc107.pdf: 13 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:19:07,472 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc113.pdf
+2026-01-12 22:19:07,473 - INFO - Extracting text from: hesc113.pdf
+2026-01-12 22:19:09,031 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:19:10,460 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/569d5c98-84f6-40ad-8963-1dc852e090c1 "HTTP/1.1 200 OK"
+2026-01-12 22:19:12,897 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/569d5c98-84f6-40ad-8963-1dc852e090c1 "HTTP/1.1 200 OK"
+2026-01-12 22:19:13,506 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/569d5c98-84f6-40ad-8963-1dc852e090c1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:19:16,945 - INFO - Extracted 15 pages from hesc113.pdf
+2026-01-12 22:19:19,880 - INFO - Inserted 15 documents in batch
+2026-01-12 22:19:19,881 - INFO - Processed hesc113.pdf: 15 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:19:19,882 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc105.pdf
+2026-01-12 22:19:19,883 - INFO - Extracting text from: hesc105.pdf
+2026-01-12 22:19:22,278 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:19:23,774 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/473d4d15-7fee-4538-85e4-9f77a95d2d90 "HTTP/1.1 200 OK"
+2026-01-12 22:19:26,258 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/473d4d15-7fee-4538-85e4-9f77a95d2d90 "HTTP/1.1 200 OK"
+2026-01-12 22:19:26,848 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/473d4d15-7fee-4538-85e4-9f77a95d2d90/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:19:28,245 - INFO - Extracted 8 pages from hesc105.pdf
+2026-01-12 22:19:30,249 - INFO - Inserted 8 documents in batch
+2026-01-12 22:19:30,251 - INFO - Processed hesc105.pdf: 8 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:19:30,253 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc111.pdf
+2026-01-12 22:19:30,255 - INFO - Extracting text from: hesc111.pdf
+2026-01-12 22:19:32,882 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:19:34,361 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/dedd6fbc-9b3f-45c0-91ef-36edbf470e31 "HTTP/1.1 200 OK"
+2026-01-12 22:19:36,777 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/dedd6fbc-9b3f-45c0-91ef-36edbf470e31 "HTTP/1.1 200 OK"
+2026-01-12 22:19:37,434 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/dedd6fbc-9b3f-45c0-91ef-36edbf470e31/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:19:43,437 - INFO - Extracted 20 pages from hesc111.pdf
+2026-01-12 22:19:47,328 - INFO - Inserted 20 documents in batch
+2026-01-12 22:19:47,329 - INFO - Processed hesc111.pdf: 20 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:19:47,331 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc110.pdf
+2026-01-12 22:19:47,333 - INFO - Extracting text from: hesc110.pdf
+2026-01-12 22:19:48,915 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:19:50,378 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5c0fa715-6350-4228-9095-0a151bf7bf89 "HTTP/1.1 200 OK"
+2026-01-12 22:19:52,827 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5c0fa715-6350-4228-9095-0a151bf7bf89 "HTTP/1.1 200 OK"
+2026-01-12 22:19:56,856 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5c0fa715-6350-4228-9095-0a151bf7bf89 "HTTP/1.1 200 OK"
+2026-01-12 22:19:57,513 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5c0fa715-6350-4228-9095-0a151bf7bf89/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:20:03,347 - INFO - Extracted 14 pages from hesc110.pdf
+2026-01-12 22:20:06,079 - INFO - Inserted 14 documents in batch
+2026-01-12 22:20:06,079 - INFO - Processed hesc110.pdf: 14 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:20:06,080 - INFO - Processing: Finaldata/Class 8/Class 8 Science/hesc104.pdf
+2026-01-12 22:20:06,082 - INFO - Extracting text from: hesc104.pdf
+2026-01-12 22:20:07,690 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:20:09,472 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d2b06882-cbb2-4aa7-b6bc-496faae7c698 "HTTP/1.1 200 OK"
+2026-01-12 22:20:11,994 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d2b06882-cbb2-4aa7-b6bc-496faae7c698 "HTTP/1.1 200 OK"
+2026-01-12 22:20:15,501 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d2b06882-cbb2-4aa7-b6bc-496faae7c698 "HTTP/1.1 200 OK"
+2026-01-12 22:20:16,030 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/d2b06882-cbb2-4aa7-b6bc-496faae7c698/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:20:20,142 - INFO - Extracted 12 pages from hesc104.pdf
+2026-01-12 22:20:22,275 - INFO - Inserted 12 documents in batch
+2026-01-12 22:20:22,277 - INFO - Processed hesc104.pdf: 12 pages (Class: Class_8, Subject: Science, Language: English)
+2026-01-12 22:20:22,284 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess4ps.pdf
+2026-01-12 22:20:22,286 - INFO - Extracting text from: hess4ps.pdf
+2026-01-12 22:20:24,654 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:20:26,972 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9edd90c1-3420-412b-bf09-82518bd49b23 "HTTP/1.1 200 OK"
+2026-01-12 22:20:30,352 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9edd90c1-3420-412b-bf09-82518bd49b23 "HTTP/1.1 200 OK"
+2026-01-12 22:20:33,775 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9edd90c1-3420-412b-bf09-82518bd49b23 "HTTP/1.1 200 OK"
+2026-01-12 22:20:34,365 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9edd90c1-3420-412b-bf09-82518bd49b23/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:20:39,649 - INFO - Extracted 8 pages from hess4ps.pdf
+2026-01-12 22:20:41,499 - INFO - Inserted 8 documents in batch
+2026-01-12 22:20:41,500 - INFO - Processed hess4ps.pdf: 8 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:20:41,501 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess401.pdf
+2026-01-12 22:20:41,502 - INFO - Extracting text from: hess401.pdf
+2026-01-12 22:20:43,678 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:20:45,125 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:20:47,537 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:20:51,001 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:20:55,467 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:21:02,447 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:21:08,878 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b "HTTP/1.1 200 OK"
+2026-01-12 22:21:09,374 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/27014828-16d1-4fc5-a1d0-fcc6615b908b/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:21:11,237 - INFO - Extracted 8 pages from hess401.pdf
+2026-01-12 22:21:13,091 - INFO - Inserted 8 documents in batch
+2026-01-12 22:21:13,093 - INFO - Processed hess401.pdf: 8 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:21:13,094 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess402.pdf
+2026-01-12 22:21:13,095 - INFO - Extracting text from: hess402.pdf
+2026-01-12 22:21:16,287 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:21:17,776 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:20,200 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:23,662 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:28,191 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:34,652 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:41,129 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:47,590 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329 "HTTP/1.1 200 OK"
+2026-01-12 22:21:48,155 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8d5f3b0e-0a91-415f-b7b3-38afbc3d1329/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:21:57,908 - INFO - Extracted 15 pages from hess402.pdf
+2026-01-12 22:22:01,285 - INFO - Inserted 15 documents in batch
+2026-01-12 22:22:01,286 - INFO - Processed hess402.pdf: 15 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:22:01,289 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess403.pdf
+2026-01-12 22:22:01,290 - INFO - Extracting text from: hess403.pdf
+2026-01-12 22:22:05,440 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:22:07,401 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:09,911 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:13,561 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:18,024 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:24,659 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:31,462 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f "HTTP/1.1 200 OK"
+2026-01-12 22:22:32,024 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/aa0d9cb0-f5fc-460f-8ffd-b440193f065f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:22:47,813 - INFO - Extracted 16 pages from hess403.pdf
+2026-01-12 22:22:51,216 - INFO - Inserted 16 documents in batch
+2026-01-12 22:22:51,217 - INFO - Processed hess403.pdf: 16 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:22:51,220 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess406.pdf
+2026-01-12 22:22:51,222 - INFO - Extracting text from: hess406.pdf
+2026-01-12 22:22:55,345 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:22:56,847 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2a3df5fb-21e1-4525-8627-ed407e1f6922 "HTTP/1.1 200 OK"
+2026-01-12 22:22:59,284 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2a3df5fb-21e1-4525-8627-ed407e1f6922 "HTTP/1.1 200 OK"
+2026-01-12 22:23:02,730 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2a3df5fb-21e1-4525-8627-ed407e1f6922 "HTTP/1.1 200 OK"
+2026-01-12 22:23:07,186 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2a3df5fb-21e1-4525-8627-ed407e1f6922 "HTTP/1.1 200 OK"
+2026-01-12 22:23:07,744 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2a3df5fb-21e1-4525-8627-ed407e1f6922/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:23:12,044 - INFO - Extracted 11 pages from hess406.pdf
+2026-01-12 22:23:14,379 - INFO - Inserted 11 documents in batch
+2026-01-12 22:23:14,379 - INFO - Processed hess406.pdf: 11 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:23:14,380 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess404.pdf
+2026-01-12 22:23:14,382 - INFO - Extracting text from: hess404.pdf
+2026-01-12 22:23:17,035 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:23:18,971 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799 "HTTP/1.1 200 OK"
+2026-01-12 22:23:21,416 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799 "HTTP/1.1 200 OK"
+2026-01-12 22:23:24,945 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799 "HTTP/1.1 200 OK"
+2026-01-12 22:23:29,542 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799 "HTTP/1.1 200 OK"
+2026-01-12 22:23:36,065 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799 "HTTP/1.1 200 OK"
+2026-01-12 22:23:36,899 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/00244e3f-48f0-4525-b4ae-5069c30b9799/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:23:43,968 - INFO - Extracted 10 pages from hess404.pdf
+2026-01-12 22:23:46,122 - INFO - Inserted 10 documents in batch
+2026-01-12 22:23:46,122 - INFO - Processed hess404.pdf: 10 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:23:46,123 - INFO - Processing: Finaldata/Class 8/Class 8 - Geography - Resourse and Developement (Geography)/hess405.pdf
+2026-01-12 22:23:46,125 - INFO - Extracting text from: hess405.pdf
+2026-01-12 22:23:49,246 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:23:50,704 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:23:53,099 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:23:56,673 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:24:01,227 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:24:07,929 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:24:14,407 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173 "HTTP/1.1 200 OK"
+2026-01-12 22:24:15,570 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/50c0dbab-ea80-42b9-b7e4-eb01ec87e173/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:24:25,142 - INFO - Extracted 16 pages from hess405.pdf
+2026-01-12 22:24:28,728 - INFO - Inserted 16 documents in batch
+2026-01-12 22:24:28,730 - INFO - Processed hess405.pdf: 16 pages (Class: Class_8, Subject: Geography - Resourse and Developement (Geography), Language: English)
+2026-01-12 22:24:28,734 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess306.pdf
+2026-01-12 22:24:28,738 - INFO - Extracting text from: gess306.pdf
+2026-01-12 22:24:32,298 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:24:33,752 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/85bf4966-0fcb-4078-9579-9ce636178357 "HTTP/1.1 200 OK"
+2026-01-12 22:24:36,193 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/85bf4966-0fcb-4078-9579-9ce636178357 "HTTP/1.1 200 OK"
+2026-01-12 22:24:40,093 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/85bf4966-0fcb-4078-9579-9ce636178357 "HTTP/1.1 200 OK"
+2026-01-12 22:24:41,547 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/85bf4966-0fcb-4078-9579-9ce636178357/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:24:53,341 - INFO - Extracted 12 pages from gess306.pdf
+2026-01-12 22:24:55,819 - INFO - Inserted 12 documents in batch
+2026-01-12 22:24:55,820 - INFO - Processed gess306.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:24:55,820 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess307.pdf
+2026-01-12 22:24:55,822 - INFO - Extracting text from: gess307.pdf
+2026-01-12 22:24:58,026 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:24:59,591 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/629f07df-36ce-40c5-8c55-7efc8646098c "HTTP/1.1 200 OK"
+2026-01-12 22:25:02,152 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/629f07df-36ce-40c5-8c55-7efc8646098c "HTTP/1.1 200 OK"
+2026-01-12 22:25:05,599 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/629f07df-36ce-40c5-8c55-7efc8646098c "HTTP/1.1 200 OK"
+2026-01-12 22:25:06,188 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/629f07df-36ce-40c5-8c55-7efc8646098c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:25:14,068 - INFO - Extracted 12 pages from gess307.pdf
+2026-01-12 22:25:16,565 - INFO - Inserted 12 documents in batch
+2026-01-12 22:25:16,566 - INFO - Processed gess307.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:25:16,568 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess305.pdf
+2026-01-12 22:25:16,570 - INFO - Extracting text from: gess305.pdf
+2026-01-12 22:25:18,812 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:25:20,189 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f15eea28-d16e-42d7-93d3-871dbf1480b1 "HTTP/1.1 200 OK"
+2026-01-12 22:25:22,663 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f15eea28-d16e-42d7-93d3-871dbf1480b1 "HTTP/1.1 200 OK"
+2026-01-12 22:25:26,943 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f15eea28-d16e-42d7-93d3-871dbf1480b1 "HTTP/1.1 200 OK"
+2026-01-12 22:25:27,973 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f15eea28-d16e-42d7-93d3-871dbf1480b1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:25:37,831 - INFO - Extracted 14 pages from gess305.pdf
+2026-01-12 22:25:40,607 - INFO - Inserted 14 documents in batch
+2026-01-12 22:25:40,608 - INFO - Processed gess305.pdf: 14 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:25:40,608 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess310.pdf
+2026-01-12 22:25:40,612 - INFO - Extracting text from: gess310.pdf
+2026-01-12 22:25:42,904 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:25:44,386 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/adf16221-aaaa-4917-9ed9-31cee50ba04e "HTTP/1.1 200 OK"
+2026-01-12 22:25:46,830 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/adf16221-aaaa-4917-9ed9-31cee50ba04e "HTTP/1.1 200 OK"
+2026-01-12 22:25:50,284 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/adf16221-aaaa-4917-9ed9-31cee50ba04e "HTTP/1.1 200 OK"
+2026-01-12 22:25:50,912 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/adf16221-aaaa-4917-9ed9-31cee50ba04e/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:26:11,228 - INFO - Extracted 11 pages from gess310.pdf
+2026-01-12 22:26:13,582 - INFO - Inserted 11 documents in batch
+2026-01-12 22:26:13,582 - INFO - Processed gess310.pdf: 11 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:26:13,583 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess304.pdf
+2026-01-12 22:26:13,586 - INFO - Extracting text from: gess304.pdf
+2026-01-12 22:26:15,065 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:26:16,548 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f02b9b2a-8ecf-4c8e-b61f-31db1e11c526 "HTTP/1.1 200 OK"
+2026-01-12 22:26:19,158 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f02b9b2a-8ecf-4c8e-b61f-31db1e11c526 "HTTP/1.1 200 OK"
+2026-01-12 22:26:22,547 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f02b9b2a-8ecf-4c8e-b61f-31db1e11c526 "HTTP/1.1 200 OK"
+2026-01-12 22:26:23,441 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f02b9b2a-8ecf-4c8e-b61f-31db1e11c526/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:26:25,883 - INFO - Extracted 12 pages from gess304.pdf
+2026-01-12 22:26:28,237 - INFO - Inserted 12 documents in batch
+2026-01-12 22:26:28,238 - INFO - Processed gess304.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:26:28,238 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess301.pdf
+2026-01-12 22:26:28,241 - INFO - Extracting text from: gess301.pdf
+2026-01-12 22:26:29,673 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:26:31,115 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8c6024f4-ec65-4b24-88cd-b0b7cfceffe8 "HTTP/1.1 200 OK"
+2026-01-12 22:26:33,593 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8c6024f4-ec65-4b24-88cd-b0b7cfceffe8 "HTTP/1.1 200 OK"
+2026-01-12 22:26:37,039 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8c6024f4-ec65-4b24-88cd-b0b7cfceffe8 "HTTP/1.1 200 OK"
+2026-01-12 22:26:37,616 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8c6024f4-ec65-4b24-88cd-b0b7cfceffe8/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:26:41,430 - INFO - Extracted 14 pages from gess301.pdf
+2026-01-12 22:26:43,929 - INFO - Inserted 14 documents in batch
+2026-01-12 22:26:43,930 - INFO - Processed gess301.pdf: 14 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:26:43,932 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess303.pdf
+2026-01-12 22:26:43,936 - INFO - Extracting text from: gess303.pdf
+2026-01-12 22:26:45,657 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:26:47,110 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/37a99d55-75c1-4ad7-83a0-5f7552cfe396 "HTTP/1.1 200 OK"
+2026-01-12 22:26:49,551 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/37a99d55-75c1-4ad7-83a0-5f7552cfe396 "HTTP/1.1 200 OK"
+2026-01-12 22:26:54,049 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/37a99d55-75c1-4ad7-83a0-5f7552cfe396 "HTTP/1.1 200 OK"
+2026-01-12 22:26:54,731 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/37a99d55-75c1-4ad7-83a0-5f7552cfe396/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:27:06,192 - INFO - Extracted 12 pages from gess303.pdf
+2026-01-12 22:27:08,628 - INFO - Inserted 12 documents in batch
+2026-01-12 22:27:08,629 - INFO - Processed gess303.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:27:08,630 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess302.pdf
+2026-01-12 22:27:08,631 - INFO - Extracting text from: gess302.pdf
+2026-01-12 22:27:11,331 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:27:12,790 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0a41a1c9-14c3-4ce6-89db-29db23530af6 "HTTP/1.1 200 OK"
+2026-01-12 22:27:15,257 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0a41a1c9-14c3-4ce6-89db-29db23530af6 "HTTP/1.1 200 OK"
+2026-01-12 22:27:18,690 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0a41a1c9-14c3-4ce6-89db-29db23530af6 "HTTP/1.1 200 OK"
+2026-01-12 22:27:19,316 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/0a41a1c9-14c3-4ce6-89db-29db23530af6/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:27:29,048 - INFO - Extracted 12 pages from gess302.pdf
+2026-01-12 22:27:31,467 - INFO - Inserted 12 documents in batch
+2026-01-12 22:27:31,468 - INFO - Processed gess302.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:27:31,468 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess309.pdf
+2026-01-12 22:27:31,470 - INFO - Extracting text from: gess309.pdf
+2026-01-12 22:27:33,852 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:27:35,292 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/71191e62-4fa5-4c1f-ae35-6d9cf45404df "HTTP/1.1 200 OK"
+2026-01-12 22:27:37,799 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/71191e62-4fa5-4c1f-ae35-6d9cf45404df "HTTP/1.1 200 OK"
+2026-01-12 22:27:41,250 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/71191e62-4fa5-4c1f-ae35-6d9cf45404df "HTTP/1.1 200 OK"
+2026-01-12 22:27:41,893 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/71191e62-4fa5-4c1f-ae35-6d9cf45404df/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:27:44,450 - INFO - Extracted 10 pages from gess309.pdf
+2026-01-12 22:27:46,603 - INFO - Inserted 10 documents in batch
+2026-01-12 22:27:46,603 - INFO - Processed gess309.pdf: 10 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:27:46,604 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess308.pdf
+2026-01-12 22:27:46,606 - INFO - Extracting text from: gess308.pdf
+2026-01-12 22:27:48,122 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:27:49,496 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/003c5cf2-c88e-4f98-ac62-e20df2fcaa1f "HTTP/1.1 200 OK"
+2026-01-12 22:27:51,928 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/003c5cf2-c88e-4f98-ac62-e20df2fcaa1f "HTTP/1.1 200 OK"
+2026-01-12 22:27:55,376 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/003c5cf2-c88e-4f98-ac62-e20df2fcaa1f "HTTP/1.1 200 OK"
+2026-01-12 22:27:55,893 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/003c5cf2-c88e-4f98-ac62-e20df2fcaa1f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:27:58,694 - INFO - Extracted 12 pages from gess308.pdf
+2026-01-12 22:28:00,960 - INFO - Inserted 12 documents in batch
+2026-01-12 22:28:00,961 - INFO - Processed gess308.pdf: 12 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:28:00,962 - INFO - Processing: Finaldata/Class 7/Class 7 Social and Political Life/gess3ps.pdf
+2026-01-12 22:28:00,962 - INFO - Extracting text from: gess3ps.pdf
+2026-01-12 22:28:04,860 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:28:06,318 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/07f50d17-db0d-449e-a7dc-28f3bfafed87 "HTTP/1.1 200 OK"
+2026-01-12 22:28:08,812 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/07f50d17-db0d-449e-a7dc-28f3bfafed87 "HTTP/1.1 200 OK"
+2026-01-12 22:28:09,329 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/07f50d17-db0d-449e-a7dc-28f3bfafed87/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:28:10,256 - INFO - Extracted 1 pages from gess3ps.pdf
+2026-01-12 22:28:11,610 - INFO - Inserted 1 documents in batch
+2026-01-12 22:28:11,611 - INFO - Processed gess3ps.pdf: 1 pages (Class: Class_7, Subject: Social and Political Life, Language: English)
+2026-01-12 22:28:11,612 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc116.pdf
+2026-01-12 22:28:11,614 - INFO - Extracting text from: gesc116.pdf
+2026-01-12 22:28:12,636 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:28:14,080 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56fc9786-a12b-400c-aca0-5ac2141cfe75 "HTTP/1.1 200 OK"
+2026-01-12 22:28:16,991 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56fc9786-a12b-400c-aca0-5ac2141cfe75 "HTTP/1.1 200 OK"
+2026-01-12 22:28:20,453 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56fc9786-a12b-400c-aca0-5ac2141cfe75 "HTTP/1.1 200 OK"
+2026-01-12 22:28:28,923 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/56fc9786-a12b-400c-aca0-5ac2141cfe75/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:28:38,892 - INFO - Extracted 13 pages from gesc116.pdf
+2026-01-12 22:28:41,492 - INFO - Inserted 13 documents in batch
+2026-01-12 22:28:41,492 - INFO - Processed gesc116.pdf: 13 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:28:41,493 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc102.pdf
+2026-01-12 22:28:41,494 - INFO - Extracting text from: gesc102.pdf
+2026-01-12 22:28:43,802 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:28:45,188 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/580e236d-9ec0-44a9-8e67-c26bb5a3b7b6 "HTTP/1.1 200 OK"
+2026-01-12 22:28:47,647 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/580e236d-9ec0-44a9-8e67-c26bb5a3b7b6 "HTTP/1.1 200 OK"
+2026-01-12 22:28:51,979 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/580e236d-9ec0-44a9-8e67-c26bb5a3b7b6 "HTTP/1.1 200 OK"
+2026-01-12 22:28:52,738 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/580e236d-9ec0-44a9-8e67-c26bb5a3b7b6/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:29:05,229 - INFO - Extracted 13 pages from gesc102.pdf
+2026-01-12 22:29:07,869 - INFO - Inserted 13 documents in batch
+2026-01-12 22:29:07,870 - INFO - Processed gesc102.pdf: 13 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:29:07,870 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc103.pdf
+2026-01-12 22:29:07,872 - INFO - Extracting text from: gesc103.pdf
+2026-01-12 22:29:09,352 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:29:11,324 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7c953911-f3c1-4a88-a566-e3d25127fc9a "HTTP/1.1 200 OK"
+2026-01-12 22:29:13,755 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7c953911-f3c1-4a88-a566-e3d25127fc9a "HTTP/1.1 200 OK"
+2026-01-12 22:29:17,197 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7c953911-f3c1-4a88-a566-e3d25127fc9a "HTTP/1.1 200 OK"
+2026-01-12 22:29:17,780 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7c953911-f3c1-4a88-a566-e3d25127fc9a/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:29:28,855 - INFO - Extracted 11 pages from gesc103.pdf
+2026-01-12 22:29:31,203 - INFO - Inserted 11 documents in batch
+2026-01-12 22:29:31,205 - INFO - Processed gesc103.pdf: 11 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:29:31,207 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc117.pdf
+2026-01-12 22:29:31,208 - INFO - Extracting text from: gesc117.pdf
+2026-01-12 22:29:32,733 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:29:34,248 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f2f1ce97-4524-4609-a997-cdb9584e93b8 "HTTP/1.1 200 OK"
+2026-01-12 22:29:36,700 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f2f1ce97-4524-4609-a997-cdb9584e93b8 "HTTP/1.1 200 OK"
+2026-01-12 22:29:40,188 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f2f1ce97-4524-4609-a997-cdb9584e93b8 "HTTP/1.1 200 OK"
+2026-01-12 22:29:44,640 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f2f1ce97-4524-4609-a997-cdb9584e93b8 "HTTP/1.1 200 OK"
+2026-01-12 22:29:45,205 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f2f1ce97-4524-4609-a997-cdb9584e93b8/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:29:55,385 - INFO - Extracted 14 pages from gesc117.pdf
+2026-01-12 22:29:58,175 - INFO - Inserted 14 documents in batch
+2026-01-12 22:29:58,176 - INFO - Processed gesc117.pdf: 14 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:29:58,177 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc101.pdf
+2026-01-12 22:29:58,178 - INFO - Extracting text from: gesc101.pdf
+2026-01-12 22:29:59,637 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:30:01,126 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ec909cc-2cb1-496a-9aef-825b6b0a489e "HTTP/1.1 200 OK"
+2026-01-12 22:30:03,662 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ec909cc-2cb1-496a-9aef-825b6b0a489e "HTTP/1.1 200 OK"
+2026-01-12 22:30:07,130 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ec909cc-2cb1-496a-9aef-825b6b0a489e "HTTP/1.1 200 OK"
+2026-01-12 22:30:11,592 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ec909cc-2cb1-496a-9aef-825b6b0a489e "HTTP/1.1 200 OK"
+2026-01-12 22:30:12,212 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5ec909cc-2cb1-496a-9aef-825b6b0a489e/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:30:16,051 - INFO - Extracted 10 pages from gesc101.pdf
+2026-01-12 22:30:18,227 - INFO - Inserted 10 documents in batch
+2026-01-12 22:30:18,228 - INFO - Processed gesc101.pdf: 10 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:30:18,229 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc115.pdf
+2026-01-12 22:30:18,230 - INFO - Extracting text from: gesc115.pdf
+2026-01-12 22:30:19,752 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:30:21,190 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df2c373d-8ed5-48b4-90bc-0dcec44cae25 "HTTP/1.1 200 OK"
+2026-01-12 22:30:23,660 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df2c373d-8ed5-48b4-90bc-0dcec44cae25 "HTTP/1.1 200 OK"
+2026-01-12 22:30:27,488 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df2c373d-8ed5-48b4-90bc-0dcec44cae25 "HTTP/1.1 200 OK"
+2026-01-12 22:30:31,927 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df2c373d-8ed5-48b4-90bc-0dcec44cae25 "HTTP/1.1 200 OK"
+2026-01-12 22:30:32,499 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df2c373d-8ed5-48b4-90bc-0dcec44cae25/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:30:40,938 - INFO - Extracted 19 pages from gesc115.pdf
+2026-01-12 22:30:45,808 - INFO - Inserted 19 documents in batch
+2026-01-12 22:30:45,810 - INFO - Processed gesc115.pdf: 19 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:30:45,813 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc114.pdf
+2026-01-12 22:30:45,815 - INFO - Extracting text from: gesc114.pdf
+2026-01-12 22:30:47,352 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:30:48,793 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1321917-16f5-44a3-bf70-1730dc68442c "HTTP/1.1 200 OK"
+2026-01-12 22:30:51,261 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1321917-16f5-44a3-bf70-1730dc68442c "HTTP/1.1 200 OK"
+2026-01-12 22:30:54,696 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1321917-16f5-44a3-bf70-1730dc68442c "HTTP/1.1 200 OK"
+2026-01-12 22:30:59,115 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1321917-16f5-44a3-bf70-1730dc68442c "HTTP/1.1 200 OK"
+2026-01-12 22:30:59,785 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1321917-16f5-44a3-bf70-1730dc68442c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:31:06,574 - INFO - Extracted 14 pages from gesc114.pdf
+2026-01-12 22:31:09,283 - INFO - Inserted 14 documents in batch
+2026-01-12 22:31:09,283 - INFO - Processed gesc114.pdf: 14 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:31:09,284 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc104.pdf
+2026-01-12 22:31:09,286 - INFO - Extracting text from: gesc104.pdf
+2026-01-12 22:31:10,985 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:31:12,452 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ec90ecc-0130-487a-bde5-6d9a9b67373f "HTTP/1.1 200 OK"
+2026-01-12 22:31:14,882 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ec90ecc-0130-487a-bde5-6d9a9b67373f "HTTP/1.1 200 OK"
+2026-01-12 22:31:18,352 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ec90ecc-0130-487a-bde5-6d9a9b67373f "HTTP/1.1 200 OK"
+2026-01-12 22:31:22,690 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ec90ecc-0130-487a-bde5-6d9a9b67373f "HTTP/1.1 200 OK"
+2026-01-12 22:31:23,352 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1ec90ecc-0130-487a-bde5-6d9a9b67373f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:31:32,152 - INFO - Extracted 14 pages from gesc104.pdf
+2026-01-12 22:31:34,888 - INFO - Inserted 14 documents in batch
+2026-01-12 22:31:34,888 - INFO - Processed gesc104.pdf: 14 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:31:34,889 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc110.pdf
+2026-01-12 22:31:34,891 - INFO - Extracting text from: gesc110.pdf
+2026-01-12 22:31:36,450 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:31:37,872 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2701d0b3-86dd-4ae9-abd8-a6e96ed1e2fd "HTTP/1.1 200 OK"
+2026-01-12 22:31:40,299 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2701d0b3-86dd-4ae9-abd8-a6e96ed1e2fd "HTTP/1.1 200 OK"
+2026-01-12 22:31:44,566 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2701d0b3-86dd-4ae9-abd8-a6e96ed1e2fd "HTTP/1.1 200 OK"
+2026-01-12 22:31:45,194 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/2701d0b3-86dd-4ae9-abd8-a6e96ed1e2fd/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:31:52,195 - INFO - Extracted 13 pages from gesc110.pdf
+2026-01-12 22:31:54,775 - INFO - Inserted 13 documents in batch
+2026-01-12 22:31:54,776 - INFO - Processed gesc110.pdf: 13 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:31:54,777 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc111.pdf
+2026-01-12 22:31:54,779 - INFO - Extracting text from: gesc111.pdf
+2026-01-12 22:31:56,334 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:31:57,996 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fcbad89f-0926-4aea-856f-7b371ae4055f "HTTP/1.1 200 OK"
+2026-01-12 22:32:00,473 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fcbad89f-0926-4aea-856f-7b371ae4055f "HTTP/1.1 200 OK"
+2026-01-12 22:32:03,901 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fcbad89f-0926-4aea-856f-7b371ae4055f "HTTP/1.1 200 OK"
+2026-01-12 22:32:08,291 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fcbad89f-0926-4aea-856f-7b371ae4055f "HTTP/1.1 200 OK"
+2026-01-12 22:32:09,069 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/fcbad89f-0926-4aea-856f-7b371ae4055f/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:32:17,095 - INFO - Extracted 12 pages from gesc111.pdf
+2026-01-12 22:32:19,601 - INFO - Inserted 12 documents in batch
+2026-01-12 22:32:19,602 - INFO - Processed gesc111.pdf: 12 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:32:19,603 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc105.pdf
+2026-01-12 22:32:19,605 - INFO - Extracting text from: gesc105.pdf
+2026-01-12 22:32:21,124 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:32:23,102 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/995a3d4c-407b-4399-8e41-d2b688d2fc40 "HTTP/1.1 200 OK"
+2026-01-12 22:32:25,558 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/995a3d4c-407b-4399-8e41-d2b688d2fc40 "HTTP/1.1 200 OK"
+2026-01-12 22:32:28,971 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/995a3d4c-407b-4399-8e41-d2b688d2fc40 "HTTP/1.1 200 OK"
+2026-01-12 22:32:29,985 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/995a3d4c-407b-4399-8e41-d2b688d2fc40/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:32:33,758 - INFO - Extracted 9 pages from gesc105.pdf
+2026-01-12 22:32:35,756 - INFO - Inserted 9 documents in batch
+2026-01-12 22:32:35,757 - INFO - Processed gesc105.pdf: 9 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:32:35,758 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc113.pdf
+2026-01-12 22:32:35,760 - INFO - Extracting text from: gesc113.pdf
+2026-01-12 22:32:37,237 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:32:38,694 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9506991-c260-4ec3-b1cc-e6198ece50e9 "HTTP/1.1 200 OK"
+2026-01-12 22:32:41,082 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9506991-c260-4ec3-b1cc-e6198ece50e9 "HTTP/1.1 200 OK"
+2026-01-12 22:32:44,520 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9506991-c260-4ec3-b1cc-e6198ece50e9 "HTTP/1.1 200 OK"
+2026-01-12 22:32:45,106 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9506991-c260-4ec3-b1cc-e6198ece50e9/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:32:51,291 - INFO - Extracted 17 pages from gesc113.pdf
+2026-01-12 22:32:54,638 - INFO - Inserted 17 documents in batch
+2026-01-12 22:32:54,639 - INFO - Processed gesc113.pdf: 17 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:32:54,641 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc107.pdf
+2026-01-12 22:32:54,644 - INFO - Extracting text from: gesc107.pdf
+2026-01-12 22:32:56,445 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:32:57,916 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1239382-ffd6-4843-b7b2-b73bce0cefc1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:02,783 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1239382-ffd6-4843-b7b2-b73bce0cefc1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:06,240 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1239382-ffd6-4843-b7b2-b73bce0cefc1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:06,936 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/a1239382-ffd6-4843-b7b2-b73bce0cefc1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:33:15,737 - INFO - Extracted 12 pages from gesc107.pdf
+2026-01-12 22:33:18,006 - INFO - Inserted 12 documents in batch
+2026-01-12 22:33:18,006 - INFO - Processed gesc107.pdf: 12 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:33:18,008 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc106.pdf
+2026-01-12 22:33:18,010 - INFO - Extracting text from: gesc106.pdf
+2026-01-12 22:33:19,493 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:33:20,947 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3592d86c-5921-4300-a4cd-77798cae8687 "HTTP/1.1 200 OK"
+2026-01-12 22:33:23,337 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3592d86c-5921-4300-a4cd-77798cae8687 "HTTP/1.1 200 OK"
+2026-01-12 22:33:26,794 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3592d86c-5921-4300-a4cd-77798cae8687 "HTTP/1.1 200 OK"
+2026-01-12 22:33:27,364 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3592d86c-5921-4300-a4cd-77798cae8687/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:33:31,919 - INFO - Extracted 10 pages from gesc106.pdf
+2026-01-12 22:33:34,052 - INFO - Inserted 10 documents in batch
+2026-01-12 22:33:34,052 - INFO - Processed gesc106.pdf: 10 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:33:34,053 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc112.pdf
+2026-01-12 22:33:34,054 - INFO - Extracting text from: gesc112.pdf
+2026-01-12 22:33:35,742 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:33:37,191 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/20d0e4d7-7c69-46cf-a455-93c8c80f27b1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:39,632 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/20d0e4d7-7c69-46cf-a455-93c8c80f27b1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:43,126 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/20d0e4d7-7c69-46cf-a455-93c8c80f27b1 "HTTP/1.1 200 OK"
+2026-01-12 22:33:43,720 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/20d0e4d7-7c69-46cf-a455-93c8c80f27b1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:33:48,045 - INFO - Extracted 10 pages from gesc112.pdf
+2026-01-12 22:33:50,215 - INFO - Inserted 10 documents in batch
+2026-01-12 22:33:50,217 - INFO - Processed gesc112.pdf: 10 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:33:50,217 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc1ps.pdf
+2026-01-12 22:33:50,219 - INFO - Extracting text from: gesc1ps.pdf
+2026-01-12 22:33:51,803 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:33:53,250 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/32b82dd2-9f99-4917-9f62-5b923198be20 "HTTP/1.1 200 OK"
+2026-01-12 22:33:55,683 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/32b82dd2-9f99-4917-9f62-5b923198be20 "HTTP/1.1 200 OK"
+2026-01-12 22:33:59,121 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/32b82dd2-9f99-4917-9f62-5b923198be20 "HTTP/1.1 200 OK"
+2026-01-12 22:34:03,613 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/32b82dd2-9f99-4917-9f62-5b923198be20 "HTTP/1.1 200 OK"
+2026-01-12 22:34:04,214 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/32b82dd2-9f99-4917-9f62-5b923198be20/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:34:08,899 - INFO - Extracted 14 pages from gesc1ps.pdf
+2026-01-12 22:34:11,491 - INFO - Inserted 14 documents in batch
+2026-01-12 22:34:11,491 - INFO - Processed gesc1ps.pdf: 14 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:34:11,492 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc108.pdf
+2026-01-12 22:34:11,494 - INFO - Extracting text from: gesc108.pdf
+2026-01-12 22:34:13,013 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:34:14,480 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/480458cd-ecdf-40d2-847c-f1275cd3458c "HTTP/1.1 200 OK"
+2026-01-12 22:34:17,439 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/480458cd-ecdf-40d2-847c-f1275cd3458c "HTTP/1.1 200 OK"
+2026-01-12 22:34:20,826 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/480458cd-ecdf-40d2-847c-f1275cd3458c "HTTP/1.1 200 OK"
+2026-01-12 22:34:21,452 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/480458cd-ecdf-40d2-847c-f1275cd3458c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:34:35,688 - INFO - Extracted 16 pages from gesc108.pdf
+2026-01-12 22:34:39,163 - INFO - Inserted 16 documents in batch
+2026-01-12 22:34:39,164 - INFO - Processed gesc108.pdf: 16 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:34:39,165 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc109.pdf
+2026-01-12 22:34:39,166 - INFO - Extracting text from: gesc109.pdf
+2026-01-12 22:34:40,861 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:34:42,329 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9ca8182f-63e8-4ae0-a99d-915c4d220224 "HTTP/1.1 200 OK"
+2026-01-12 22:34:44,770 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9ca8182f-63e8-4ae0-a99d-915c4d220224 "HTTP/1.1 200 OK"
+2026-01-12 22:34:48,209 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9ca8182f-63e8-4ae0-a99d-915c4d220224 "HTTP/1.1 200 OK"
+2026-01-12 22:34:48,803 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/9ca8182f-63e8-4ae0-a99d-915c4d220224/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:34:59,649 - INFO - Extracted 12 pages from gesc109.pdf
+2026-01-12 22:35:02,164 - INFO - Inserted 12 documents in batch
+2026-01-12 22:35:02,165 - INFO - Processed gesc109.pdf: 12 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:35:02,166 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc119.pdf
+2026-01-12 22:35:02,171 - INFO - Extracting text from: gesc119.pdf
+2026-01-12 22:35:03,869 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:35:05,323 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8ee104d7-9ac8-4996-be09-854fcce6bf64 "HTTP/1.1 200 OK"
+2026-01-12 22:35:07,913 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8ee104d7-9ac8-4996-be09-854fcce6bf64 "HTTP/1.1 200 OK"
+2026-01-12 22:35:08,488 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/8ee104d7-9ac8-4996-be09-854fcce6bf64/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:35:12,304 - INFO - Extracted 4 pages from gesc119.pdf
+2026-01-12 22:35:13,982 - INFO - Inserted 4 documents in batch
+2026-01-12 22:35:13,983 - INFO - Processed gesc119.pdf: 4 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:35:13,984 - INFO - Processing: Finaldata/Class 7/Class 7 Science/gesc118.pdf
+2026-01-12 22:35:13,986 - INFO - Extracting text from: gesc118.pdf
+2026-01-12 22:35:15,563 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:35:16,920 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df964fa4-b310-4005-976a-136855a19d6d "HTTP/1.1 200 OK"
+2026-01-12 22:35:19,380 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df964fa4-b310-4005-976a-136855a19d6d "HTTP/1.1 200 OK"
+2026-01-12 22:35:23,389 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df964fa4-b310-4005-976a-136855a19d6d "HTTP/1.1 200 OK"
+2026-01-12 22:35:23,981 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/df964fa4-b310-4005-976a-136855a19d6d/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:35:30,831 - INFO - Extracted 11 pages from gesc118.pdf
+2026-01-12 22:35:33,191 - INFO - Inserted 11 documents in batch
+2026-01-12 22:35:33,192 - INFO - Processed gesc118.pdf: 11 pages (Class: Class_7, Subject: Science, Language: English)
+2026-01-12 22:35:33,193 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess205.pdf
+2026-01-12 22:35:33,195 - INFO - Extracting text from: gess205.pdf
+2026-01-12 22:35:34,631 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:35:36,077 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4165fa9-0062-4caa-b84b-1843c7495866 "HTTP/1.1 200 OK"
+2026-01-12 22:35:38,444 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4165fa9-0062-4caa-b84b-1843c7495866 "HTTP/1.1 200 OK"
+2026-01-12 22:35:39,012 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/f4165fa9-0062-4caa-b84b-1843c7495866/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:35:43,123 - INFO - Extracted 9 pages from gess205.pdf
+2026-01-12 22:35:44,929 - INFO - Inserted 9 documents in batch
+2026-01-12 22:35:44,932 - INFO - Processed gess205.pdf: 9 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:35:44,934 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess210.pdf
+2026-01-12 22:35:44,935 - INFO - Extracting text from: gess210.pdf
+2026-01-12 22:35:46,533 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:35:47,909 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e8f05870-f69c-4395-a0bb-346d0751b59c "HTTP/1.1 200 OK"
+2026-01-12 22:35:50,340 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e8f05870-f69c-4395-a0bb-346d0751b59c "HTTP/1.1 200 OK"
+2026-01-12 22:35:50,892 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e8f05870-f69c-4395-a0bb-346d0751b59c/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:35:54,428 - INFO - Extracted 8 pages from gess210.pdf
+2026-01-12 22:35:56,091 - INFO - Inserted 8 documents in batch
+2026-01-12 22:35:56,093 - INFO - Processed gess210.pdf: 8 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:35:56,094 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess204.pdf
+2026-01-12 22:35:56,095 - INFO - Extracting text from: gess204.pdf
+2026-01-12 22:35:58,208 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:35:59,668 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/677f14d3-5c3d-4421-9a97-0ae19f710a00 "HTTP/1.1 200 OK"
+2026-01-12 22:36:02,055 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/677f14d3-5c3d-4421-9a97-0ae19f710a00 "HTTP/1.1 200 OK"
+2026-01-12 22:36:05,484 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/677f14d3-5c3d-4421-9a97-0ae19f710a00 "HTTP/1.1 200 OK"
+2026-01-12 22:36:06,111 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/677f14d3-5c3d-4421-9a97-0ae19f710a00/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:36:12,030 - INFO - Extracted 10 pages from gess204.pdf
+2026-01-12 22:36:14,078 - INFO - Inserted 10 documents in batch
+2026-01-12 22:36:14,079 - INFO - Processed gess204.pdf: 10 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:36:14,080 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess206.pdf
+2026-01-12 22:36:14,083 - INFO - Extracting text from: gess206.pdf
+2026-01-12 22:36:15,618 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:36:17,107 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3d4faced-8236-43cd-8541-74222ba490c3 "HTTP/1.1 200 OK"
+2026-01-12 22:36:20,092 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3d4faced-8236-43cd-8541-74222ba490c3 "HTTP/1.1 200 OK"
+2026-01-12 22:36:20,703 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/3d4faced-8236-43cd-8541-74222ba490c3/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:36:25,266 - INFO - Extracted 8 pages from gess206.pdf
+2026-01-12 22:36:26,780 - INFO - Inserted 8 documents in batch
+2026-01-12 22:36:26,781 - INFO - Processed gess206.pdf: 8 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:36:26,782 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess207.pdf
+2026-01-12 22:36:26,783 - INFO - Extracting text from: gess207.pdf
+2026-01-12 22:36:28,403 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:36:29,852 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7613d5c0-0ef2-49e6-9d8f-260efd0dd4d7 "HTTP/1.1 200 OK"
+2026-01-12 22:36:32,277 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7613d5c0-0ef2-49e6-9d8f-260efd0dd4d7 "HTTP/1.1 200 OK"
+2026-01-12 22:36:33,215 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/7613d5c0-0ef2-49e6-9d8f-260efd0dd4d7/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:36:39,858 - INFO - Extracted 8 pages from gess207.pdf
+2026-01-12 22:36:41,583 - INFO - Inserted 8 documents in batch
+2026-01-12 22:36:41,584 - INFO - Processed gess207.pdf: 8 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:36:41,585 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess203.pdf
+2026-01-12 22:36:41,586 - INFO - Extracting text from: gess203.pdf
+2026-01-12 22:36:43,996 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:36:45,490 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b316fcbf-bd84-4b0b-975c-3ecc3257aba1 "HTTP/1.1 200 OK"
+2026-01-12 22:36:47,956 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b316fcbf-bd84-4b0b-975c-3ecc3257aba1 "HTTP/1.1 200 OK"
+2026-01-12 22:36:48,961 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b316fcbf-bd84-4b0b-975c-3ecc3257aba1/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:36:59,133 - INFO - Extracted 8 pages from gess203.pdf
+2026-01-12 22:37:00,830 - INFO - Inserted 8 documents in batch
+2026-01-12 22:37:00,831 - INFO - Processed gess203.pdf: 8 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:00,831 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess202.pdf
+2026-01-12 22:37:00,832 - INFO - Extracting text from: gess202.pdf
+2026-01-12 22:37:02,865 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:37:04,344 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1e0217a4-d5e5-47d0-aa98-02131efa2ac7 "HTTP/1.1 200 OK"
+2026-01-12 22:37:06,764 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1e0217a4-d5e5-47d0-aa98-02131efa2ac7 "HTTP/1.1 200 OK"
+2026-01-12 22:37:07,330 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/1e0217a4-d5e5-47d0-aa98-02131efa2ac7/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:37:10,928 - INFO - Extracted 5 pages from gess202.pdf
+2026-01-12 22:37:12,415 - INFO - Inserted 5 documents in batch
+2026-01-12 22:37:12,416 - INFO - Processed gess202.pdf: 5 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:12,417 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess201.pdf
+2026-01-12 22:37:12,419 - INFO - Extracting text from: gess201.pdf
+2026-01-12 22:37:15,370 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:37:16,811 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ebb2d68f-a7f2-4b30-89bf-83e3f5d3a2a5 "HTTP/1.1 200 OK"
+2026-01-12 22:37:19,280 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ebb2d68f-a7f2-4b30-89bf-83e3f5d3a2a5 "HTTP/1.1 200 OK"
+2026-01-12 22:37:19,960 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ebb2d68f-a7f2-4b30-89bf-83e3f5d3a2a5/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:37:22,924 - INFO - Extracted 6 pages from gess201.pdf
+2026-01-12 22:37:24,492 - INFO - Inserted 6 documents in batch
+2026-01-12 22:37:24,493 - INFO - Processed gess201.pdf: 6 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:24,493 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess209.pdf
+2026-01-12 22:37:24,496 - INFO - Extracting text from: gess209.pdf
+2026-01-12 22:37:26,045 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:37:27,487 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ed4a7fa7-17a5-47e2-a5c7-d9b705f82b07 "HTTP/1.1 200 OK"
+2026-01-12 22:37:29,869 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ed4a7fa7-17a5-47e2-a5c7-d9b705f82b07 "HTTP/1.1 200 OK"
+2026-01-12 22:37:31,760 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/ed4a7fa7-17a5-47e2-a5c7-d9b705f82b07/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:37:35,570 - INFO - Extracted 6 pages from gess209.pdf
+2026-01-12 22:37:37,019 - INFO - Inserted 6 documents in batch
+2026-01-12 22:37:37,020 - INFO - Processed gess209.pdf: 6 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:37,020 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess2ps.pdf
+2026-01-12 22:37:37,023 - INFO - Extracting text from: gess2ps.pdf
+2026-01-12 22:37:38,514 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:37:39,963 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9e468ca-cbfe-4b3a-9881-a0fef3153a26 "HTTP/1.1 200 OK"
+2026-01-12 22:37:42,421 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9e468ca-cbfe-4b3a-9881-a0fef3153a26 "HTTP/1.1 200 OK"
+2026-01-12 22:37:45,806 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9e468ca-cbfe-4b3a-9881-a0fef3153a26 "HTTP/1.1 200 OK"
+2026-01-12 22:37:46,296 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/b9e468ca-cbfe-4b3a-9881-a0fef3153a26/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:37:48,854 - INFO - Extracted 9 pages from gess2ps.pdf
+2026-01-12 22:37:50,283 - INFO - Inserted 9 documents in batch
+2026-01-12 22:37:50,284 - INFO - Processed gess2ps.pdf: 9 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:50,285 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess2er.pdf
+2026-01-12 22:37:50,286 - INFO - Extracting text from: gess2er.pdf
+2026-01-12 22:37:51,816 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:37:53,628 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5a3dccf6-bad4-444f-9a02-ed8cc2b3e802 "HTTP/1.1 200 OK"
+2026-01-12 22:37:56,068 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5a3dccf6-bad4-444f-9a02-ed8cc2b3e802 "HTTP/1.1 200 OK"
+2026-01-12 22:37:56,572 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/5a3dccf6-bad4-444f-9a02-ed8cc2b3e802/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:37:56,867 - INFO - Extracted 1 pages from gess2er.pdf
+2026-01-12 22:37:57,321 - INFO - Inserted 1 documents in batch
+2026-01-12 22:37:57,322 - INFO - Processed gess2er.pdf: 1 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:37:57,322 - INFO - Processing: Finaldata/Class 7/Class 7 Geography/gess208.pdf
+2026-01-12 22:37:57,322 - INFO - Extracting text from: gess208.pdf
+2026-01-12 22:37:58,679 - INFO - HTTP Request: POST https://api.cloud.llamaindex.ai/api/parsing/upload "HTTP/1.1 200 OK"
+2026-01-12 22:38:00,991 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e9188cf1-0b4e-4f9a-8314-6ac9e6a36b48 "HTTP/1.1 200 OK"
+2026-01-12 22:38:04,248 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e9188cf1-0b4e-4f9a-8314-6ac9e6a36b48 "HTTP/1.1 200 OK"
+2026-01-12 22:38:07,607 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e9188cf1-0b4e-4f9a-8314-6ac9e6a36b48 "HTTP/1.1 200 OK"
+2026-01-12 22:38:08,066 - INFO - HTTP Request: GET https://api.cloud.llamaindex.ai/api/parsing/job/e9188cf1-0b4e-4f9a-8314-6ac9e6a36b48/result/json "HTTP/1.1 200 OK"
+2026-01-12 22:38:15,976 - INFO - Extracted 10 pages from gess208.pdf
+2026-01-12 22:38:18,113 - INFO - Inserted 10 documents in batch
+2026-01-12 22:38:18,113 - INFO - Processed gess208.pdf: 10 pages (Class: Class_7, Subject: Geography, Language: English)
+2026-01-12 22:38:18,120 - INFO - ============================================================
+2026-01-12 22:38:18,120 - INFO - Processing Summary:
+2026-01-12 22:38:18,120 - INFO -   Files processed: 116/116
+2026-01-12 22:38:18,120 - INFO -   Files failed: 0
+2026-01-12 22:38:18,120 - INFO -   Total pages processed: 1287
+2026-01-12 22:38:18,120 - INFO -   Pages failed: 0
+2026-01-12 22:38:18,120 - INFO -   Total documents in database: 1287
+2026-01-12 22:38:18,120 - INFO - ============================================================
+2026-01-12 22:38:18,129 - INFO - Database connection closed
+2026-01-12 22:38:18,129 - INFO - 
+Processing completed successfully!
+2026-01-12 22:38:18,130 - INFO - Total documents in database: 1287
