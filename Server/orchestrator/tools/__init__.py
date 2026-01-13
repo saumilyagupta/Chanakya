@@ -10,6 +10,7 @@ from .crisis_handler import CrisisHandlerTool
 from .teacher_motivation import TeacherMotivationTool
 from .content_explainer import ContentExplainerTool
 from .classroom_guidance import ClassroomGuidanceTool
+from .expert_teacher import ExpertTeacherTool
 
 __all__ = [
     "ActivityGeneratorTool",
@@ -17,4 +18,5 @@ __all__ = [
     "TeacherMotivationTool",
     "ContentExplainerTool",
     "ClassroomGuidanceTool",
+    "ExpertTeacherTool",
 ]

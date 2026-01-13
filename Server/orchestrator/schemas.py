@@ -249,3 +249,62 @@ class ConversationContext(BaseModel):
         """Get recent conversation history as text."""
         recent = self.messages[-max_messages:]
         return "\n".join([f"{m.role}: {m.content}" for m in recent])
+
+
+class ExpertTeacherOutput(BaseModel):
+    """
+    Output from the Expert Teacher tool.
+    """
+    
+    query: str = Field(
+        ...,
+        description="The original query"
+    )
+    
+    explanation: str = Field(
+        ...,
+        description="Detailed explanation of the concept",
+        min_length=50
+    )
+    
+    key_points: List[str] = Field(
+        ...,
+        description="Key points to remember (3-5 points)"
+    )
+    
+    teaching_tips: List[str] = Field(
+        ...,
+        description="Practical tips for teaching this concept (2-3 tips)"
+    )
+    
+    examples: List[str] = Field(
+        default_factory=list,
+        description="Real-world examples or analogies"
+    )
+    
+    common_misconceptions: List[str] = Field(
+        default_factory=list,
+        description="Common student misconceptions to watch for"
+    )
+    
+    follow_up_questions: List[str] = Field(
+        default_factory=list,
+        description="Questions to check student understanding"
+    )
+    
+    grade_level: str = Field(
+        default="middle school",
+        description="Target grade level"
+    )
+    
+    subject: str = Field(
+        default="general",
+        description="Subject area"
+    )
+    
+    confidence: float = Field(
+        default=0.85,
+        description="Confidence score for this response",
+        ge=0.0,
+        le=1.0
+    )

@@ -199,10 +199,17 @@ class Database:
         # Sort by similarity (descending)
         similarities.sort(key=lambda x: x[0], reverse=True)
         
-        # Return top_k results
-        results = [doc for _, doc in similarities[:top_k]]
+        # Return top_k results with similarity scores
+        results = []
+        for similarity, doc in similarities[:top_k]:
+            result_doc = doc.copy()
+            result_doc['similarity'] = float(similarity)  # Add similarity score
+            results.append(result_doc)
         
         logger.debug(f"Found {len(results)} similar documents (top_k={top_k})")
+        if results:
+            logger.debug(f"Top similarity: {results[0]['similarity']:.4f}")
+        
         return results
     
     def get_document_count(self) -> int:

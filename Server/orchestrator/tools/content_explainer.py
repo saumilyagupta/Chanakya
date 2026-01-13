@@ -7,17 +7,18 @@ grounded explanations for teachers.
 """
 
 import json
-import logging
+import structlog
 import numpy as np
 from typing import Optional, List, Dict
 from google import genai
 from google.genai import types
+from sentence_transformers import SentenceTransformer
 
 from ..schemas import ContentExplanationOutput
 from .base import BaseTool
 from .RAG.database import Database
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 CONTENT_EXPLAINER_PROMPT = """You are an expert educational content explainer for Indian teachers using NCERT curriculum.
@@ -73,7 +74,7 @@ class ContentExplainerTool(BaseTool):
         self,
         db_path: str = "orchestrator/tools/RAG/ncert_books.db",
         model_name: str = "gemini-2.0-flash-exp",
-        embedding_model: str = "text-embedding-004",
+        embedding_model: str = "sentence-transformers/sentence-t5-large",
         top_k: int = 5,
         temperature: float = 0.3
     ):
@@ -83,16 +84,20 @@ class ContentExplainerTool(BaseTool):
         Args:
             db_path: Path to NCERT embeddings database
             model_name: Gemini model for text generation
-            embedding_model: Gemini model for embeddings
+            embedding_model: Sentence transformer model for embeddings (must match database)
             top_k: Number of relevant passages to retrieve
             temperature: Generation temperature (low for factual content)
         """
         self.db = Database(db_path)
         self.client = genai.Client(api_key=self._get_api_key())
         self.model_name = model_name
-        self.embedding_model = embedding_model
+        self.embedding_model_name = embedding_model
         self.top_k = top_k
         self.temperature = temperature
+        
+        # Load sentence transformer model
+        logger.info(f"Loading embedding model: {embedding_model}")
+        self.embedding_model = SentenceTransformer(embedding_model)
         
         logger.info(f"ContentExplainerTool initialized with {self.db.get_document_count()} documents")
     
@@ -106,7 +111,7 @@ class ContentExplainerTool(BaseTool):
     
     async def _generate_embedding(self, text: str) -> np.ndarray:
         """
-        Generate embedding vector for text using Gemini Embeddings API.
+        Generate embedding for text using Sentence Transformers.
         
         Args:
             text: Input text to embed
@@ -115,11 +120,10 @@ class ContentExplainerTool(BaseTool):
             Numpy array of embedding vector
         """
         try:
-            result = await self.client.aio.models.embed_content(
-                model=self.embedding_model,
-                contents=text
-            )
-            embedding = np.array(result.embeddings[0].values, dtype=np.float32)
+            # Encode text using sentence transformer
+            embedding = self.embedding_model.encode(text, convert_to_numpy=True)
+            # Ensure float32 type to match database
+            embedding = embedding.astype(np.float32)
             logger.debug(f"Generated embedding with shape: {embedding.shape}")
             return embedding
         except Exception as e:
@@ -166,7 +170,12 @@ class ContentExplainerTool(BaseTool):
             filters=filters_dict
         )
         
-        logger.info(f"Retrieved {len(results)} relevant passages")
+        logger.info("rag_search_complete",
+            query_preview=query[:50],
+            num_results=len(results),
+            has_filters=bool(filters_dict),
+            top_result_similarity=results[0].get('similarity', 0.0) if results else 0.0
+        )
         return results
     
     def _format_retrieved_content(self, results: List[Dict]) -> str:
@@ -206,7 +215,10 @@ class ContentExplainerTool(BaseTool):
             ContentExplanationOutput dictionary
         """
         try:
-            logger.info(f"ContentExplainer processing query: {query[:100]}...")
+            logger.info("content_explainer_start",
+                query_preview=query[:100],
+                has_context=bool(context)
+            )
             
             # Extract filters from context
             filters = {}
@@ -214,7 +226,11 @@ class ContentExplainerTool(BaseTool):
                 if context.get("class"):
                     filters["class"] = context["class"]
                 if context.get("subject"):
-                    filters["subject"] = context["subject"]
+                    # Capitalize subject for database matching (Science, Mathematics, etc.)
+                    filters["subject"] = context["subject"].capitalize()
+                if context.get("language"):
+                    # Capitalize language for database matching (English, Hindi, etc.)
+                    filters["language"] = context["language"].capitalize()
             
             # Retrieve relevant content
             retrieved_docs = await self._retrieve_relevant_content(query, filters)
