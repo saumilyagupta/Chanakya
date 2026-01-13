@@ -172,6 +172,7 @@ def get_next_student_suggestion(
     """
     Get the next student suggestion for the session.
     Returns the student with highest priority score.
+    Questions already asked in this session are excluded.
     """
     # Get all students in the class
     students = db.query(Student).filter(Student.class_id == session.class_id).all()
@@ -183,6 +184,12 @@ def get_next_student_suggestion(
     session_responses = db.query(DBStudentResponse).filter(
         DBStudentResponse.session_id == session.id
     ).all()
+    
+    # Get question IDs already asked in this session (to avoid repeating)
+    asked_question_ids = set(
+        r.question_id for r in session_responses 
+        if r.question_id is not None
+    )
     
     # Calculate priority scores for each student
     student_scores = []
@@ -199,10 +206,11 @@ def get_next_student_suggestion(
     # Determine difficulty
     difficulty = determine_difficulty(selected_student, session)
     
-    # Try to find a question for this topic and difficulty
+    # Try to find a question for this topic and difficulty that hasn't been asked yet
     question = db.query(Question).filter(
         Question.topic == session.topic,
-        Question.difficulty == difficulty
+        Question.difficulty == difficulty,
+        ~Question.id.in_(asked_question_ids) if asked_question_ids else True
     ).first()
     
     # If no question for exact difficulty, try adjacent difficulties
@@ -211,10 +219,22 @@ def get_next_student_suggestion(
         for adj_diff in adjacent.get(difficulty, []):
             question = db.query(Question).filter(
                 Question.topic == session.topic,
-                Question.difficulty == adj_diff
+                Question.difficulty == adj_diff,
+                ~Question.id.in_(asked_question_ids) if asked_question_ids else True
             ).first()
             if question:
+                difficulty = adj_diff  # Update difficulty to match found question
                 break
+    
+    # If still no question (all questions for this topic have been asked), 
+    # try any unused question from the topic regardless of difficulty
+    if not question:
+        question = db.query(Question).filter(
+            Question.topic == session.topic,
+            ~Question.id.in_(asked_question_ids) if asked_question_ids else True
+        ).first()
+        if question:
+            difficulty = question.difficulty
     
     # Generate reason
     reason = generate_reason(selected_student, priority_score, difficulty)

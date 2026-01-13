@@ -271,10 +271,15 @@
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: var(--space-md);
   padding: var(--space-sm) var(--space-md);
   align-items: center;
+}
+
+.homework-badge {
+  font-size: 0.7rem;
+  padding: 4px 10px;
 }
 
 .table-header {
@@ -302,6 +307,113 @@
   color: var(--color-text-primary);
 }
 
+/* Homework Section */
+.homework-section h2 {
+  color: var(--color-primary);
+}
+
+.homework-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: calc(var(--space-lg) * -1 + var(--space-xs));
+  margin-bottom: var(--space-lg);
+}
+
+.homework-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.homework-card {
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  background: var(--color-surface-elevated);
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.homework-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.homework-card.easy {
+  border-color: var(--color-easy);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(76, 175, 80, 0.1) 100%);
+}
+
+.homework-card.medium {
+  border-color: var(--color-medium);
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.1) 100%);
+}
+
+.homework-card.hard {
+  border-color: var(--color-hard);
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.05) 0%, rgba(244, 67, 54, 0.1) 100%);
+}
+
+.homework-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.homework-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.homework-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  line-height: 1.4;
+}
+
+.homework-students {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.homework-student-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--color-surface);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-secondary-light);
+}
+
+.homework-card.easy .homework-student-tag {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: var(--color-easy);
+  color: #2e7d32;
+}
+
+.homework-card.medium .homework-student-tag {
+  background: rgba(255, 193, 7, 0.15);
+  border-color: var(--color-medium);
+  color: #f57c00;
+}
+
+.homework-card.hard .homework-student-tag {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: var(--color-hard);
+  color: #c62828;
+}
+
+.no-students {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 1000px) {
   .metrics-grid {
@@ -315,6 +427,22 @@
   .section-card.full-width {
     grid-column: span 1;
   }
+  
+  .homework-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+  
+  .table-header span:nth-child(4),
+  .table-row span:nth-child(4) {
+    display: none;
+  }
 }
 
 @media (max-width: 600px) {
@@ -327,8 +455,10 @@
     grid-template-columns: 2fr 1fr 1fr;
   }
   
-  .table-header span:last-child,
-  .table-row span:last-child {
+  .table-header span:nth-child(3),
+  .table-row span:nth-child(3),
+  .table-header span:nth-child(4),
+  .table-row span:nth-child(4) {
     display: none;
   }
 }

@@ -44,7 +44,7 @@ async def generate_questions_for_topic(
         
         prompt = f"""Generate classroom questions for teaching {subject}, specifically about the topic: "{topic}"
 
-Create questions suitable for rural Indian students. Make them simple, clear, and in English.
+Create questions suitable for rural Indian students. Make them simple, clear, and in Language of the topic.
 
 Generate exactly:
 - {easy_count} EASY questions (recall, basic understanding)

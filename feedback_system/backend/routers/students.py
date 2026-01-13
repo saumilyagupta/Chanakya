@@ -133,14 +133,22 @@ def get_student_profile(student_id: int, db: Session = Depends(get_db)):
         older_avg = sum(r.rating for r in responses[len(responses)//2:]) / (len(responses) - len(responses)//2)
         improvement_trend = recent_avg - older_avg
     
-    # Recent history
+    # Recent history with question text and topic
     recent_history = []
     for r in responses[:10]:
+        question_text = None
+        topic = None
+        if r.question:
+            question_text = r.question.text
+        if r.session:
+            topic = r.session.topic
         recent_history.append({
             "session_id": r.session_id,
             "rating": r.rating,
             "difficulty": r.difficulty_asked,
-            "answered_at": r.answered_at.isoformat() if r.answered_at else None
+            "answered_at": r.answered_at.isoformat() if r.answered_at else None,
+            "question_text": question_text,
+            "topic": topic
         })
     
     return StudentProfileResponse(

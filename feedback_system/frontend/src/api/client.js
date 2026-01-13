@@ -151,6 +151,9 @@ export const analyticsApi = {
   getSessionSummary: (sessionId) => 
     fetch(`${API_BASE}/analytics/session/${sessionId}/summary`).then(handleResponse),
   
+  getClassDashboard: (classId) => 
+    fetch(`${API_BASE}/analytics/class/${classId}/dashboard`).then(handleResponse),
+  
   getClassHistory: (classId, limit = 10) => 
     fetch(`${API_BASE}/analytics/class/${classId}/history?limit=${limit}`).then(handleResponse),
   

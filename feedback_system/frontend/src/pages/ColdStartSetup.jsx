@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { classesApi, studentsApi } from '../api/client'
 import StudentCard from '../components/StudentCard'
 import StarRating from '../components/StarRating'
+import ClassDashboard from '../components/ClassDashboard'
 import './ColdStartSetup.css'
 
 function ColdStartSetup() {
@@ -14,6 +15,7 @@ function ColdStartSetup() {
   const [showClassForm, setShowClassForm] = useState(false)
   const [showStudentForm, setShowStudentForm] = useState(false)
   const [editingStudent, setEditingStudent] = useState(null)
+  const [activeTab, setActiveTab] = useState('dashboard') // 'dashboard' or 'students'
   
   // Form states
   const [className, setClassName] = useState('')
@@ -273,18 +275,6 @@ function ColdStartSetup() {
                   <span className="subject-tag">{selectedClass.subject}</span>
                 </div>
                 <div className="panel-actions">
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => setShowStudentForm(true)}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="8.5" cy="7" r="4"/>
-                      <line x1="20" y1="8" x2="20" y2="14"/>
-                      <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
-                    Add Student
-                  </button>
                   {students.length > 0 && (
                     <button 
                       className="btn btn-accent"
@@ -299,84 +289,139 @@ function ColdStartSetup() {
                 </div>
               </div>
               
-              {showStudentForm && (
-                <form 
-                  className="student-form card fade-in" 
-                  onSubmit={editingStudent ? handleUpdateStudent : handleAddStudent}
+              {/* Tabs */}
+              <div className="panel-tabs">
+                <button 
+                  className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('dashboard')}
                 >
-                  <h3>{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
-                  
-                  <div className="form-group">
-                    <label>Student Name</label>
-                    <input
-                      type="text"
-                      value={studentName}
-                      onChange={(e) => setStudentName(e.target.value)}
-                      placeholder="Enter student name"
-                      autoFocus
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Initial Level</label>
-                    <div className="level-buttons">
-                      {['weak', 'medium', 'strong'].map((level) => (
-                        <button
-                          key={level}
-                          type="button"
-                          className={`level-btn ${studentLevel === level ? 'active' : ''} ${level}`}
-                          onClick={() => setStudentLevel(level)}
-                        >
-                          {level.charAt(0).toUpperCase() + level.slice(1)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Initial Confidence</label>
-                    <div className="confidence-input">
-                      <StarRating 
-                        value={Math.round(studentConfidence)}
-                        onChange={setStudentConfidence}
-                        size="medium"
-                      />
-                      <span className="confidence-value">{studentConfidence.toFixed(1)}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="form-actions">
-                    <button type="button" className="btn btn-secondary" onClick={resetStudentForm}>
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      {editingStudent ? 'Update' : 'Add Student'}
-                    </button>
-                  </div>
-                </form>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 3v18h18"/>
+                    <path d="M18 17V9"/>
+                    <path d="M13 17V5"/>
+                    <path d="M8 17v-3"/>
+                  </svg>
+                  Dashboard
+                </button>
+                <button 
+                  className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('students')}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  Students ({students.length})
+                </button>
+              </div>
+              
+              {/* Dashboard Tab */}
+              {activeTab === 'dashboard' && (
+                <div className="tab-content">
+                  <ClassDashboard classId={selectedClass.id} />
+                </div>
               )}
               
-              <div className="students-list">
-                {students.length === 0 ? (
-                  <div className="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                      <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    <p>No students yet</p>
-                    <span>Add students to this class</span>
+              {/* Students Tab */}
+              {activeTab === 'students' && (
+                <div className="tab-content">
+                  <div className="students-header">
+                    <button 
+                      className="btn btn-secondary"
+                      onClick={() => setShowStudentForm(true)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                      </svg>
+                      Add Student
+                    </button>
                   </div>
-                ) : (
-                  students.map((student) => (
-                    <StudentCard
-                      key={student.id}
-                      student={student}
-                      onUpdate={startEditStudent}
-                      onDelete={handleDeleteStudent}
-                    />
-                  ))
-                )}
-              </div>
+                  
+                  {showStudentForm && (
+                    <form 
+                      className="student-form card fade-in" 
+                      onSubmit={editingStudent ? handleUpdateStudent : handleAddStudent}
+                    >
+                      <h3>{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
+                      
+                      <div className="form-group">
+                        <label>Student Name</label>
+                        <input
+                          type="text"
+                          value={studentName}
+                          onChange={(e) => setStudentName(e.target.value)}
+                          placeholder="Enter student name"
+                          autoFocus
+                        />
+                      </div>
+                      
+                      <div className="form-group">
+                        <label>Initial Level</label>
+                        <div className="level-buttons">
+                          {['weak', 'medium', 'strong'].map((level) => (
+                            <button
+                              key={level}
+                              type="button"
+                              className={`level-btn ${studentLevel === level ? 'active' : ''} ${level}`}
+                              onClick={() => setStudentLevel(level)}
+                            >
+                              {level.charAt(0).toUpperCase() + level.slice(1)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label>Initial Confidence</label>
+                        <div className="confidence-input">
+                          <StarRating 
+                            value={Math.round(studentConfidence)}
+                            onChange={setStudentConfidence}
+                            size="medium"
+                          />
+                          <span className="confidence-value">{studentConfidence.toFixed(1)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={resetStudentForm}>
+                          Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                          {editingStudent ? 'Update' : 'Add Student'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                  
+                  <div className="students-list">
+                    {students.length === 0 ? (
+                      <div className="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p>No students yet</p>
+                        <span>Add students to this class</span>
+                      </div>
+                    ) : (
+                      students.map((student) => (
+                        <StudentCard
+                          key={student.id}
+                          student={student}
+                          onUpdate={startEditStudent}
+                          onDelete={handleDeleteStudent}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="select-class-prompt">

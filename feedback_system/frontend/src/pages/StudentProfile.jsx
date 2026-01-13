@@ -202,23 +202,29 @@ function StudentProfile() {
         </div>
       </div>
       
-      {/* Topic Performance */}
-      {student.topic_performance && Object.keys(student.topic_performance).length > 0 && (
-        <div className="section-card">
-          <h2>Topic Performance</h2>
+      {/* Topic Performance - Top 3 */}
+      <div className="section-card">
+        <h2>Top Topic Performance</h2>
+        {student.topic_performance && Object.keys(student.topic_performance).length > 0 ? (
           <div className="topics-grid">
-            {Object.entries(student.topic_performance).map(([topic, score]) => (
-              <div key={topic} className="topic-item">
-                <span className="topic-name">{topic}</span>
-                <div className="topic-score">
-                  <StarRating value={Math.round(score)} readonly size="small" />
-                  <span className="score-value">{score.toFixed(1)}</span>
+            {Object.entries(student.topic_performance)
+              .sort(([, a], [, b]) => b - a)
+              .slice(0, 3)
+              .map(([topic, score], index) => (
+                <div key={topic} className="topic-item">
+                  <span className="topic-rank">#{index + 1}</span>
+                  <span className="topic-name">{topic}</span>
+                  <div className="topic-score">
+                    <StarRating value={Math.round(score)} readonly size="small" />
+                    <span className="score-value">{score.toFixed(1)}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="empty-message">No topic performance data yet. Start a session to track topics!</p>
+        )}
+      </div>
       
       {/* Recent History */}
       <div className="section-card">
@@ -229,25 +235,35 @@ function StudentProfile() {
           <div className="history-list">
             {profile.recent_history.map((item, index) => (
               <div key={index} className="history-item">
-                <div className="history-rating">
-                  <StarRating value={item.rating} readonly size="small" />
+                <div className="history-row">
+                  <div className="history-rating">
+                    <StarRating value={item.rating} readonly size="small" />
+                  </div>
+                  <div className="history-info">
+                    {item.topic && (
+                      <span className="history-topic">{item.topic}</span>
+                    )}
+                    <span className={`badge badge-${item.difficulty}`}>
+                      {item.difficulty}
+                    </span>
+                    <span className="history-date">
+                      {item.answered_at 
+                        ? new Date(item.answered_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        : 'Unknown date'
+                      }
+                    </span>
+                  </div>
                 </div>
-                <div className="history-info">
-                  <span className={`badge badge-${item.difficulty}`}>
-                    {item.difficulty}
-                  </span>
-                  <span className="history-date">
-                    {item.answered_at 
-                      ? new Date(item.answered_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })
-                      : 'Unknown date'
-                    }
-                  </span>
-                </div>
+                {item.question_text && (
+                  <div className="history-question">
+                    <span className="question-label">Q:</span> {item.question_text}
+                  </div>
+                )}
               </div>
             ))}
           </div>

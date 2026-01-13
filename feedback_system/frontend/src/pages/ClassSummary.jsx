@@ -241,27 +241,47 @@ function ClassSummary() {
             <span>Times Called</span>
             <span>Avg Rating</span>
             <span>Change</span>
+            <span>Homework</span>
           </div>
-          {summary.all_student_summaries.map((s) => (
-            <Link 
-              key={s.student_id}
-              to={`/student/${s.student_id}`}
-              className="table-row"
-            >
-              <span className="student-name">{s.student_name}</span>
-              <span>{s.times_called}</span>
-              <span>
-                {s.times_called > 0 ? (
-                  <StarRating value={Math.round(s.average_rating)} readonly size="small" />
-                ) : (
-                  '-'
-                )}
-              </span>
-              <span className={`confidence-change ${s.confidence_change > 0 ? 'positive' : s.confidence_change < 0 ? 'negative' : ''}`}>
-                {s.confidence_change > 0 ? '+' : ''}{s.confidence_change.toFixed(1)}
-              </span>
-            </Link>
-          ))}
+          {summary.all_student_summaries.map((s) => {
+            const getHomeworkLevel = () => {
+              if (s.times_called === 0) return null
+              if (s.average_rating < 2.5) return 'easy'
+              if (s.average_rating < 4) return 'medium'
+              return 'hard'
+            }
+            const homeworkLevel = getHomeworkLevel()
+            
+            return (
+              <Link 
+                key={s.student_id}
+                to={`/student/${s.student_id}`}
+                className="table-row"
+              >
+                <span className="student-name">{s.student_name}</span>
+                <span>{s.times_called}</span>
+                <span>
+                  {s.times_called > 0 ? (
+                    <StarRating value={Math.round(s.average_rating)} readonly size="small" />
+                  ) : (
+                    '-'
+                  )}
+                </span>
+                <span className={`confidence-change ${s.confidence_change > 0 ? 'positive' : s.confidence_change < 0 ? 'negative' : ''}`}>
+                  {s.confidence_change > 0 ? '+' : ''}{s.confidence_change.toFixed(1)}
+                </span>
+                <span>
+                  {homeworkLevel ? (
+                    <span className={`badge badge-${homeworkLevel} homework-badge`}>
+                      {homeworkLevel === 'easy' ? 'Easy' : homeworkLevel === 'medium' ? 'Medium' : 'Hard'}
+                    </span>
+                  ) : (
+                    '-'
+                  )}
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </div>

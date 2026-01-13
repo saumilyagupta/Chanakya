@@ -15,6 +15,9 @@ function QuestionSetup() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingQuestion, setEditingQuestion] = useState(null)
   
+  // Question generation counts
+  const [questionCounts, setQuestionCounts] = useState({ easy: 3, medium: 3, hard: 3 })
+  
   // Add question form
   const [newQuestionText, setNewQuestionText] = useState('')
   const [newQuestionDifficulty, setNewQuestionDifficulty] = useState('medium')
@@ -44,6 +47,13 @@ function QuestionSetup() {
     }
   }
   
+  const updateQuestionCount = (difficulty, delta) => {
+    setQuestionCounts(prev => ({
+      ...prev,
+      [difficulty]: Math.max(0, Math.min(10, prev[difficulty] + delta))
+    }))
+  }
+  
   const handleGenerateQuestions = async () => {
     if (!topic.trim() || !classInfo) return
     
@@ -52,9 +62,9 @@ function QuestionSetup() {
       const data = await questionsApi.generate({
         topic: topic.trim(),
         subject: classInfo.subject,
-        easy_count: 3,
-        medium_count: 3,
-        hard_count: 3
+        easy_count: questionCounts.easy,
+        medium_count: questionCounts.medium,
+        hard_count: questionCounts.hard
       })
       setQuestions(data)
     } catch (error) {
@@ -234,6 +244,38 @@ function QuestionSetup() {
               </>
             )}
           </button>
+        </div>
+        
+        {/* Question Count Controls */}
+        <div className="question-count-controls">
+          <span className="controls-label">Questions to generate:</span>
+          <div className="count-controls-group">
+            {['easy', 'medium', 'hard'].map((diff) => (
+              <div key={diff} className={`count-control ${diff}`}>
+                <span className={`badge badge-${diff}`}>{diff}</span>
+                <div className="count-adjuster">
+                  <button 
+                    type="button"
+                    className="count-btn"
+                    onClick={() => updateQuestionCount(diff, -1)}
+                    disabled={questionCounts[diff] <= 0}
+                  >
+                    −
+                  </button>
+                  <span className="count-value">{questionCounts[diff]}</span>
+                  <button 
+                    type="button"
+                    className="count-btn"
+                    onClick={() => updateQuestionCount(diff, 1)}
+                    disabled={questionCounts[diff] >= 10}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <span className="total-label">Total: {questionCounts.easy + questionCounts.medium + questionCounts.hard}</span>
         </div>
       </div>
       

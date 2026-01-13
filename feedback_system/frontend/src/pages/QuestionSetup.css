@@ -72,6 +72,101 @@
   border-top-color: white;
 }
 
+/* Question Count Controls */
+.question-count-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-secondary-light);
+  flex-wrap: wrap;
+}
+
+.controls-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.count-controls-group {
+  display: flex;
+  gap: var(--space-md);
+  flex: 1;
+}
+
+.count-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+}
+
+.count-control.easy {
+  border: 1px solid var(--color-easy);
+}
+
+.count-control.medium {
+  border: 1px solid var(--color-medium);
+}
+
+.count-control.hard {
+  border: 1px solid var(--color-hard);
+}
+
+.count-adjuster {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.count-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-secondary-light);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.count-btn:hover:not(:disabled) {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.count-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.count-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.total-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
 /* Questions Section */
 .questions-section {
   margin-top: var(--space-xl);
@@ -316,5 +411,15 @@
   
   .topic-input-group {
     flex-direction: column;
+  }
+  
+  .question-count-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .count-controls-group {
+    width: 100%;
+    justify-content: space-between;
   }
 }
