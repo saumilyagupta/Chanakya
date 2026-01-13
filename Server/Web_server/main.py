@@ -56,6 +56,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
 app.include_router(query_router, prefix="/api/query", tags=["Query"])
+app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 
 
 @app.get("/")

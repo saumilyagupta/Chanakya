@@ -1,7 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../utils/apiClient";
+
 function SignUp() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     // Step 1
     name: "",
@@ -222,7 +229,7 @@ function SignUp() {
     setStep(2);
   };
 
-  const handleStep2Submit = (e) => {
+  const handleStep2Submit = async (e) => {
     e.preventDefault();
     if (formData.classesHandled.length === 0) {
       toast.error("Please add at least one class!");
@@ -236,9 +243,44 @@ function SignUp() {
       toast.error("Please select at least one preferred teaching language!");
       return;
     }
-    // Handle final submission
-    console.log("Form submitted:", formData);
-    toast.success("Signed up successfully!");
+
+    // Submit to backend using axios
+    setIsLoading(true);
+    try {
+      const response = await authAPI.signup({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        classesHandled: formData.classesHandled,
+        subjects: formData.subjects,
+        schoolLocation: formData.schoolLocation,
+        preferredLanguage: formData.preferredLanguage,
+      });
+
+      const { data } = response;
+
+      // Store token in localStorage and context
+      if (data.token && data.user) {
+        login(data.user, data.token);
+      }
+
+      toast.success("Signed up successfully!");
+
+      // Redirect to dashboard after brief delay
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.message ||
+        "An error occurred. Please check your connection and try again.";
+      toast.error(errorMessage);
+      console.error("Signup error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -563,10 +605,10 @@ function SignUp() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] px-6 py-3 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
-                  disabled={step !== 2}
+                  className="flex-1 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] px-6 py-3 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={step !== 2 || isLoading}
                 >
-                  Sign Up
+                  {isLoading ? "Signing up..." : "Sign Up"}
                 </button>
               </div>
             </form>

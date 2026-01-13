@@ -47,3 +47,6 @@ beanie>=1.23.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 email-validator>=2.0.0
+
+# Sarvam AI
+sarvamai>=0.1.22

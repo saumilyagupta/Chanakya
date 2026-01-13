@@ -12,7 +12,7 @@
   "dependencies": {
     "@lineiconshq/free-icons": "^1.0.3",
     "@lineiconshq/react-lineicons": "^1.0.5",
-    "axios": "^1.7.9",
+    "axios": "^1.13.2",
     "motion": "^12.25.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
