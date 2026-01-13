@@ -2,6 +2,7 @@
 Authentication service - handles login and signup logic.
 """
 from fastapi import HTTPException, status
+from datetime import datetime
 from models.user import User
 from schemas.auth import SignUpRequest, LoginRequest
 from schemas.user import UserResponse
@@ -57,6 +58,15 @@ class AuthService:
         
         try:
             await new_user.insert()
+            # Log successful signup
+            print(f"\n✅ USER SIGNUP SUCCESSFUL")
+            print(f"   Name: {new_user.name}")
+            print(f"   Email: {new_user.email}")
+            print(f"   ID: {new_user.id}")
+            print(f"   Classes: {new_user.classes_handled}")
+            print(f"   Subjects: {new_user.subjects}")
+            print(f"   Location: {new_user.school_location}")
+            print(f"   Languages: {new_user.preferred_language}\n")
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -111,6 +121,14 @@ class AuthService:
         
         # Generate token
         token = create_access_token(str(user.id))
+        
+        # Log successful login
+        print(f"\n✅ USER LOGIN SUCCESSFUL")
+        print(f"   Email: {user.email}")
+        print(f"   Name: {user.name}")
+        print(f"   ID: {user.id}")
+        print(f"   Token Generated: {token[:20]}...")
+        print(f"   Timestamp: {datetime.utcnow()}\n")
         
         # Return user response
         user_response = UserResponse(

@@ -42,3 +42,6 @@ motor>=3.3.0
 beanie>=1.23.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
+
+# Sarvam AI
+sarvamai>=0.1.22

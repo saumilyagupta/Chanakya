@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from database import connect_to_mongo, close_mongo_connection
 from config import settings
-from routers import auth_router, users_router
+from routers import auth_router, users_router, sarvam_router
 
 
 @asynccontextmanager
@@ -39,6 +39,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
+app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 
 
 @app.get("/")

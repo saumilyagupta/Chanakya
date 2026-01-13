@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../utils/apiClient";
 
 function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,11 +20,44 @@ function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login
-    console.log("Login submitted:", formData);
-    toast.success("Logged in successfully");
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await authAPI.login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const { data } = response;
+
+      // Store token in localStorage and context
+      if (data.token && data.user) {
+        login(data.user, data.token);
+      }
+
+      toast.success("Logged in successfully!");
+
+      // Redirect to chat page after brief delay
+      setTimeout(() => {
+        navigate("/chat");
+      }, 1000);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.message ||
+        "Login failed. Please try again.";
+      toast.error(errorMessage);
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,16 +106,17 @@ function Login() {
 
             <button
               type="submit"
-              className="w-full bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] px-6 py-3 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all mb-4"
+              disabled={isLoading}
+              className="w-full bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] px-6 py-3 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </button>
 
             <p className="text-center text-sm text-[#000000]">
               Don't have an account?{" "}
               <Link
                 to="/signup"
-                className="font-bold underline hover:text-blue-600"
+                className="font-bold text-[#000000] hover:text-blue-600"
               >
                 Sign up
               </Link>
