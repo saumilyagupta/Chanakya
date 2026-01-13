@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { queryOrchestrator } from "../services/api";
 
 function ChatInterface() {
   const [messages, setMessages] = useState([]);
@@ -24,7 +25,7 @@ function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
@@ -35,18 +36,55 @@ function ChatInterface() {
     setInput("");
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Call the orchestrator API using axios
+      const data = await queryOrchestrator(userMessage);
+
+      // Extract the explanation from the result
+      let botResponse = "";
+      if (data.success && data.result) {
+        if (data.result.explanation) {
+          botResponse = data.result.explanation;
+        } else if (typeof data.result === "string") {
+          botResponse = data.result;
+        } else {
+          botResponse = JSON.stringify(data.result, null, 2);
+        }
+      } else {
+        botResponse = data.error || "Sorry, I couldn't process your request.";
+      }
+
       setMessages((m) => [
         ...m,
         {
           id: Date.now() + 1,
           from: "bot",
-          text: "Try a simple activity: ask students to estimate the height of a tree using its shadow and a ruler.",
+          text: botResponse,
+          tool_used: data.tool_used,
+          confidence: data.confidence,
         },
       ]);
+    } catch (error) {
+      console.error("Error calling orchestrator:", error);
+      
+      let errorMessage = "Sorry, I'm having trouble connecting to the server.";
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setMessages((m) => [
+        ...m,
+        {
+          id: Date.now() + 1,
+          from: "bot",
+          text: errorMessage,
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   const handleKeyPress = (e) => {

@@ -23,22 +23,33 @@ logger = structlog.get_logger(__name__)
 
 CONTENT_EXPLAINER_PROMPT = """You are an expert educational content explainer for Indian teachers using NCERT curriculum.
 
-Your task is to provide CLEAR, ACCURATE explanations based ONLY on the retrieved NCERT textbook content provided below.
+=== CRITICAL: LANGUAGE REQUIREMENT ===
+TEACHER'S LANGUAGE: {language}
+YOU MUST RESPOND IN: {language}
 
-=== CRITICAL GUIDELINES ===
-- Answer ONLY using information from the retrieved NCERT passages
+If {language} is "Hinglish", you MUST write in Hinglish (mix Hindi and English words):
+- Use Hindi words: hai, hota, hoti, mein, ka, ke, ko, se, aur, yeh, ek, etc.
+- Use English for technical terms: photosynthesis, carbon dioxide, chlorophyll
+- Example: "Photosynthesis ek process hai jismein plants apna food banate hain. Isme chlorophyll sunlight ko capture karta hai aur carbon dioxide aur water ko use karke carbohydrates banate hain."
+
+If {language} is "English", use pure English.
+If {language} is "Hindi", use Devanagari script.
+
+=== CONTENT GUIDELINES ===
+- Answer ONLY using information from the retrieved NCERT passages below
 - If the passages don't contain enough information, say "The retrieved content doesn't fully cover this topic"
 - Explain concepts in SIMPLE language suitable for rural Indian teachers
-- Use HINDI/HINGLISH terms where appropriate for better understanding
 - Include PRACTICAL EXAMPLES from the Indian context
 - Keep explanations CONCISE (2-3 paragraphs maximum)
-- If relevant, mention the specific class/subject/book the content is from
 
 === RETRIEVED NCERT CONTENT ===
 {retrieved_content}
 
 === TEACHER'S QUESTION ===
 {question}
+
+=== REMINDER: RESPOND IN {language} ===
+Do NOT translate. Write naturally in {language} as shown in the examples above.
 
 === OUTPUT FORMAT ===
 Provide your response in JSON format:
@@ -249,10 +260,16 @@ class ContentExplainerTool(BaseTool):
             # Format content for prompt
             formatted_content = self._format_retrieved_content(retrieved_docs)
             
+            # Get detected language from context
+            detected_language = context.get('detected_language', 'English') if context else 'English'
+            
+            logger.info("content_explainer_language", detected=detected_language, query=query[:50])
+            
             # Generate explanation using Gemini
             prompt = CONTENT_EXPLAINER_PROMPT.format(
                 retrieved_content=formatted_content,
-                question=query
+                question=query,
+                language=detected_language
             )
             
             response = await self.client.aio.models.generate_content(

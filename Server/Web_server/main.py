@@ -6,7 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from database import connect_to_mongo, close_mongo_connection
 from config import settings
-from routers import auth_router, users_router
+from routers import auth_router, users_router, query_router
+from services import orchestrator_service
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 @asynccontextmanager
@@ -14,9 +18,21 @@ async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events."""
     # Startup
     await connect_to_mongo()
+    
+    # Initialize orchestrator
+    try:
+        logger.info("Initializing orchestrator service")
+        orchestrator_service.initialize()
+        logger.info("Orchestrator service initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize orchestrator: {str(e)}")
+        logger.warning("Continuing without orchestrator - /api/query endpoints will return 503")
+    
     yield
+    
     # Shutdown
     await close_mongo_connection()
+    logger.info("Application shutdown complete")
 
 
 # Create FastAPI app
@@ -39,6 +55,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
+app.include_router(query_router, prefix="/api/query", tags=["Query"])
 
 
 @app.get("/")
@@ -54,7 +71,10 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy"}
+    return {
+        "status": "healthy",
+        "orchestrator_ready": orchestrator_service.is_ready()
+    }
 
 
 if __name__ == "__main__":

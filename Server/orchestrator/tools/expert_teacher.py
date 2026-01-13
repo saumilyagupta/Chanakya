@@ -83,7 +83,10 @@ class ExpertTeacherTool(BaseTool):
             # Extract context parameters
             grade = context.get("grade", "middle school") if context else "middle school"
             subject = context.get("subject", "general") if context else "general"
-            language = context.get("language", "English") if context else "English"
+            # Check detected_language first, then language, then default to English
+            language = context.get("detected_language") or context.get("language", "English") if context else "English"
+            
+            logger.info(f"Expert teacher using language: {language} for query: {query[:50]}")
             
             # Build the expert teacher prompt
             prompt = self._build_expert_prompt(query, grade, subject, language)
@@ -156,9 +159,37 @@ class ExpertTeacherTool(BaseTool):
                 confidence=0.85  # General expert knowledge confidence
             )
             
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in expert teacher: {e}")
+            logger.error(f"Response text: {response.text[:500]}")
+            # Return a basic response
+            return ExpertTeacherOutput(
+                query=query,
+                explanation=f"I apologize, but I encountered an error processing your question about '{query}'. Please try rephrasing your question.",
+                key_points=["Unable to generate response"],
+                teaching_tips=["Please try again with a rephrased question"],
+                examples=[],
+                common_misconceptions=[],
+                follow_up_questions=[],
+                grade_level=grade,
+                subject=subject,
+                confidence=0.1
+            )
         except Exception as e:
-            logger.error(f"Error in expert teacher generation: {e}")
-            raise
+            logger.error(f"Error in expert teacher generation: {e}", exc_info=True)
+            # Return a fallback response instead of raising
+            return ExpertTeacherOutput(
+                query=query,
+                explanation=f"I apologize, but I encountered an error: {str(e)}",
+                key_points=["Error occurred"],
+                teaching_tips=["Please try again"],
+                examples=[],
+                common_misconceptions=[],
+                follow_up_questions=[],
+                grade_level=grade,
+                subject=subject,
+                confidence=0.1
+            )
     
     def _build_expert_prompt(
         self,
@@ -186,29 +217,50 @@ TEACHER'S QUESTION: {query}
 CONTEXT:
 - Grade Level: {grade}
 - Subject: {subject}
-- Language: {language}
+- **REQUIRED RESPONSE LANGUAGE: {language}**
+
+=== CRITICAL: LANGUAGE REQUIREMENT ===
+YOU MUST RESPOND EXACTLY IN: {language}
+
+**IF {language} is "Hindi":**
+- Write ONLY in Devanagari script: न, म, त, ग, ण, व, र, क, etc.
+- DO NOT use Roman/Latin script
+- DO NOT use Hinglish
+- Example: "वृत्त एक ज्यामितीय आकृति है जो एक निश्चित बिंदु से समान दूरी पर स्थित सभी बिंदुओं का समुच्चय होता है।"
+
+**IF {language} is "Hinglish":**
+- Mix Hindi words in Roman script with English
+- Use: hai, hota, mein, ka, ke, ko, aur, yeh, ek, kya, etc.
+- Example: "Circle ek geometric shape hai jo ek fixed point se equal distance par sabhi points ka collection hota hai."
+
+**IF {language} is "English":**
+- Use pure English only
+- Example: "A circle is a geometric shape defined as the set of all points equidistant from a fixed center point."
+
+IMPORTANT: {language} = Hindi means DEVANAGARI SCRIPT ONLY. If you write "hai" or "hota" in Roman script, you are writing HINGLISH, not HINDI.
 
 YOUR TASK:
-Provide a comprehensive, accurate, and pedagogically sound explanation that helps the teacher understand and teach this concept effectively.
+Provide a comprehensive, accurate, and pedagogically sound explanation IN {language} that helps the teacher understand and teach this concept effectively.
 
 GUIDELINES:
-1. **Accuracy First**: Provide scientifically/academically accurate information
-2. **Clear Explanation**: Use simple language appropriate for teachers
-3. **Practical Focus**: Include practical teaching tips and real-world examples
-4. **Student Perspective**: Anticipate common misconceptions students might have
-5. **Engaging**: Make it interesting and relatable
-6. **Age-Appropriate**: Consider the grade level in your explanation
-7. **Cultural Context**: Consider Indian classroom context and examples
+1. **RESPOND IN {language}** - Use the correct script!
+2. **Accuracy First**: Provide scientifically/academically accurate information
+3. **Clear Explanation**: Use simple language appropriate for teachers
+4. **Practical Focus**: Include practical teaching tips and real-world examples
+5. **Student Perspective**: Anticipate common misconceptions students might have
+6. **Engaging**: Make it interesting and relatable
+7. **Age-Appropriate**: Consider the grade level in your explanation
+8. **Cultural Context**: Consider Indian classroom context and examples
 
-RESPONSE STRUCTURE:
-- explanation: A clear, detailed explanation (200-300 words)
-- key_points: 3-5 bullet points highlighting the most important concepts
-- teaching_tips: 2-3 practical tips for teaching this effectively in a classroom
-- examples: 1-2 real-world examples or analogies students can relate to
-- common_misconceptions: Common errors or misunderstandings to watch for
-- follow_up_questions: Questions to ask students to check their understanding
+RESPONSE STRUCTURE (ALL IN {language}):
+- explanation: A clear, detailed explanation (200-300 words) IN {language}
+- key_points: 3-5 bullet points IN {language}
+- teaching_tips: 2-3 practical tips IN {language}
+- examples: 1-2 real-world examples IN {language}
+- common_misconceptions: Common errors IN {language}
+- follow_up_questions: Questions IN {language}
 
-Respond in {language} if requested, otherwise use English."""
+=== FINAL REMINDER: If language is "Hindi", use देवनागरी लिपि (Devanagari script) ONLY ==="""
 
     def validate(self, output: ExpertTeacherOutput) -> bool:
         """

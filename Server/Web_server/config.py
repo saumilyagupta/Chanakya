@@ -3,6 +3,12 @@ Configuration for the Chanakya Web Server.
 """
 import os
 from typing import Optional
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file from parent Server directory
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 class Settings:
     """Application settings."""
@@ -28,5 +34,8 @@ class Settings:
     # Environment
     ENV: str = os.getenv("ENV", "development")
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
+    
+    # Gemini API Configuration
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 
 settings = Settings()

@@ -91,24 +91,24 @@ ROUTER_PROMPT = """You are Chanakya's intelligent router for a classroom support
 Your job is to understand the teacher's query and decide which tool to use.
 
 AVAILABLE TOOLS:
-1. "activity_generator" - Use when the teacher wants a hands-on activity, demonstration, or interactive exercise to help students understand a concept. This tool generates simple classroom activities using basic materials.
+1. "expert_teacher" - **[DEFAULT - USE THIS MOST OFTEN]** Use for ANY educational question, concept explanation, or teaching query. This is a knowledgeable expert teacher with broad subject knowledge that can answer both curriculum and non-curriculum topics. When in doubt, use this tool.
 
-2. "crisis_handler" - Use when there is an IMMEDIATE classroom management crisis: students making noise, losing focus, being disruptive, chaos, behavior problems. This tool provides instant solutions (under 2 minutes) to restore order and attention.
+2. "content_explainer" - Use ONLY when the teacher specifically mentions NCERT or specifically asks for textbook-based answers. This retrieves information from NCERT textbooks. If uncertain whether content is in NCERT, prefer expert_teacher instead.
 
-3. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
+3. "activity_generator" - Use when the teacher explicitly wants a hands-on activity, demonstration, or interactive exercise. Must include words like "activity", "game", "demonstration", "exercise".
 
-4. "content_explainer" - Use when the teacher asks questions about NCERT curriculum content, wants explanations of concepts, asks "what is", "explain", "tell me about", or needs subject matter clarification. This tool retrieves information from NCERT textbooks and provides grounded explanations.
+4. "crisis_handler" - Use when there is an IMMEDIATE classroom management crisis: students making noise, losing focus, being disruptive, chaos, behavior problems. This tool provides instant solutions (under 2 minutes) to restore order and attention.
 
-5. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand". This tool provides comprehensive teaching strategies and tips.
+5. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
 
-6. "expert_teacher" - Use when the teacher asks about topics, concepts, or questions that may NOT be in NCERT textbooks, or when they need deeper explanations beyond curriculum. This acts as a knowledgeable expert teacher with broad subject knowledge. Use this as a fallback when content_explainer might not have the answer, or for advanced/non-standard topics.
+6. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
 
 FUTURE TOOLS (not yet available, do NOT select these):
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "activity_generator" or "crisis_handler" or "teacher_motivation" or "content_explainer" or "classroom_guidance" or "expert_teacher",
+    "selected_tool": "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance",
     "reasoning": "Brief explanation of why this tool was selected",
     "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge",
     "confidence": 0.95
@@ -116,41 +116,35 @@ ANALYZE THE QUERY AND RESPOND WITH JSON:
 
 EXAMPLES:
 
-Query: "How can I teach fractions in a fun way?"
-Response: {"selected_tool": "activity_generator", "reasoning": "Teacher wants an engaging method to teach fractions - activity would help", "extracted_topic": "fractions", "confidence": 0.95}
+Query: "What is photosynthesis?"
+Response: {"selected_tool": "expert_teacher", "reasoning": "General educational question - expert teacher can provide comprehensive answer", "extracted_topic": "photosynthesis", "confidence": 0.97}
 
-Query: "Students are making too much noise and not listening"
-Response: {"selected_tool": "crisis_handler", "reasoning": "Immediate classroom management crisis - noise and attention problem", "extracted_topic": "noise control", "confidence": 0.98}
+Query: "Explain Pythagoras theorem to me"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Concept explanation request - expert teacher is best for clear explanations", "extracted_topic": "Pythagoras theorem", "confidence": 0.98}
 
-Query: "I'm feeling burnt out and don't want to teach anymore"
-Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing burnout and loss of motivation - needs emotional support", "extracted_topic": "burnout and exhaustion", "confidence": 0.97}
+Query: "What is quantum mechanics?"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Educational question requiring expert knowledge", "extracted_topic": "quantum mechanics", "confidence": 0.95}
 
-Query: "My class is completely out of control, everyone is talking"
-Response: {"selected_tool": "crisis_handler", "reasoning": "Crisis situation - chaos and lack of control", "extracted_topic": "classroom chaos", "confidence": 0.97}
-
-Query: "I feel like I'm failing as a teacher, nothing is working"
-Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing self-doubt and stress - needs encouragement and strategies", "extracted_topic": "self-doubt and discouragement", "confidence": 0.96}
-
-Query: "Students are distracted and not paying attention"
-Response: {"selected_tool": "crisis_handler", "reasoning": "Focus and attention crisis needs immediate intervention", "extracted_topic": "lack of focus", "confidence": 0.95}
+Query: "Explain NCERT Chapter 5 on photosynthesis"
+Response: {"selected_tool": "content_explainer", "reasoning": "Teacher specifically asked for NCERT textbook content", "extracted_topic": "photosynthesis", "confidence": 0.98}
 
 Query: "Give me an activity for teaching addition with carry"
 Response: {"selected_tool": "activity_generator", "reasoning": "Teacher explicitly asked for an activity", "extracted_topic": "addition with carry", "confidence": 0.98}
 
-Query: "I'm exhausted and have no energy to prepare lessons"
-Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing exhaustion and overwhelm - needs support and practical tips", "extracted_topic": "exhaustion and overwhelm", "confidence": 0.96}
+Query: "How can I teach fractions in a fun way?"
+Response: {"selected_tool": "activity_generator", "reasoning": "Teacher wants an engaging activity method to teach", "extracted_topic": "fractions", "confidence": 0.95}
 
-Query: "बच्चे शोर मचा रहे हैं"
-Response: {"selected_tool": "crisis_handler", "reasoning": "Children making noise - immediate crisis intervention needed", "extracted_topic": "noise and chaos", "confidence": 0.96}
+Query: "Students are making too much noise and not listening"
+Response: {"selected_tool": "crisis_handler", "reasoning": "Immediate classroom management crisis - noise and attention problem", "extracted_topic": "noise control", "confidence": 0.98}
 
-Query: "What is photosynthesis?"
-Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for concept explanation from curriculum", "extracted_topic": "photosynthesis", "confidence": 0.97}
+Query: "My class is completely out of control, everyone is talking"
+Response: {"selected_tool": "crisis_handler", "reasoning": "Crisis situation - chaos and lack of control", "extracted_topic": "classroom chaos", "confidence": 0.97}
 
-Query: "Explain Pythagoras theorem to me"
-Response: {"selected_tool": "content_explainer", "reasoning": "Teacher wants explanation of mathematical concept", "extracted_topic": "Pythagoras theorem", "confidence": 0.98}
+Query: "I'm feeling burnt out and don't want to teach anymore"
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing burnout and loss of motivation - needs emotional support", "extracted_topic": "burnout and exhaustion", "confidence": 0.97}
 
-Query: "Tell me about the water cycle"
-Response: {"selected_tool": "content_explainer", "reasoning": "Teacher asking for content explanation", "extracted_topic": "water cycle", "confidence": 0.96}
+Query: "I feel like I'm failing as a teacher, nothing is working"
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing self-doubt and stress - needs encouragement", "extracted_topic": "self-doubt and discouragement", "confidence": 0.96}
 
 Query: "Students are unable to interpret maps and graphs systematically"
 Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing a pedagogical challenge about student learning skills", "extracted_topic": "interpreting visual data", "confidence": 0.96}
@@ -161,23 +155,14 @@ Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describi
 Query: "How can I make my lessons more interactive?"
 Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95}
 
-Query: "What is quantum mechanics?"
-Response: {"selected_tool": "expert_teacher", "reasoning": "Advanced topic likely not in NCERT textbooks - needs expert explanation", "extracted_topic": "quantum mechanics", "confidence": 0.92}
-
-Query: "Explain the concept of artificial intelligence"
-Response: {"selected_tool": "expert_teacher", "reasoning": "Modern topic not in standard curriculum - expert knowledge needed", "extracted_topic": "artificial intelligence", "confidence": 0.93}
-
-Query: "What are fractals and how do they work?"
-Response: {"selected_tool": "expert_teacher", "reasoning": "Advanced mathematical concept beyond standard curriculum", "extracted_topic": "fractals", "confidence": 0.90}
-
 RULES:
 - Return ONLY valid JSON
+- **DEFAULT to "expert_teacher" for ANY educational content question**
+- Use "content_explainer" ONLY when NCERT is specifically mentioned
+- Use "activity_generator" ONLY when explicitly asking for activities/games
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
-- Use "activity_generator" for teaching concepts and learning activities  
-- Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed, needing support
-- Use "content_explainer" for NCERT curriculum content questions, standard textbook topics
-- Use "expert_teacher" for advanced topics, non-NCERT content, or when broader expert knowledge is needed
-- Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategy questions
+- Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed
+- Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategies
 - Extract the topic/concept or crisis situation or motivation issue or teaching challenge clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
 
@@ -291,43 +276,73 @@ class ChanakyaOrchestrator:
         # Build the LangGraph
         self.graph = self._build_graph()
     
-    def _detect_language(self, text: str) -> str:
+    async def _detect_language(self, text: str) -> str:
         """
-        Detect language of input text.
+        Detect language of input text using LLM.
         
-        Simple heuristic-based detection for common Indian languages.
-        Returns: 'hi' (Hindi), 'en' (English), or other language code
+        Returns: Full language name (e.g., 'English', 'Hindi', 'Tamil', 'Hinglish')
         """
-        # Fast ASCII check - if text is pure ASCII, it's English
-        # This skips expensive Unicode range scanning for English queries (saves 5-7s)
         try:
-            text.encode('ascii')
-            self.logger.info("language_detection_fast", detected='en', method='ascii_check')
-            return 'en'
-        except UnicodeEncodeError:
-            pass  # Contains non-ASCII characters, continue with Unicode detection
-        
-        # Devanagari script range (Hindi and related languages)
-        devanagari_chars = sum(1 for char in text if '\u0900' <= char <= '\u097F')
-        
-        # If more than 30% Devanagari, it's Hindi
-        if len(text) > 0 and devanagari_chars / len(text) > 0.3:
-            return 'hi'
-        
-        # Tamil script range
-        tamil_chars = sum(1 for char in text if '\u0B80' <= char <= '\u0BFF')
-        if len(text) > 0 and tamil_chars / len(text) > 0.3:
-            return 'ta'
-        
-        # Bengali script range
-        bengali_chars = sum(1 for char in text if '\u0980' <= char <= '\u09FF')
-        if len(text) > 0 and bengali_chars / len(text) > 0.3:
-            return 'bn'
-        
-        # Telugu script range
-        telugu_chars = sum(1 for char in text if '\u0C00' <= char <= '\u0C7F')
-        if len(text) > 0 and telugu_chars / len(text) > 0.3:
-            return 'te'
+            response = await self.client.aio.models.generate_content(
+                model=self.model_name,
+                contents=[
+                    types.Content(
+                        role="user",
+                        parts=[types.Part(text=f"""Identify the language. Look for these patterns:
+
+**Hindi** (Devanagari script):
+- Contains Devanagari characters: न, म, त, ग, क, र, व, etc.
+- Example: "गणित में वृत्त क्या होता है?"
+- If you see Devanagari script, it's Hindi
+
+**Hinglish** (Hindi + English mix in Roman script):
+- Contains Hindi words in Roman script: kya, hai, mein, ka, ko, se, ke, hota, hoti, kar, karo, etc.
+- Examples: "kya hai", "explain karo", "photosynthesis kya hota hai", "mujhe batao"
+- If you see words like: kya, hai, kaise, kahan, kab, kyun, mein - it's Hinglish
+
+**English**: Pure English, no Hindi words or Devanagari script
+**Other**: Tamil, Bengali, Telugu, Gujarati, Marathi, Kannada, Malayalam
+
+Text: "{text}"
+
+Respond with ONLY ONE word from: Hindi, Hinglish, English, Tamil, Bengali, Telugu, Gujarati, Marathi, Kannada, Malayalam
+
+Language:""")]
+                    )
+                ],
+                config=types.GenerateContentConfig(
+                    temperature=0.0,
+                    max_output_tokens=5,
+                )
+            )
+            
+            detected = response.text.strip().lower()
+            # Map to full names
+            lang_map = {
+                'english': 'English',
+                'hindi': 'Hindi',
+                'tamil': 'Tamil',
+                'bengali': 'Bengali',
+                'telugu': 'Telugu',
+                'gujarati': 'Gujarati',
+                'marathi': 'Marathi',
+                'kannada': 'Kannada',
+                'malayalam': 'Malayalam',
+                'hinglish': 'Hinglish'
+            }
+            
+            for key, value in lang_map.items():
+                if key in detected:
+                    self.logger.info("language_detection", detected=value, method='llm')
+                    return value
+            
+            # Default to English if uncertain
+            self.logger.info("language_detection", detected='English', method='llm_default')
+            return 'English'
+            
+        except Exception as e:
+            self.logger.warning("language_detection_failed", error=str(e))
+            return 'English'  # Default fallback
         
         # Gujarati script range
         gujarati_chars = sum(1 for char in text if '\u0A80' <= char <= '\u0AFF')
@@ -1120,13 +1135,18 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             query=input_data.query[:100]
         )
         
-        # Detect input language
-        detected_lang = self._detect_language(input_data.query)
+        # Detect input language using LLM
+        detected_lang = await self._detect_language(input_data.query)
         
         self.logger.info("language_detected",
             session_id=session_id,
             language=detected_lang
         )
+        
+        # Store detected language in context for tools to use
+        if input_data.context is None:
+            input_data.context = {}
+        input_data.context['detected_language'] = detected_lang
         
         # Initial state
         initial_state: OrchestratorState = {
