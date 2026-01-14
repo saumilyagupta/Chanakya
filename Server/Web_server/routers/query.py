@@ -174,3 +174,135 @@ async def get_status() -> JSONResponse:
             "available": is_ready
         }
     )
+
+
+@router.get("/history")
+async def get_chat_history(limit: int = 20) -> JSONResponse:
+    """
+    Get recent chat history sessions.
+    
+    Args:
+        limit: Maximum number of sessions to return (default: 20)
+        
+    Returns:
+        JSON response with list of recent chat sessions
+    """
+    try:
+        if not orchestrator_service.is_ready():
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "error": "Orchestrator service not ready",
+                    "sessions": []
+                }
+            )
+        
+        sessions = await orchestrator_service.get_recent_sessions(limit)
+        
+        logger.info(f"Retrieved {len(sessions)} chat history sessions")
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "count": len(sessions),
+                "sessions": sessions
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error fetching chat history: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": f"Error fetching chat history: {str(e)}",
+                "sessions": []
+            }
+        )
+
+
+@router.get("/history/{session_id}")
+async def get_session_history(session_id: str) -> JSONResponse:
+    """
+    Get message history for a specific session.
+    
+    Args:
+        session_id: The session ID to retrieve
+        
+    Returns:
+        JSON response with session messages
+    """
+    try:
+        if not orchestrator_service.is_ready():
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "error": "Orchestrator service not ready",
+                    "messages": []
+                }
+            )
+        
+        messages = await orchestrator_service.get_session_messages(session_id)
+        
+        logger.info(f"Retrieved {len(messages)} messages for session {session_id}")
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "session_id": session_id,
+                "count": len(messages),
+                "messages": messages
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error fetching session history: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": f"Error fetching session history: {str(e)}",
+                "messages": []
+            }
+        )
+
+
+@router.delete("/history/{session_id}")
+async def delete_session(session_id: str) -> JSONResponse:
+    """
+    Delete a chat session and its history.
+    
+    Args:
+        session_id: The session ID to delete
+        
+    Returns:
+        JSON response with deletion status
+    """
+    try:
+        if not orchestrator_service.is_ready():
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "error": "Orchestrator service not ready",
+                    "success": False
+                }
+            )
+        
+        success = await orchestrator_service.delete_session(session_id)
+        
+        logger.info(f"Deleted session {session_id}: {success}")
+        
+        return JSONResponse(
+            content={
+                "success": success,
+                "message": "Session deleted successfully" if success else "Session not found"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error deleting session: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": f"Error deleting session: {str(e)}",
+                "success": False
+            }
+        )

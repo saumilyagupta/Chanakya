@@ -50,3 +50,4 @@ email-validator>=2.0.0
 
 # Sarvam AI
 sarvamai>=0.1.22
+python-multipart>=0.0.6

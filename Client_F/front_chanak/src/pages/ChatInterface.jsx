@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { queryOrchestrator } from "../services/api";
+import { queryOrchestrator, getChatHistory, getSessionMessages } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { transcribeAudio, textToSpeechAndPlay } from "../utils/sarvamApi";
+import ResponseFormatter from "../components/ResponseFormatter";
+import Header from "../components/Header";
 
 function ChatInterface() {
   const { user } = useAuth();
@@ -18,18 +20,124 @@ function ChatInterface() {
   const audioChunksRef = useRef([]);
   const speechSynthesisRef = useRef(null);
   const [speakingMessageId, setSpeakingMessageId] = useState(null);
-  const [chatHistory] = useState([
-    { id: 1, title: "Trigonometry explanation", date: "Today" },
-    { id: 2, title: "Active listening techniques", date: "Yesterday" },
-    { id: 3, title: "Class activity ideas", date: "Jan 10" },
-    { id: 4, title: "Student engagement tips", date: "Jan 9" },
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
 
-  // Hide header on chat page
+  // Load chat history on mount
   useEffect(() => {
-    document.body.classList.add("chat-page");
-    return () => document.body.classList.remove("chat-page");
+    loadChatHistory();
   }, []);
+
+  const loadChatHistory = async () => {
+    try {
+      const response = await getChatHistory(20);
+      if (response.success && response.sessions) {
+        // Sort sessions by updated_at in descending order (most recent first)
+        const sortedSessions = [...response.sessions].sort((a, b) => {
+          return new Date(b.updated_at) - new Date(a.updated_at);
+        });
+        
+        // Format sessions for display
+        const formattedSessions = sortedSessions.map(session => {
+          const date = new Date(session.updated_at);
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          
+          let dateStr;
+          if (date.toDateString() === today.toDateString()) {
+            dateStr = "Today";
+          } else if (date.toDateString() === yesterday.toDateString()) {
+            dateStr = "Yesterday";
+          } else {
+            dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          }
+          
+          return {
+            id: session.session_id,
+            title: session.title || "New conversation",
+            date: dateStr,
+            message_count: session.message_count
+          };
+        });
+        setChatHistory(formattedSessions);
+      }
+    } catch (error) {
+      console.error("Error loading chat history:", error);
+    }
+  };
+
+  const loadSession = async (sessionId) => {
+    try {
+      const response = await getSessionMessages(sessionId);
+      if (response.success && response.messages) {
+        // Convert backend messages to frontend format
+        const formattedMessages = response.messages.map((msg, idx) => {
+          const baseMessage = {
+            id: Date.now() + idx,
+            from: msg.role === "user" ? "teacher" : "bot",
+            text: msg.content,
+          };
+          
+          // Parse metadata if it exists
+          if (msg.metadata) {
+            try {
+              const metadata = typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata;
+              
+              // Check if metadata has actual content (not just empty object)
+              const hasMetadata = metadata && Object.keys(metadata).length > 0;
+              
+              console.log("Message metadata:", metadata, "Has content:", hasMetadata); // Debug log
+              
+              // For bot messages with metadata, reconstruct the data structure
+              if (msg.role === "assistant" && hasMetadata && metadata.result) {
+                baseMessage.data = {
+                  success: true,
+                  tool_used: metadata.tool_used,
+                  reasoning: metadata.reasoning,
+                  result: metadata.result,
+                  confidence: metadata.confidence,
+                  timestamp: metadata.timestamp
+                };
+                baseMessage.tool_used = metadata.tool_used;
+                baseMessage.confidence = metadata.confidence;
+                
+                // Extract text for fallback display
+                if (metadata.result.explanation) {
+                  baseMessage.text = metadata.result.explanation;
+                } else if (metadata.result.activity_name) {
+                  baseMessage.text = metadata.result.description;
+                } else if (metadata.result.motivation_title) {
+                  baseMessage.text = metadata.result.acknowledgment;
+                }
+                
+                console.log("Formatted bot message with metadata:", baseMessage); // Debug log
+              } else if (msg.role === "assistant" && !hasMetadata) {
+                // Old message without metadata - show informative message
+                baseMessage.text = "📜 This is an older conversation. For better formatted responses with activities and detailed breakdowns, please start a new chat!";
+                console.log("Old message without metadata"); // Debug log
+              }
+            } catch (error) {
+              console.error("Error parsing message metadata:", error, msg.metadata);
+            }
+          }
+          
+          return baseMessage;
+        });
+        
+        setMessages(formattedMessages);
+        setCurrentSessionId(sessionId);
+      }
+    } catch (error) {
+      console.error("Error loading session:", error);
+    }
+  };
+
+  const startNewChat = () => {
+    setMessages([]);
+    setCurrentSessionId(null);
+    setInput("");
+  };
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -54,21 +162,31 @@ function ChatInterface() {
     setIsLoading(true);
 
     try {
-      // Call the orchestrator API using axios
-      const data = await queryOrchestrator(userMessage);
+      const botMessageId = Date.now() + 1;
+      
+      // Use existing session ID or create new one
+      const sessionId = currentSessionId || `session_${Date.now()}`;
+      if (!currentSessionId) {
+        setCurrentSessionId(sessionId);
+      }
+      
+      // Call the orchestrator API with session ID
+      const data = await queryOrchestrator(userMessage, { session_id: sessionId });
 
-      // Extract the explanation from the result
-      let botResponse = "";
+      // Extract text for fallback display
+      let botResponseText = "";
       if (data.success && data.result) {
         if (data.result.explanation) {
-          botResponse = data.result.explanation;
+          botResponseText = data.result.explanation;
+        } else if (data.result.activity_name) {
+          botResponseText = data.result.description;
         } else if (typeof data.result === "string") {
-          botResponse = data.result;
+          botResponseText = data.result;
         } else {
-          botResponse = JSON.stringify(data.result, null, 2);
+          botResponseText = JSON.stringify(data.result, null, 2);
         }
       } else {
-        botResponse = data.error || "Sorry, I couldn't process your request.";
+        botResponseText = data.error || "Sorry, I couldn't process your request.";
       }
 
       setMessages((m) => [
@@ -76,11 +194,15 @@ function ChatInterface() {
         {
           id: botMessageId,
           from: "bot",
-          text: botResponse,
+          text: botResponseText,
+          data: data, // Store full response for formatting
           tool_used: data.tool_used,
           confidence: data.confidence,
         },
       ]);
+      
+      // Refresh chat history to show new conversation
+      await loadChatHistory();
     } catch (error) {
       console.error("Error calling orchestrator:", error);
       
@@ -101,12 +223,7 @@ function ChatInterface() {
       ]);
     } finally {
       setIsLoading(false);
-
-      // Automatically speak the bot response
-      setTimeout(() => {
-        speakText(botResponse, botMessageId);
-      }, 100);
-    }, 800);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -238,7 +355,8 @@ function ChatInterface() {
   }, [isRecording]);
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] flex relative overflow-hidden">
+    <div className="min-h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
+      
       {/* Background Image with very low opacity */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -251,7 +369,7 @@ function ChatInterface() {
         }}
       />
 
-      <div className="relative z-10 flex w-full">
+      <div className="relative z-10 flex w-full flex-1">
         {/* Sidebar - Chat History */}
         <aside className="hidden md:flex flex-col w-64 bg-[#FFFFFF] border-r-2 border-[#000000]">
           {/* Sidebar Header */}
@@ -281,7 +399,7 @@ function ChatInterface() {
           <div className="p-4 border-b-2 border-[#000000]">
             <button
               className="w-full bg-[#E0EEEF] border-2 border-[#000000] px-4 py-2 font-bold text-[#000000] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center gap-2"
-              onClick={() => setMessages([])}
+              onClick={startNewChat}
             >
               <svg
                 className="w-4 h-4"
@@ -301,7 +419,7 @@ function ChatInterface() {
           </div>
 
           {/* Chat History */}
-          <div className="flex-1 overflow-y-auto p-3">
+          <div className="flex-1 overflow-y-auto p-3 max-h-[calc(100vh-140px)]">
             <div className="text-xs font-bold text-[#000000] mb-3 px-2">
               Recent Chats
             </div>
@@ -310,6 +428,7 @@ function ChatInterface() {
                 <button
                   key={chat.id}
                   className="w-full text-left p-3 rounded-lg border-2 border-[#000000] bg-white hover:bg-[#FDE047] transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
+                  onClick={() => loadSession(chat.id)}
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-[#E8D5FF] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
@@ -350,7 +469,7 @@ function ChatInterface() {
               Chanakya
             </Link>
             <button
-              onClick={() => setMessages([])}
+              onClick={startNewChat}
               className="p-2 border-2 border-[#000000] rounded"
             >
               <svg
@@ -370,20 +489,20 @@ function ChatInterface() {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto px-4 py-8">
+          <div className="flex-1 overflow-y-auto px-4 py-8 max-h-[calc(100vh-200px)]">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full max-w-3xl mx-auto">
                 <div>
                   <img
                     src="/happy_chanakya.png"
                     alt="Chanakya"
-                    className="w-64 h-64 md:w-96 md:h-96 object-contain"
+                    className="w-60 h-60 md:w-96 md:h-96 object-contain"
                   />
                 </div>
 
                 <div className="text-center mb-8">
                   <h2
-                    className="text-3xl md:text-4xl font-bold text-[#000000] mb-3"
+                    className="text-3xl md:text-4xl font-bold text-[#000000] mb-1"
                     style={{
                       fontFamily: "TT Firs Neue, sans-serif",
                       fontWeight: 700,
@@ -496,54 +615,56 @@ function ChatInterface() {
                 </div>
               </div>
             ) : (
-              <div className="max-w-3xl mx-auto space-y-6 pb-4">
+              <div className="max-w-4xl mx-auto space-y-8 pb-4">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-4 ${
-                      message.from === "teacher"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    {message.from === "bot" && (
-                      <div className="w-8 h-8 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-4 h-4 text-[#000000]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                          />
-                        </svg>
+                  <div key={message.id} className="w-full">
+                    {message.from === "teacher" ? (
+                      <div className="flex justify-center mb-4">
+                        <div className="bg-[#FDE047] border-2 border-[#000000] rounded-lg px-6 py-3 shadow-[2px_2px_0px_0px_#000000] max-w-2xl">
+                          <p className="text-sm md:text-base font-medium text-[#000000] text-center">
+                            {message.text}
+                          </p>
+                        </div>
                       </div>
-                    )}
-                    <div
-                      className={`max-w-[80%] md:max-w-[70%] px-4 py-3 rounded-lg border-2 border-[#000000] ${
-                        message.from === "teacher"
-                          ? "bg-[#FDE047] text-[#000000]"
-                          : "bg-[#DDD6FE] text-[#000000]"
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap flex-1">
-                          {message.text}
-                        </p>
-                        {message.from === "bot" && (
+                    ) : (
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                            <svg
+                              className="w-5 h-5 text-[#000000]"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-lg font-bold text-[#000000]">
+                            Chanakya
+                          </span>
                           <button
                             onClick={() => {
                               if (speakingMessageId === message.id) {
                                 stopSpeaking();
                               } else {
-                                speakText(message.text, message.id);
+                                // Extract text for TTS
+                                let textToSpeak = message.text;
+                                if (message.data?.result) {
+                                  if (message.data.result.explanation) {
+                                    textToSpeak = message.data.result.explanation;
+                                  } else if (message.data.result.activity_name) {
+                                    textToSpeak = `Activity: ${message.data.result.activity_name}. ${message.data.result.description}`;
+                                  }
+                                }
+                                speakText(textToSpeak, message.id);
                               }
                             }}
-                            className="p-1.5 border border-[#000000] rounded bg-white hover:bg-[#FDE047] transition-all flex-shrink-0"
+                            className="p-2 border-2 border-[#000000] rounded bg-white hover:bg-[#FDE047] transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
                             title={
                               speakingMessageId === message.id
                                 ? "Stop speaking"
@@ -587,24 +708,14 @@ function ChatInterface() {
                               </svg>
                             )}
                           </button>
-                        )}
-                      </div>
-                    </div>
-                    {message.from === "teacher" && (
-                      <div className="w-8 h-8 rounded-full bg-[#E8D5FF] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-4 h-4 text-[#000000]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        </div>
+                        <div className="w-full border-2 border-[#000000] rounded-lg p-6 bg-white shadow-[4px_4px_0px_0px_#000000]">
+                          <ResponseFormatter
+                            toolUsed={message.tool_used}
+                            result={message.data?.result}
+                            text={message.text}
                           />
-                        </svg>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -653,7 +764,7 @@ function ChatInterface() {
           </div>
 
           {/* Input Area */}
-          <div className="border-t-2 border-[#000000] bg-[#FFFFFF] px-4 py-4">
+          <div className="border-t-2 border-[#000000] bg-[#FFFFFF] px-4 py-2">
             <div className="max-w-3xl mx-auto">
               <div className="flex items-end gap-3 border-2 border-[#000000] rounded-lg px-3 py-3 bg-white shadow-[2px_2px_0px_0px_#000000]">
                 <button
@@ -768,7 +879,7 @@ function ChatInterface() {
                   </svg>
                 </button>
               </div>
-              <p className="text-xs text-[#000000] opacity-60 mt-2 text-center">
+              <p className="text-xs text-[#000000] opacity-60 mt-1 text-center">
                 Chanakya can make mistakes. Check important info.
               </p>
             </div>

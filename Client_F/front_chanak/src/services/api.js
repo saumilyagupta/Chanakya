@@ -116,4 +116,28 @@ export const getUserProfile = async () => {
   return response.data;
 };
 
+/**
+ * Chat History - Get recent sessions
+ */
+export const getChatHistory = async (limit = 20) => {
+  const response = await apiClient.get(`/api/query/history?limit=${limit}`);
+  return response.data;
+};
+
+/**
+ * Chat History - Get specific session messages
+ */
+export const getSessionMessages = async (sessionId) => {
+  const response = await apiClient.get(`/api/query/history/${sessionId}`);
+  return response.data;
+};
+
+/**
+ * Chat History - Delete a session
+ */
+export const deleteSession = async (sessionId) => {
+  const response = await apiClient.delete(`/api/query/history/${sessionId}`);
+  return response.data;
+};
+
 export default apiClient;

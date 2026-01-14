@@ -10,6 +10,7 @@ import json
 import re
 import time
 import uuid
+from datetime import datetime
 from typing import Optional, Dict, Any, TypedDict, List, AsyncIterator
 from google import genai
 from google.genai import types
@@ -495,7 +496,16 @@ Language:""")]
         
         # Save to SQLite storage
         if self.storage:
-            await self.storage.add_message(session_id, "user", query)
+            try:
+                message_id = await self.storage.add_message(session_id, "user", query)
+                self.logger.info("user_message_saved", 
+                    session_id=session_id, 
+                    message_id=message_id)
+            except Exception as e:
+                self.logger.error("failed_to_save_user_message",
+                    session_id=session_id,
+                    error=str(e),
+                    exc_info=True)
         
         # Check if summarization is needed
         if len(ctx.messages) > Config.SUMMARIZATION_THRESHOLD:
@@ -1252,9 +1262,37 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             if session_id in self.contexts:
                 self.contexts[session_id].add_message("assistant", assistant_message)
             
-            # Save assistant message to SQLite
+            # Save assistant message to SQLite with full metadata
             if self.storage:
-                await self.storage.add_message(session_id, "assistant", assistant_message)
+                try:
+                    # Prepare metadata with full response data
+                    # Serialize result properly based on type
+                    if hasattr(result, 'model_dump'):
+                        result_data = result.model_dump()
+                    elif hasattr(result, 'dict'):
+                        result_data = result.dict()
+                    elif isinstance(result, dict):
+                        result_data = result
+                    else:
+                        result_data = {"data": str(result)}
+                    
+                    metadata = {
+                        "tool_used": final_state.get("selected_tool", "activity_generator"),
+                        "reasoning": final_state.get("tool_reasoning", ""),
+                        "confidence": final_state.get("confidence", 0.0),
+                        "result": result_data,
+                        "timestamp": datetime.utcnow().isoformat()
+                    }
+                    message_id = await self.storage.add_message(session_id, "assistant", assistant_message, metadata=metadata)
+                    self.logger.info("assistant_message_saved", 
+                        session_id=session_id, 
+                        message_id=message_id,
+                        has_metadata=bool(metadata))
+                except Exception as e:
+                    self.logger.error("failed_to_save_assistant_message",
+                        session_id=session_id,
+                        error=str(e),
+                        exc_info=True)
             
             self.logger.info("process_complete",
                 session_id=session_id,
@@ -1384,7 +1422,35 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                     self.contexts[session_id].add_message("assistant", assistant_message)
                 
                 if self.storage:
-                    await self.storage.add_message(session_id, "assistant", assistant_message)
+                    try:
+                        # Prepare metadata with full response data
+                        # Serialize result properly based on type
+                        if hasattr(result, 'model_dump'):
+                            result_data = result.model_dump()
+                        elif hasattr(result, 'dict'):
+                            result_data = result.dict()
+                        elif isinstance(result, dict):
+                            result_data = result
+                        else:
+                            result_data = {"data": str(result)}
+                        
+                        metadata = {
+                            "tool_used": final_values.get("selected_tool", "activity_generator"),
+                            "reasoning": final_values.get("tool_reasoning", ""),
+                            "confidence": final_values.get("confidence", 0.0),
+                            "result": result_data,
+                            "timestamp": datetime.utcnow().isoformat()
+                        }
+                        message_id = await self.storage.add_message(session_id, "assistant", assistant_message, metadata=metadata)
+                        self.logger.info("assistant_message_saved_streaming", 
+                            session_id=session_id, 
+                            message_id=message_id,
+                            has_metadata=bool(metadata))
+                    except Exception as e:
+                        self.logger.error("failed_to_save_assistant_message_streaming",
+                            session_id=session_id,
+                            error=str(e),
+                            exc_info=True)
             
             # Yield final result
             yield {

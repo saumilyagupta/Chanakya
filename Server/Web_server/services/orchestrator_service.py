@@ -95,11 +95,21 @@ class OrchestratorService:
             # OrchestratorOutput doesn't have 'success' field - determine from error
             success = result.error is None
             
+            # Convert result to dict if it's a Pydantic model
+            result_dict = result.result
+            if hasattr(result_dict, 'model_dump'):
+                result_dict = result_dict.model_dump()
+            elif hasattr(result_dict, 'dict'):
+                result_dict = result_dict.dict()
+            elif not isinstance(result_dict, dict):
+                # If it's not a dict and not a model, convert to dict
+                result_dict = {"data": str(result_dict)}
+            
             return QueryResponse(
                 success=success,
                 tool_used=result.tool_used,
                 reasoning=result.reasoning,
-                result=result.result,
+                result=result_dict,
                 confidence=result.confidence,
                 processing_time_ms=processing_time_ms,
                 timestamp=datetime.utcnow(),
@@ -155,6 +165,86 @@ class OrchestratorService:
     def is_ready(self) -> bool:
         """Check if orchestrator is initialized and ready."""
         return self.initialized and self.orchestrator is not None
+    
+    async def get_recent_sessions(self, limit: int = 20) -> list[dict]:
+        """
+        Get recent chat sessions from storage.
+        
+        Args:
+            limit: Maximum number of sessions to return
+            
+        Returns:
+            List of session information dictionaries
+        """
+        if not self.initialized or not self.orchestrator:
+            logger.warning("Orchestrator not initialized")
+            return []
+        
+        try:
+            if self.orchestrator.storage:
+                sessions = await self.orchestrator.storage.get_recent_sessions(limit)
+                # Add first user message as title for each session
+                for session in sessions:
+                    messages = await self.orchestrator.storage.get_messages(session["session_id"])
+                    if messages:
+                        # Find first user message
+                        user_msg = next((m for m in messages if m["role"] == "user"), None)
+                        if user_msg:
+                            # Truncate to first 60 chars for title
+                            session["title"] = user_msg["content"][:60] + ("..." if len(user_msg["content"]) > 60 else "")
+                        else:
+                            session["title"] = "New conversation"
+                    else:
+                        session["title"] = "Empty conversation"
+                return sessions
+            return []
+        except Exception as e:
+            logger.error(f"Error getting recent sessions: {str(e)}")
+            return []
+    
+    async def get_session_messages(self, session_id: str) -> list[dict]:
+        """
+        Get all messages for a specific session.
+        
+        Args:
+            session_id: The session ID to retrieve messages for
+            
+        Returns:
+            List of message dictionaries
+        """
+        if not self.initialized or not self.orchestrator:
+            logger.warning("Orchestrator not initialized")
+            return []
+        
+        try:
+            if self.orchestrator.storage:
+                return await self.orchestrator.storage.get_messages(session_id)
+            return []
+        except Exception as e:
+            logger.error(f"Error getting session messages: {str(e)}")
+            return []
+    
+    async def delete_session(self, session_id: str) -> bool:
+        """
+        Delete a chat session.
+        
+        Args:
+            session_id: The session ID to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        if not self.initialized or not self.orchestrator:
+            logger.warning("Orchestrator not initialized")
+            return False
+        
+        try:
+            if self.orchestrator.storage:
+                return await self.orchestrator.storage.delete_session(session_id)
+            return False
+        except Exception as e:
+            logger.error(f"Error deleting session: {str(e)}")
+            return False
 
 
 # Global instance

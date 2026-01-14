@@ -229,7 +229,7 @@ class CrisisHandlerTool:
                 config=types.GenerateContentConfig(
                     system_instruction=CRISIS_HANDLER_PROMPT,
                     temperature=0.8,
-                    max_output_tokens=2048,
+                    max_output_tokens=10000,
                     response_mime_type="application/json"
                 )
             )
