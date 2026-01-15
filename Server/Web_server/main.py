@@ -1,12 +1,33 @@
 """
 FastAPI application entry point.
 """
+import sys
+import os
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+
+# Load .env from Server directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+server_dir = os.path.dirname(current_dir)
+env_path = os.path.join(server_dir, '.env')
+load_dotenv(env_path)
+
+# Also try loading from root directory
+root_dir = os.path.dirname(server_dir)
+root_env_path = os.path.join(root_dir, '.env')
+load_dotenv(root_env_path)
+
+# Add Web_server and Server directories to path
+sys.path.insert(0, current_dir)
+sys.path.insert(0, server_dir)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from database import connect_to_mongo, close_mongo_connection
 from config import settings
-from routers import auth_router, users_router, sarvam_router
+from routers import auth_router, users_router, sarvam_router, module_router
 
 
 @asynccontextmanager
@@ -40,6 +61,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
 app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
+app.include_router(module_router, prefix="/api/module", tags=["MODULE - Lesson Builder"])
 
 
 @app.get("/")

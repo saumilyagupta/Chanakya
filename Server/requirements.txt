@@ -49,3 +49,8 @@ passlib[bcrypt]>=1.7.4
 
 # Sarvam AI
 sarvamai>=0.1.22
+
+# Export libraries (MODULE)
+reportlab>=4.0.0
+python-docx>=1.0.0
+python-pptx>=0.6.21
