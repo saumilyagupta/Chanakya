@@ -4,6 +4,8 @@ books/
 
 # Python
 __pycache__/.py[cod]
+__pycache__/
+*.py[cod]
 *$py.class
 *.so
 .Python
@@ -79,4 +81,5 @@ Thumbs.db
 .DS_Store?
 ._*
 .Spotlight-V100
+.Trashes
 .Trashes

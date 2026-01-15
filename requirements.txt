@@ -1,0 +1,12 @@
+playwright==1.40.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Embedding and RAG system dependencies
+sentence-transformers>=2.2.0
+llama-cloud-services>=0.1.0
+numpy>=1.24.0
+google-generativeai>=0.3.0
+tqdm>=4.65.0
+python-dotenv>=1.0.0
