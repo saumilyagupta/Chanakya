@@ -5,9 +5,11 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, De
 from fastapi.responses import JSONResponse
 import structlog
 import json
-from typing import List
+from typing import List, Optional
 from services.orchestrator_service import orchestrator_service
+from services.chat_service import ChatService
 from schemas.query import QueryRequest, QueryResponse
+from routers.users import get_current_user_id
 
 logger = structlog.get_logger(__name__)
 
@@ -15,18 +17,25 @@ router = APIRouter()
 
 
 @router.post("/query", response_model=QueryResponse)
-async def process_query(query_request: QueryRequest) -> QueryResponse:
+async def process_query(
+    query_request: QueryRequest,
+    user_id: str = Depends(get_current_user_id)
+) -> QueryResponse:
     """
-    Process a query using the orchestrator.
+    Process a query using the orchestrator and save to chat history.
     
     Args:
         query_request: The query request with query text and context
+        user_id: Current user ID from authentication token
         
     Returns:
         QueryResponse with the orchestrator's response
     """
     try:
-        logger.info("Received query request", query=query_request.query[:100])
+        logger.info("Received query request", 
+                   query=query_request.query[:100], 
+                   user_id=user_id,
+                   session_id=query_request.session_id)
         
         if not orchestrator_service.is_ready():
             raise HTTPException(
@@ -34,7 +43,54 @@ async def process_query(query_request: QueryRequest) -> QueryResponse:
                 detail="Orchestrator service is not ready. Please try again later."
             )
         
+        # Save user message to chat history
+        if query_request.session_id:
+            logger.info("Saving user message to chat history",
+                       session_id=query_request.session_id,
+                       user_id=user_id)
+            await ChatService.save_message(
+                session_id=query_request.session_id,
+                user_id=user_id,
+                role="user",
+                content=query_request.query
+            )
+            logger.info("User message saved successfully")
+        
+        # Process the query
         response = await orchestrator_service.process_query(query_request)
+        
+        # Save assistant response to chat history
+        if query_request.session_id and response.success:
+            logger.info("Saving assistant response to chat history",
+                       session_id=query_request.session_id,
+                       user_id=user_id,
+                       tool_used=response.tool_used)
+            
+            # Extract text response for storage
+            response_text = ""
+            if isinstance(response.result, dict):
+                response_text = response.result.get("response", str(response.result))
+            else:
+                response_text = str(response.result)
+            
+            await ChatService.save_message(
+                session_id=query_request.session_id,
+                user_id=user_id,
+                role="assistant",
+                content=response_text,
+                tool_used=response.tool_used,
+                confidence=response.confidence,
+                metadata={
+                    "tool_used": response.tool_used,
+                    "reasoning": response.reasoning,
+                    "result": response.result,  # Save the full result for formatting
+                    "confidence": response.confidence,
+                    "processing_time_ms": response.processing_time_ms,
+                    "timestamp": response.timestamp.isoformat() if response.timestamp else None
+                }
+            )
+            logger.info("Assistant response saved successfully")
+        
         return response
         
     except HTTPException:

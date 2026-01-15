@@ -161,27 +161,6 @@ function CarouselView({
               <p className="text-[#000000] leading-relaxed">{slide.explanation}</p>
             </div>
 
-            {/* Bullet Points */}
-            {slide.bullet_points && slide.bullet_points.length > 0 && (
-              <div className="bg-white border-2 border-[#000000] rounded-lg p-4">
-                <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                  Key Points
-                </h4>
-                <ul className="space-y-2">
-                  {slide.bullet_points.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-[#000000]">
-                      <span className="w-2 h-2 mt-2 bg-[#000000] rounded-full flex-shrink-0" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             {/* Key Terms */}
             {slide.key_terms && slide.key_terms.length > 0 && (
               <div className="bg-white border-2 border-[#000000] rounded-lg p-4">
@@ -206,37 +185,8 @@ function CarouselView({
             )}
           </div>
 
-          {/* Right Column - Examples & Diagram */}
+          {/* Right Column - Examples & Key Points */}
           <div className="space-y-4">
-            {/* Diagram */}
-            {slide.diagram_url ? (
-              <div className="bg-white border-2 border-[#000000] rounded-lg p-4">
-                <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Diagram
-                </h4>
-                <img 
-                  src={slide.diagram_url} 
-                  alt={`Diagram for ${slide.title}`}
-                  className="w-full rounded-lg border-2 border-[#000000]"
-                />
-              </div>
-            ) : slide.diagram_prompt && (
-              <div className="bg-gray-100 border-2 border-dashed border-[#000000] rounded-lg p-4">
-                <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Diagram (Pending)
-                </h4>
-                <p className="text-sm text-gray-600 italic">{slide.diagram_prompt}</p>
-              </div>
-            )}
-
             {/* Examples */}
             {slide.examples && slide.examples.length > 0 && (
               <div className="bg-white border-2 border-[#000000] rounded-lg p-4">
@@ -259,6 +209,27 @@ function CarouselView({
                 </div>
               </div>
             )}
+
+            {/* Key Points */}
+            {slide.bullet_points && slide.bullet_points.length > 0 && (
+              <div className="bg-white border-2 border-[#000000] rounded-lg p-4">
+                <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                  Key Points
+                </h4>
+                <ul className="space-y-2">
+                  {slide.bullet_points.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-[#000000]">
+                      <span className="w-2 h-2 mt-2 bg-[#000000] rounded-full flex-shrink-0" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -269,9 +240,9 @@ function CarouselView({
           <button
             onClick={prevSlide}
             disabled={currentSlide === 0}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-[#000000] rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FDE047] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-2 border-2 border-[#000000] rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FDE047] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 text-white"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Previous
@@ -294,7 +265,7 @@ function CarouselView({
           <button
             onClick={nextSlide}
             disabled={currentSlide === slides.length - 1}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-[#000000] rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FDE047] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-2 border-2 border-[#000000] rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FDE047] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 text-white"
           >
             Next
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,15 +306,6 @@ function GridView({ slides, goToSlide, setViewMode, getSlideTypeColor, getSlideT
             <p className="text-xs text-[#000000] opacity-70 line-clamp-3">
               {slide.explanation}
             </p>
-            {slide.diagram_url && (
-              <div className="mt-2">
-                <img 
-                  src={slide.diagram_url} 
-                  alt="" 
-                  className="w-full h-16 object-cover rounded border border-[#000000]"
-                />
-              </div>
-            )}
           </button>
         ))}
       </div>

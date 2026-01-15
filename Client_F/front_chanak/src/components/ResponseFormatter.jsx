@@ -53,6 +53,72 @@ const parseBoldText = (text) => {
   return parts.length > 0 ? parts : text;
 };
 
+/**
+ * General Conversation Response
+ * For greetings, gratitude, clarifications, and out-of-scope queries
+ */
+const GeneralConversationResponse = ({ data }) => {
+  const responseType = data.response_type || "general";
+  const response = data.response || "";
+  const suggestedTopics = data.suggested_topics || [];
+
+  // Icons for different response types
+  const icons = {
+    greeting: <Handshake size={20} className="text-[#000000]" />,
+    gratitude: <Heart size={20} className="text-[#000000]" />,
+    clarification: <HelpCircle size={20} className="text-[#000000]" />,
+    out_of_scope: <Info size={20} className="text-[#000000]" />,
+    unclear: <AlertTriangle size={20} className="text-[#000000]" />,
+    general: <Sparkles size={20} className="text-[#000000]" />,
+  };
+
+  const colors = {
+    greeting: "#D4F1C5",
+    gratitude: "#FFB7C5",
+    clarification: "#FDE047",
+    out_of_scope: "#E0EEEF",
+    unclear: "#FFE4B5",
+    general: "#E8D5FF",
+  };
+
+  const bgColor = colors[responseType] || colors.general;
+  const icon = icons[responseType] || icons.general;
+
+  return (
+    <div className="space-y-4">
+      <div
+        className="border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]"
+        style={{ backgroundColor: bgColor }}
+      >
+        <div className="flex items-start gap-3">
+          <div className="mt-1">{icon}</div>
+          <p className="text-base text-[#000000] leading-relaxed flex-1">
+            {parseBoldText(response)}
+          </p>
+        </div>
+
+        {suggestedTopics.length > 0 && (
+          <div className="mt-4 pt-4 border-t-2 border-[#000000]">
+            <p className="text-sm font-bold text-[#000000] mb-2">
+              I can help you with:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {suggestedTopics.map((topic, idx) => (
+                <span
+                  key={idx}
+                  className="bg-white border-2 border-[#000000] px-3 py-1 rounded-full text-xs font-medium text-[#000000] shadow-[2px_2px_0px_0px_#000000]"
+                >
+                  {topic}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ActivityResponse = ({ data }) => (
   <div className="space-y-4">
     <div className="bg-[#EDF4EC] border-2 border-[#000000] p-4 rounded-lg">
@@ -275,6 +341,125 @@ const DefaultResponse = ({ text }) => (
   </p>
 );
 
+/**
+ * Classroom Guidance Response
+ * For classroom management strategies and pedagogical guidance
+ */
+const ClassroomGuidanceResponse = ({ data }) => (
+  <div className="space-y-4">
+    {/* Situation Analysis */}
+    {data.situation_analysis && (
+      <div className="bg-white border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+          <Info size={20} /> Understanding the Situation
+        </h4>
+        <p className="text-sm text-[#000000] leading-relaxed">
+          {parseBoldText(data.situation_analysis)}
+        </p>
+      </div>
+    )}
+
+    {/* Immediate Tips */}
+    {data.immediate_tips && data.immediate_tips.length > 0 && (
+      <div className="bg-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+          <Zap size={20} /> Quick Tips (Try Today!)
+        </h4>
+        <div className="space-y-3">
+          {data.immediate_tips.map((tip, idx) => (
+            <div
+              key={idx}
+              className="flex gap-3 bg-white border-2 border-[#000000] p-3 rounded"
+            >
+              <span className="flex-shrink-0 w-7 h-7 bg-[#FDE047] border-2 border-[#000000] rounded-full flex items-center justify-center text-sm font-bold">
+                {idx + 1}
+              </span>
+              <p className="text-sm text-[#000000] flex-1 pt-0.5">{parseBoldText(tip)}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Step-by-Step Strategies */}
+    {data.step_by_step_strategies && data.step_by_step_strategies.length > 0 && (
+      <div className="space-y-4">
+        <h4 className="text-lg font-bold text-[#000000] flex items-center gap-2">
+          <Target size={20} /> Detailed Strategies
+        </h4>
+        {data.step_by_step_strategies.map((strategy, idx) => (
+          <div
+            key={idx}
+            className="bg-[#E0EEEF] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]"
+          >
+            <h5 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
+              <Presentation size={18} /> {strategy.strategy_name}
+            </h5>
+            
+            <div className="space-y-2 mb-3">
+              {strategy.steps && strategy.steps.map((step, stepIdx) => (
+                <div key={stepIdx} className="flex gap-2 items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-white border-2 border-[#000000] rounded-full flex items-center justify-center text-xs font-bold">
+                    {stepIdx + 1}
+                  </span>
+                  <p className="text-sm text-[#000000] pt-0.5">{parseBoldText(step)}</p>
+                </div>
+              ))}
+            </div>
+
+            {strategy.why_it_works && (
+              <div className="mt-3 pt-3 border-t-2 border-[#000000]">
+                <p className="text-xs font-bold text-[#000000] mb-1 flex items-center gap-1">
+                  <Lightbulb size={14} /> Why It Works:
+                </p>
+                <p className="text-sm text-[#000000] italic">
+                  {parseBoldText(strategy.why_it_works)}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Long-term Approach */}
+    {data.long_term_approach && (
+      <div className="bg-[#D4F1C5] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+          <Target size={20} /> Long-term Approach
+        </h4>
+        <p className="text-sm text-[#000000] leading-relaxed">
+          {parseBoldText(data.long_term_approach)}
+        </p>
+      </div>
+    )}
+
+    {/* Rural Adaptations */}
+    {data.rural_adaptations && (
+      <div className="bg-[#E8D5FF] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+          <Flower2 size={20} /> Rural Context Adaptations
+        </h4>
+        <p className="text-sm text-[#000000] leading-relaxed">
+          {parseBoldText(data.rural_adaptations)}
+        </p>
+      </div>
+    )}
+
+    {/* Encouragement */}
+    {data.encouragement && (
+      <div className="bg-gradient-to-r from-[#F99DA8] to-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+          <Heart size={20} /> You've Got This!
+        </h4>
+        <p className="text-sm text-[#000000] leading-relaxed">
+          {parseBoldText(data.encouragement)}
+        </p>
+      </div>
+    )}
+  </div>
+);
+
 const TeacherMotivationResponse = ({ data }) => (
   <div className="space-y-4">
     {/* Title */}
@@ -479,6 +664,9 @@ const ResponseFormatter = ({ toolUsed, result, text }) => {
 
   // Format based on tool type
   switch (toolUsed) {
+    case "general_conversation":
+      return <GeneralConversationResponse data={result} />;
+
     case "activity_generator":
       return <ActivityResponse data={result} />;
 
@@ -499,8 +687,7 @@ const ResponseFormatter = ({ toolUsed, result, text }) => {
       return <CrisisHandlerResponse data={result} />;
 
     case "classroom_guidance":
-      // Classroom guidance can use expert teacher format
-      return <ExpertTeacherResponse data={result} />;
+      return <ClassroomGuidanceResponse data={result} />;
 
     default:
       return <DefaultResponse text={text} />;

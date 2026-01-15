@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from database import connect_to_mongo, close_mongo_connection
 from config import settings
-from routers import auth_router, users_router, query_router
+from routers import auth_router, users_router, query_router, chat_router
 from services import orchestrator_service
 import structlog
 
@@ -78,6 +78,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
 app.include_router(query_router, prefix="/api/query", tags=["Query"])
+app.include_router(chat_router, prefix="/api/chat", tags=["Chat History"])
 #app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 app.include_router(module_router, prefix="/api/module", tags=["MODULE - Lesson Builder"])

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
@@ -31,7 +32,14 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/alm" element={<ActiveListeningMode />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/chat" element={<ChatInterface />} />
+              <Route 
+                path="/chat" 
+                element={
+                  <ProtectedRoute>
+                    <ChatInterface />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/module" element={<ModulePage />} />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<Contact />} />

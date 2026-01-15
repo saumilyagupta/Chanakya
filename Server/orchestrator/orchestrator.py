@@ -24,7 +24,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool
 
 
 # LangGraph imports
@@ -92,30 +92,50 @@ ROUTER_PROMPT = """You are Chanakya's intelligent router for a classroom support
 Your job is to understand the teacher's query and decide which tool to use.
 
 AVAILABLE TOOLS:
-1. "expert_teacher" - **[DEFAULT - USE THIS MOST OFTEN]** Use for ANY educational question, concept explanation, or teaching query. This is a knowledgeable expert teacher with broad subject knowledge that can answer both curriculum and non-curriculum topics. When in doubt, use this tool.
+1. "general_conversation" - **[USE FIRST FOR NON-EDUCATIONAL QUERIES]** Use for:
+   - Greetings (hi, hello, good morning, namaste)
+   - Gratitude (thank you, thanks, appreciate it)
+   - Unclear/ambiguous queries that need clarification
+   - Out-of-scope questions (weather, news, personal matters, non-teaching topics)
+   - Small talk or casual conversation
+   When the query is NOT about teaching, education, or classroom matters, use this tool.
 
-2. "content_explainer" - Use ONLY when the teacher specifically mentions NCERT or specifically asks for textbook-based answers. This retrieves information from NCERT textbooks. If uncertain whether content is in NCERT, prefer expert_teacher instead.
+2. "expert_teacher" - **[DEFAULT FOR EDUCATIONAL QUERIES]** Use for ANY educational question, concept explanation, or teaching query. This is a knowledgeable expert teacher with broad subject knowledge that can answer both curriculum and non-curriculum topics. When in doubt about educational content, use this tool.
 
-3. "activity_generator" - Use when the teacher explicitly wants a hands-on activity, demonstration, or interactive exercise. Must include words like "activity", "game", "demonstration", "exercise".
+3. "content_explainer" - Use ONLY when the teacher specifically mentions NCERT or specifically asks for textbook-based answers. This retrieves information from NCERT textbooks. If uncertain whether content is in NCERT, prefer expert_teacher instead.
 
-4. "crisis_handler" - Use when there is an IMMEDIATE classroom management crisis: students making noise, losing focus, being disruptive, chaos, behavior problems. This tool provides instant solutions (under 2 minutes) to restore order and attention.
+4. "activity_generator" - Use when the teacher explicitly wants a hands-on activity, demonstration, or interactive exercise. Must include words like "activity", "game", "demonstration", "exercise".
 
-5. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
+5. "crisis_handler" - Use when there is an IMMEDIATE classroom management crisis: students making noise, losing focus, being disruptive, chaos, behavior problems. This tool provides instant solutions (under 2 minutes) to restore order and attention.
 
-6. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
+6. "teacher_motivation" - Use when the teacher is expressing feelings of burnout, stress, exhaustion, lack of motivation, feeling overwhelmed, or needing emotional support. This tool provides motivation, tips, and recovery strategies for teacher wellbeing.
+
+7. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
 
 FUTURE TOOLS (not yet available, do NOT select these):
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance",
+    "selected_tool": "general_conversation" or "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance",
     "reasoning": "Brief explanation of why this tool was selected",
-    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge",
+    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge OR conversation type",
     "confidence": 0.95
 }
 
 EXAMPLES:
+
+Query: "Hi"
+Response: {"selected_tool": "general_conversation", "reasoning": "Simple greeting - needs friendly response", "extracted_topic": "greeting", "confidence": 0.99}
+
+Query: "Thank you so much!"
+Response: {"selected_tool": "general_conversation", "reasoning": "Expression of gratitude", "extracted_topic": "gratitude", "confidence": 0.99}
+
+Query: "What's the weather like today?"
+Response: {"selected_tool": "general_conversation", "reasoning": "Out of scope - not related to teaching or education", "extracted_topic": "out_of_scope", "confidence": 0.98}
+
+Query: "I need help"
+Response: {"selected_tool": "general_conversation", "reasoning": "Unclear query - needs clarification on what kind of help", "extracted_topic": "clarification_needed", "confidence": 0.95}
 
 Query: "What is photosynthesis?"
 Response: {"selected_tool": "expert_teacher", "reasoning": "General educational question - expert teacher can provide comprehensive answer", "extracted_topic": "photosynthesis", "confidence": 0.97}
@@ -158,13 +178,14 @@ Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking f
 
 RULES:
 - Return ONLY valid JSON
+- **FIRST check if query is a greeting, gratitude, unclear, or out-of-scope → use "general_conversation"**
 - **DEFAULT to "expert_teacher" for ANY educational content question**
 - Use "content_explainer" ONLY when NCERT is specifically mentioned
 - Use "activity_generator" ONLY when explicitly asking for activities/games
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
 - Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed
 - Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategies
-- Extract the topic/concept or crisis situation or motivation issue or teaching challenge clearly
+- Extract the topic/concept or crisis situation or motivation issue or teaching challenge or conversation type clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
 
 
@@ -262,7 +283,8 @@ class ChanakyaOrchestrator:
             "teacher_motivation": TeacherMotivationTool(api_key=api_key),
             "content_explainer": ContentExplainerTool(),
             "classroom_guidance": ClassroomGuidanceTool(api_key=api_key),
-            "expert_teacher": ExpertTeacherTool(api_key=api_key)
+            "expert_teacher": ExpertTeacherTool(api_key=api_key),
+            "general_conversation": GeneralConversationTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -359,26 +381,14 @@ Language:""")]
         
         Args:
             text: Text to translate
-            target_lang: Target language code (hi, ta, bn, etc.)
+            target_lang: Target language (full name like 'Hindi', 'Tamil', 'English')
         
         Returns:
             Translated text
         """
-        if target_lang == 'en':
+        # Skip translation for English
+        if not text or target_lang.lower() in ['english', 'en']:
             return text
-        
-        lang_names = {
-            'hi': 'Hindi',
-            'ta': 'Tamil',
-            'bn': 'Bengali',
-            'te': 'Telugu',
-            'gu': 'Gujarati',
-            'mr': 'Marathi',
-            'kn': 'Kannada',
-            'ml': 'Malayalam'
-        }
-        
-        target_name = lang_names.get(target_lang, target_lang)
         
         try:
             response = await self.client.aio.models.generate_content(
@@ -386,7 +396,7 @@ Language:""")]
                 contents=[
                     types.Content(
                         role="user",
-                        parts=[types.Part(text=f"Translate this to {target_name} (preserve formatting):\n\n{text}")]
+                        parts=[types.Part(text=f"Translate this to {target_lang} (preserve formatting and structure, only translate the text content):\n\n{text}")]
                     )
                 ],
                 config=types.GenerateContentConfig(
@@ -403,6 +413,165 @@ Language:""")]
                 error=str(e)
             )
             return text  # Return original if translation fails
+    
+    async def _translate_dict_result(self, result: dict, target_lang: str, tool_name: str) -> dict:
+        """
+        Translate dictionary results from various tools to target language.
+        
+        Args:
+            result: Tool result dictionary
+            target_lang: Target language (e.g., 'Hindi', 'Tamil')
+            tool_name: Name of the tool that generated this result
+        
+        Returns:
+            Translated result dictionary
+        """
+        if target_lang.lower() in ['english', 'en']:
+            return result
+        
+        self.logger.info("translating_dict_result",
+            tool=tool_name,
+            target_lang=target_lang
+        )
+        
+        try:
+            # General conversation tool
+            if tool_name == "general_conversation":
+                if "response" in result:
+                    result["response"] = await self._translate_text(result["response"], target_lang)
+                if "suggested_topics" in result and isinstance(result["suggested_topics"], list):
+                    result["suggested_topics"] = [
+                        await self._translate_text(topic, target_lang) 
+                        for topic in result["suggested_topics"]
+                    ]
+            
+            # Classroom guidance tool
+            elif tool_name == "classroom_guidance":
+                if "situation_analysis" in result:
+                    result["situation_analysis"] = await self._translate_text(result["situation_analysis"], target_lang)
+                if "immediate_tips" in result and isinstance(result["immediate_tips"], list):
+                    result["immediate_tips"] = [
+                        await self._translate_text(tip, target_lang) 
+                        for tip in result["immediate_tips"]
+                    ]
+                if "step_by_step_strategies" in result and isinstance(result["step_by_step_strategies"], list):
+                    for strategy in result["step_by_step_strategies"]:
+                        if "strategy_name" in strategy:
+                            strategy["strategy_name"] = await self._translate_text(strategy["strategy_name"], target_lang)
+                        if "steps" in strategy and isinstance(strategy["steps"], list):
+                            strategy["steps"] = [
+                                await self._translate_text(step, target_lang) 
+                                for step in strategy["steps"]
+                            ]
+                        if "why_it_works" in strategy:
+                            strategy["why_it_works"] = await self._translate_text(strategy["why_it_works"], target_lang)
+                if "long_term_approach" in result:
+                    result["long_term_approach"] = await self._translate_text(result["long_term_approach"], target_lang)
+                if "rural_adaptations" in result:
+                    result["rural_adaptations"] = await self._translate_text(result["rural_adaptations"], target_lang)
+                if "encouragement" in result:
+                    result["encouragement"] = await self._translate_text(result["encouragement"], target_lang)
+            
+            # Expert teacher tool
+            elif tool_name == "expert_teacher":
+                if "explanation" in result:
+                    result["explanation"] = await self._translate_text(result["explanation"], target_lang)
+                if "key_points" in result and isinstance(result["key_points"], list):
+                    result["key_points"] = [
+                        await self._translate_text(point, target_lang) 
+                        for point in result["key_points"]
+                    ]
+                if "examples" in result and isinstance(result["examples"], list):
+                    result["examples"] = [
+                        await self._translate_text(example, target_lang) 
+                        for example in result["examples"]
+                    ]
+                if "teaching_tips" in result and isinstance(result["teaching_tips"], list):
+                    result["teaching_tips"] = [
+                        await self._translate_text(tip, target_lang) 
+                        for tip in result["teaching_tips"]
+                    ]
+                if "common_misconceptions" in result and isinstance(result["common_misconceptions"], list):
+                    result["common_misconceptions"] = [
+                        await self._translate_text(misc, target_lang) 
+                        for misc in result["common_misconceptions"]
+                    ]
+                if "follow_up_questions" in result and isinstance(result["follow_up_questions"], list):
+                    result["follow_up_questions"] = [
+                        await self._translate_text(q, target_lang) 
+                        for q in result["follow_up_questions"]
+                    ]
+            
+            # Content explainer tool
+            elif tool_name == "content_explainer":
+                if "explanation" in result:
+                    result["explanation"] = await self._translate_text(result["explanation"], target_lang)
+                if "key_points" in result and isinstance(result["key_points"], list):
+                    result["key_points"] = [
+                        await self._translate_text(point, target_lang) 
+                        for point in result["key_points"]
+                    ]
+                if "examples" in result and isinstance(result["examples"], list):
+                    result["examples"] = [
+                        await self._translate_text(example, target_lang) 
+                        for example in result["examples"]
+                    ]
+            
+            # Teacher motivation tool
+            elif tool_name == "teacher_motivation":
+                if "motivation_title" in result:
+                    result["motivation_title"] = await self._translate_text(result["motivation_title"], target_lang)
+                if "acknowledgment" in result:
+                    result["acknowledgment"] = await self._translate_text(result["acknowledgment"], target_lang)
+                if "immediate_tips" in result and isinstance(result["immediate_tips"], list):
+                    result["immediate_tips"] = [
+                        await self._translate_text(tip, target_lang) 
+                        for tip in result["immediate_tips"]
+                    ]
+                if "long_term_strategies" in result and isinstance(result["long_term_strategies"], list):
+                    result["long_term_strategies"] = [
+                        await self._translate_text(strategy, target_lang) 
+                        for strategy in result["long_term_strategies"]
+                    ]
+                if "inspiration" in result:
+                    result["inspiration"] = await self._translate_text(result["inspiration"], target_lang)
+                if "self_care_reminder" in result:
+                    result["self_care_reminder"] = await self._translate_text(result["self_care_reminder"], target_lang)
+            
+            # Crisis handler tool
+            elif tool_name == "crisis_handler":
+                if "crisis_analysis" in result:
+                    result["crisis_analysis"] = await self._translate_text(result["crisis_analysis"], target_lang)
+                if "immediate_steps" in result and isinstance(result["immediate_steps"], list):
+                    result["immediate_steps"] = [
+                        await self._translate_text(step, target_lang) 
+                        for step in result["immediate_steps"]
+                    ]
+                if "de_escalation_phrases" in result and isinstance(result["de_escalation_phrases"], list):
+                    result["de_escalation_phrases"] = [
+                        await self._translate_text(phrase, target_lang) 
+                        for phrase in result["de_escalation_phrases"]
+                    ]
+                if "prevention_strategies" in result and isinstance(result["prevention_strategies"], list):
+                    result["prevention_strategies"] = [
+                        await self._translate_text(strategy, target_lang) 
+                        for strategy in result["prevention_strategies"]
+                    ]
+                if "followup_actions" in result and isinstance(result["followup_actions"], list):
+                    result["followup_actions"] = [
+                        await self._translate_text(action, target_lang) 
+                        for action in result["followup_actions"]
+                    ]
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error("dict_translation_failed",
+                tool=tool_name,
+                target_lang=target_lang,
+                error=str(e)
+            )
+            return result  # Return original if translation fails
     
     
     def _build_graph(self) -> StateGraph:
@@ -1226,35 +1395,43 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                 result = ActivityOutput(**result)
             
             # Translate result to original language if needed
-            if detected_lang != 'en' and isinstance(result, ActivityOutput):
+            tool_name = final_state.get("selected_tool", "unknown")
+            if detected_lang != 'English':
                 self.logger.info("translating_result",
                     session_id=session_id,
-                    target_lang=detected_lang
+                    target_lang=detected_lang,
+                    tool=tool_name
                 )
                 
-                # Translate activity fields
-                result.activity_name = await self._translate_text(result.activity_name, detected_lang)
-                result.description = await self._translate_text(result.description, detected_lang)
-                result.learning_outcome = await self._translate_text(result.learning_outcome, detected_lang)
+                # Handle ActivityOutput (activity_generator)
+                if isinstance(result, ActivityOutput):
+                    # Translate activity fields
+                    result.activity_name = await self._translate_text(result.activity_name, detected_lang)
+                    result.description = await self._translate_text(result.description, detected_lang)
+                    result.learning_outcome = await self._translate_text(result.learning_outcome, detected_lang)
+                    
+                    # Translate steps
+                    translated_steps = []
+                    for step in result.steps:
+                        translated_steps.append(await self._translate_text(step, detected_lang))
+                    result.steps = translated_steps
+                    
+                    # Translate materials
+                    translated_materials = []
+                    for material in result.materials_needed:
+                        translated_materials.append(await self._translate_text(material, detected_lang))
+                    result.materials_needed = translated_materials
+                    
+                    # Translate tips if present
+                    if result.tips:
+                        translated_tips = []
+                        for tip in result.tips:
+                            translated_tips.append(await self._translate_text(tip, detected_lang))
+                        result.tips = translated_tips
                 
-                # Translate steps
-                translated_steps = []
-                for step in result.steps:
-                    translated_steps.append(await self._translate_text(step, detected_lang))
-                result.steps = translated_steps
-                
-                # Translate materials
-                translated_materials = []
-                for material in result.materials_needed:
-                    translated_materials.append(await self._translate_text(material, detected_lang))
-                result.materials_needed = translated_materials
-                
-                # Translate tips if present
-                if result.tips:
-                    translated_tips = []
-                    for tip in result.tips:
-                        translated_tips.append(await self._translate_text(tip, detected_lang))
-                    result.tips = translated_tips
+                # Handle dict-based results (other tools)
+                elif isinstance(result, dict):
+                    result = await self._translate_dict_result(result, detected_lang, tool_name)
             
             # Update conversation context and save to SQLite
             assistant_message = f"Generated activity: {result.activity_name if isinstance(result, ActivityOutput) else 'Response'}"
