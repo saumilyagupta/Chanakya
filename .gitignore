@@ -15,6 +15,23 @@ ENV/
 dist/
 build/
 *.egg
+/Server/venv
+.env
+/Server/.hypothesis
+/.hypothesis
+/.kiro
+/.pytest_cache
+.qodo
+.venv
+/Server/.pytest_cache
+ncert_books_.db
+
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 
 # Database files
 *.db

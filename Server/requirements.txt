@@ -51,3 +51,8 @@ bcrypt==4.0.1
 # Sarvam AI
 sarvamai>=0.1.22
 python-multipart>=0.0.6
+
+# Export libraries (MODULE)
+reportlab>=4.0.0
+python-docx>=1.0.0
+python-pptx>=0.6.21
