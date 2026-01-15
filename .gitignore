@@ -1,3 +1,4 @@
+/Server/venv
 .env
 /Server/.hypothesis
 /.hypothesis
@@ -7,6 +8,7 @@
 .venv
 /Server/.pytest_cache
 ncert_books_.db
+
 
 # Python cache
 __pycache__/
