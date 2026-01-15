@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { queryOrchestrator, getChatHistory, getSessionMessages } from "../services/api";
+import {
+  queryOrchestrator,
+  getChatHistory,
+  getSessionMessages,
+} from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { transcribeAudio, textToSpeechAndPlay } from "../utils/sarvamApi";
 import ResponseFormatter from "../components/ResponseFormatter";
@@ -36,28 +40,31 @@ function ChatInterface() {
         const sortedSessions = [...response.sessions].sort((a, b) => {
           return new Date(b.updated_at) - new Date(a.updated_at);
         });
-        
+
         // Format sessions for display
-        const formattedSessions = sortedSessions.map(session => {
+        const formattedSessions = sortedSessions.map((session) => {
           const date = new Date(session.updated_at);
           const today = new Date();
           const yesterday = new Date(today);
           yesterday.setDate(yesterday.getDate() - 1);
-          
+
           let dateStr;
           if (date.toDateString() === today.toDateString()) {
             dateStr = "Today";
           } else if (date.toDateString() === yesterday.toDateString()) {
             dateStr = "Yesterday";
           } else {
-            dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            dateStr = date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
           }
-          
+
           return {
             id: session.session_id,
             title: session.title || "New conversation",
             date: dateStr,
-            message_count: session.message_count
+            message_count: session.message_count,
           };
         });
         setChatHistory(formattedSessions);
@@ -78,17 +85,25 @@ function ChatInterface() {
             from: msg.role === "user" ? "teacher" : "bot",
             text: msg.content,
           };
-          
+
           // Parse metadata if it exists
           if (msg.metadata) {
             try {
-              const metadata = typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata;
-              
+              const metadata =
+                typeof msg.metadata === "string"
+                  ? JSON.parse(msg.metadata)
+                  : msg.metadata;
+
               // Check if metadata has actual content (not just empty object)
               const hasMetadata = metadata && Object.keys(metadata).length > 0;
-              
-              console.log("Message metadata:", metadata, "Has content:", hasMetadata); // Debug log
-              
+
+              console.log(
+                "Message metadata:",
+                metadata,
+                "Has content:",
+                hasMetadata
+              ); // Debug log
+
               // For bot messages with metadata, reconstruct the data structure
               if (msg.role === "assistant" && hasMetadata && metadata.result) {
                 baseMessage.data = {
@@ -97,11 +112,11 @@ function ChatInterface() {
                   reasoning: metadata.reasoning,
                   result: metadata.result,
                   confidence: metadata.confidence,
-                  timestamp: metadata.timestamp
+                  timestamp: metadata.timestamp,
                 };
                 baseMessage.tool_used = metadata.tool_used;
                 baseMessage.confidence = metadata.confidence;
-                
+
                 // Extract text for fallback display
                 if (metadata.result.explanation) {
                   baseMessage.text = metadata.result.explanation;
@@ -110,21 +125,29 @@ function ChatInterface() {
                 } else if (metadata.result.motivation_title) {
                   baseMessage.text = metadata.result.acknowledgment;
                 }
-                
-                console.log("Formatted bot message with metadata:", baseMessage); // Debug log
+
+                console.log(
+                  "Formatted bot message with metadata:",
+                  baseMessage
+                ); // Debug log
               } else if (msg.role === "assistant" && !hasMetadata) {
                 // Old message without metadata - show informative message
-                baseMessage.text = "📜 This is an older conversation. For better formatted responses with activities and detailed breakdowns, please start a new chat!";
+                baseMessage.text =
+                  "📜 This is an older conversation. For better formatted responses with activities and detailed breakdowns, please start a new chat!";
                 console.log("Old message without metadata"); // Debug log
               }
             } catch (error) {
-              console.error("Error parsing message metadata:", error, msg.metadata);
+              console.error(
+                "Error parsing message metadata:",
+                error,
+                msg.metadata
+              );
             }
           }
-          
+
           return baseMessage;
         });
-        
+
         setMessages(formattedMessages);
         setCurrentSessionId(sessionId);
       }
@@ -163,15 +186,17 @@ function ChatInterface() {
 
     try {
       const botMessageId = Date.now() + 1;
-      
+
       // Use existing session ID or create new one
       const sessionId = currentSessionId || `session_${Date.now()}`;
       if (!currentSessionId) {
         setCurrentSessionId(sessionId);
       }
-      
+
       // Call the orchestrator API with session ID
-      const data = await queryOrchestrator(userMessage, { session_id: sessionId });
+      const data = await queryOrchestrator(userMessage, {
+        session_id: sessionId,
+      });
 
       // Extract text for fallback display
       let botResponseText = "";
@@ -186,7 +211,8 @@ function ChatInterface() {
           botResponseText = JSON.stringify(data.result, null, 2);
         }
       } else {
-        botResponseText = data.error || "Sorry, I couldn't process your request.";
+        botResponseText =
+          data.error || "Sorry, I couldn't process your request.";
       }
 
       setMessages((m) => [
@@ -200,19 +226,19 @@ function ChatInterface() {
           confidence: data.confidence,
         },
       ]);
-      
+
       // Refresh chat history to show new conversation
       await loadChatHistory();
     } catch (error) {
       console.error("Error calling orchestrator:", error);
-      
+
       let errorMessage = "Sorry, I'm having trouble connecting to the server.";
       if (error.response?.data?.detail) {
         errorMessage = error.response.data.detail;
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setMessages((m) => [
         ...m,
         {
@@ -356,7 +382,6 @@ function ChatInterface() {
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
-      
       {/* Background Image with very low opacity */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -371,15 +396,15 @@ function ChatInterface() {
 
       <div className="relative z-10 flex w-full flex-1">
         {/* Sidebar - Chat History */}
-        <aside className="hidden md:flex flex-col w-64 bg-[#FFFFFF] border-r-2 border-[#000000]">
-          {/* Sidebar Header */}
+        <aside className="hidden md:flex flex-col w-56 bg-[#FFFFFF] border-r-2 border-[#000000]">
+          {/* Sidebar Header
           <div className="p-4 border-b-2 border-[#000000]">
             <Link
               to="/"
               className="flex items-center gap-3 text-[#000000] hover:opacity-80 transition"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -393,12 +418,12 @@ function ChatInterface() {
               </svg>
               <span className="text-base font-bold">Chanakya</span>
             </Link>
-          </div>
+          </div> */}
 
           {/* New Chat Button */}
-          <div className="p-4 border-b-2 border-[#000000]">
+          <div className="p-3 border-b-2 border-[#000000]">
             <button
-              className="w-full bg-[#E0EEEF] border-2 border-[#000000] px-4 py-2 font-bold text-[#000000] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#E0EEEF] border-2 border-[#000000] px-3 py-1.5 font-bold text-[#000000] shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center gap-2"
               onClick={startNewChat}
             >
               <svg
@@ -431,7 +456,7 @@ function ChatInterface() {
                   onClick={() => loadSession(chat.id)}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#E8D5FF] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[#E8D5FF] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
                       <svg
                         className="w-4 h-4 text-[#000000]"
                         fill="none"
@@ -470,10 +495,10 @@ function ChatInterface() {
             </Link>
             <button
               onClick={startNewChat}
-              className="p-2 border-2 border-[#000000] rounded"
+              className="p-1.5 border-2 border-[#000000] rounded"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -496,13 +521,13 @@ function ChatInterface() {
                   <img
                     src="/happy_chanakya.png"
                     alt="Chanakya"
-                    className="w-60 h-60 md:w-96 md:h-96 object-contain"
+                    className="w-48 h-48 md:w-80 md:h-80 object-contain"
                   />
                 </div>
 
                 <div className="text-center mb-8">
                   <h2
-                    className="text-3xl md:text-4xl font-bold text-[#000000] mb-1"
+                    className="text-2xl md:text-3xl font-bold text-[#000000] mb-1"
                     style={{
                       fontFamily: "TT Firs Neue, sans-serif",
                       fontWeight: 700,
@@ -520,7 +545,7 @@ function ChatInterface() {
                       color: "#F99DA8",
                       icon: (
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -539,7 +564,7 @@ function ChatInterface() {
                       color: "#FDE047",
                       icon: (
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -558,7 +583,7 @@ function ChatInterface() {
                       color: "#D4F1C5",
                       icon: (
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -583,7 +608,7 @@ function ChatInterface() {
                       color: "#E8D5FF",
                       icon: (
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -600,7 +625,7 @@ function ChatInterface() {
                   ].map((feature) => (
                     <button
                       key={feature.name}
-                      className="p-4 rounded-lg border-2 border-[#000000] text-left transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
+                      className="p-3 rounded-lg border-2 border-[#000000] text-left transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
                       style={{ backgroundColor: feature.color }}
                       onClick={() => setInput(`Activate ${feature.name}`)}
                     >
@@ -615,12 +640,12 @@ function ChatInterface() {
                 </div>
               </div>
             ) : (
-              <div className="max-w-4xl mx-auto space-y-8 pb-4">
+              <div className="max-w-3xl mx-auto space-y-8 pb-4">
                 {messages.map((message) => (
                   <div key={message.id} className="w-full">
                     {message.from === "teacher" ? (
                       <div className="flex justify-center mb-4">
-                        <div className="bg-[#FDE047] border-2 border-[#000000] rounded-lg px-6 py-3 shadow-[2px_2px_0px_0px_#000000] max-w-2xl">
+                        <div className="bg-[#FDE047] border-2 border-[#000000] rounded-lg px-4 py-2 shadow-[2px_2px_0px_0px_#000000] max-w-xl">
                           <p className="text-sm md:text-base font-medium text-[#000000] text-center">
                             {message.text}
                           </p>
@@ -629,7 +654,7 @@ function ChatInterface() {
                     ) : (
                       <div className="flex flex-col items-center gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                          <div className="w-8 h-8 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
                             <svg
                               className="w-5 h-5 text-[#000000]"
                               fill="none"
@@ -644,7 +669,7 @@ function ChatInterface() {
                               />
                             </svg>
                           </div>
-                          <span className="text-lg font-bold text-[#000000]">
+                          <span className="text-base font-bold text-[#000000]">
                             Chanakya
                           </span>
                           <button
@@ -656,15 +681,18 @@ function ChatInterface() {
                                 let textToSpeak = message.text;
                                 if (message.data?.result) {
                                   if (message.data.result.explanation) {
-                                    textToSpeak = message.data.result.explanation;
-                                  } else if (message.data.result.activity_name) {
+                                    textToSpeak =
+                                      message.data.result.explanation;
+                                  } else if (
+                                    message.data.result.activity_name
+                                  ) {
                                     textToSpeak = `Activity: ${message.data.result.activity_name}. ${message.data.result.description}`;
                                   }
                                 }
                                 speakText(textToSpeak, message.id);
                               }
                             }}
-                            className="p-2 border-2 border-[#000000] rounded bg-white hover:bg-[#FDE047] transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
+                            className="p-1.5 border-2 border-[#000000] rounded bg-white hover:bg-[#FDE047] transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5"
                             title={
                               speakingMessageId === message.id
                                 ? "Stop speaking"
@@ -709,7 +737,7 @@ function ChatInterface() {
                             )}
                           </button>
                         </div>
-                        <div className="w-full border-2 border-[#000000] rounded-lg p-6 bg-white shadow-[4px_4px_0px_0px_#000000]">
+                        <div className="w-full px-1 py-1">
                           <ResponseFormatter
                             toolUsed={message.tool_used}
                             result={message.data?.result}
@@ -722,9 +750,9 @@ function ChatInterface() {
                 ))}
                 {isLoading && (
                   <div className="flex gap-4 justify-start">
-                    <div className="w-8 h-8 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#FDE047] border-2 border-[#000000] flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-4 h-4 text-[#000000] animate-spin"
+                        className="w-3 h-3 text-[#000000] animate-spin"
                         fill="none"
                         viewBox="0 0 24 24"
                       >
@@ -852,7 +880,7 @@ function ChatInterface() {
                   placeholder="Message Chanakya..."
                   rows={1}
                   className="flex-1 bg-transparent text-sm md:text-base text-[#000000] placeholder-gray-500 focus:outline-none resize-none overflow-y-auto"
-                  style={{ minHeight: "24px", maxHeight: "128px" }}
+                  style={{ minHeight: "20px", maxHeight: "128px" }}
                   aria-label="Message input"
                 />
                 <button
@@ -860,12 +888,12 @@ function ChatInterface() {
                   onClick={sendMessage}
                   onMouseDown={(e) => e.preventDefault()}
                   disabled={!input.trim() || isLoading}
-                  className="p-2 border-2 border-[#000000] rounded bg-[#FDE047] text-[#000000] font-bold hover:bg-[#FDE047] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex-shrink-0"
+                  className="p-1.5 border-2 border-[#000000] rounded bg-[#FDE047] text-[#000000] font-bold hover:bg-[#FDE047] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex-shrink-0"
                   title="Send message"
                   aria-label="Send message"
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

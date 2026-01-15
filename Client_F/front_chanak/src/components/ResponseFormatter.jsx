@@ -3,23 +3,46 @@
  * Formats different types of orchestrator responses with proper styling
  */
 
+import {
+  ClipboardList,
+  Package,
+  List,
+  BookOpen,
+  Lightbulb,
+  CheckCircle,
+  Sparkles,
+  Presentation,
+  AlertTriangle,
+  HelpCircle,
+  Heart,
+  Rocket,
+  Target,
+  Flower2,
+  RotateCcw,
+  Info,
+  Zap,
+  Handshake,
+  ShieldCheck,
+  Check,
+} from "lucide-react";
+
 const ActivityResponse = ({ data }) => (
   <div className="space-y-4">
-    <div className="bg-[#FDE047] border-2 border-[#000000] p-4 rounded-lg">
-      <h3 className="text-xl font-bold text-[#000000] mb-2">
-        🎯 {data.activity_name}
+    <div className="bg-[#EDF4EC] border-2 border-[#000000] p-4 rounded-lg">
+      <h3 className="text-xl font-bold text-[#000000] mb-2 flex items-center gap-2">
+        <ClipboardList size={18} /> {data.activity_name}
       </h3>
       <p className="text-sm text-[#000000]">{data.description}</p>
       <div className="mt-2 flex items-center gap-2 text-xs text-[#000000]">
         <span className="bg-white border border-[#000000] px-2 py-1 rounded">
-          ⏱️ {data.duration_minutes} minutes
+          Duration: {data.duration_minutes} minutes
         </span>
       </div>
     </div>
 
-    <div className="bg-white border-2 border-[#000000] p-4 rounded-lg">
+    <div className="bg-[#feffdf] border-2 border-[#000000] p-4 rounded-lg">
       <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-        📦 Materials Needed
+        <Package size={18} /> Materials Needed
       </h4>
       <ul className="space-y-1 text-sm">
         {data.materials_needed?.map((item, idx) => (
@@ -31,9 +54,9 @@ const ActivityResponse = ({ data }) => (
       </ul>
     </div>
 
-    <div className="bg-white border-2 border-[#000000] p-4 rounded-lg">
+    <div className="bg-[#ffefed] border-2 border-[#000000] p-4 rounded-lg">
       <h4 className="font-bold text-[#000000] mb-3 flex items-center gap-2">
-        📝 Steps
+        <List size={18} /> Steps
       </h4>
       <ol className="space-y-3">
         {data.steps?.map((step, idx) => (
@@ -49,7 +72,7 @@ const ActivityResponse = ({ data }) => (
 
     <div className="bg-[#D4F1C5] border-2 border-[#000000] p-4 rounded-lg">
       <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-        🎓 Learning Outcome
+        <BookOpen size={18} /> Learning Outcome
       </h4>
       <p className="text-sm text-[#000000]">{data.learning_outcome}</p>
     </div>
@@ -57,7 +80,7 @@ const ActivityResponse = ({ data }) => (
     {data.tips && data.tips.length > 0 && (
       <div className="bg-[#E8D5FF] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          💡 Tips
+          <Lightbulb size={18} /> Tips
         </h4>
         <ul className="space-y-2 text-sm">
           {data.tips.map((tip, idx) => (
@@ -81,9 +104,9 @@ const ExpertTeacherResponse = ({ data }) => (
     </div>
 
     {data.key_points && data.key_points.length > 0 && (
-      <div className="bg-[#FDE047] border-2 border-[#000000] p-4 rounded-lg">
+      <div className="bg-[#EDF4EC] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          🔑 Key Points
+          <CheckCircle size={18} /> Key Points
         </h4>
         <ul className="space-y-2 text-sm">
           {data.key_points.map((point, idx) => (
@@ -99,11 +122,13 @@ const ExpertTeacherResponse = ({ data }) => (
     {data.examples && data.examples.length > 0 && (
       <div className="bg-[#D4F1C5] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          💡 Examples
+          <Sparkles size={18} /> Examples
         </h4>
         <ul className="space-y-2 text-sm">
           {data.examples.map((example, idx) => (
-            <li key={idx} className="text-[#000000]">{example}</li>
+            <li key={idx} className="text-[#000000]">
+              {example}
+            </li>
           ))}
         </ul>
       </div>
@@ -112,7 +137,7 @@ const ExpertTeacherResponse = ({ data }) => (
     {data.teaching_tips && data.teaching_tips.length > 0 && (
       <div className="bg-[#E8D5FF] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          👩‍🏫 Teaching Tips
+          <Presentation size={18} /> Teaching Tips
         </h4>
         <ul className="space-y-2 text-sm">
           {data.teaching_tips.map((tip, idx) => (
@@ -128,7 +153,7 @@ const ExpertTeacherResponse = ({ data }) => (
     {data.common_misconceptions && data.common_misconceptions.length > 0 && (
       <div className="bg-[#F99DA8] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          ⚠️ Common Misconceptions
+          <AlertTriangle size={18} /> Common Misconceptions
         </h4>
         <ul className="space-y-2 text-sm">
           {data.common_misconceptions.map((misconception, idx) => (
@@ -144,11 +169,13 @@ const ExpertTeacherResponse = ({ data }) => (
     {data.follow_up_questions && data.follow_up_questions.length > 0 && (
       <div className="bg-[#E0EEEF] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          ❓ Follow-up Questions
+          <HelpCircle size={18} /> Follow-up Questions
         </h4>
         <ul className="space-y-2 text-sm">
           {data.follow_up_questions.map((question, idx) => (
-            <li key={idx} className="text-[#000000]">{question}</li>
+            <li key={idx} className="text-[#000000]">
+              {question}
+            </li>
           ))}
         </ul>
       </div>
@@ -165,9 +192,9 @@ const ContentExplanationResponse = ({ data }) => (
     </div>
 
     {data.key_points && data.key_points.length > 0 && (
-      <div className="bg-[#FDE047] border-2 border-[#000000] p-4 rounded-lg">
+      <div className="bg-[#EDF4EC] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          🔑 Key Points
+          <CheckCircle size={18} /> Key Points
         </h4>
         <ul className="space-y-2 text-sm">
           {data.key_points.map((point, idx) => (
@@ -183,11 +210,13 @@ const ContentExplanationResponse = ({ data }) => (
     {data.examples && data.examples.length > 0 && (
       <div className="bg-[#D4F1C5] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
-          💡 Examples
+          <Sparkles size={18} /> Examples
         </h4>
         <ul className="space-y-2 text-sm">
           {data.examples.map((example, idx) => (
-            <li key={idx} className="text-[#000000]">{example}</li>
+            <li key={idx} className="text-[#000000]">
+              {example}
+            </li>
           ))}
         </ul>
       </div>
@@ -196,7 +225,7 @@ const ContentExplanationResponse = ({ data }) => (
     {data.sources && data.sources.length > 0 && (
       <div className="bg-[#E0EEEF] border-2 border-[#000000] p-4 rounded-lg">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2 text-xs">
-          📚 NCERT Sources
+          <BookOpen size={18} /> NCERT Sources
         </h4>
         <div className="flex flex-wrap gap-2">
           {data.sources.map((source, idx) => (
@@ -223,8 +252,8 @@ const TeacherMotivationResponse = ({ data }) => (
   <div className="space-y-4">
     {/* Title */}
     <div className="bg-gradient-to-r from-[#E8D5FF] to-[#DDD6FE] border-2 border-[#000000] p-6 rounded-lg shadow-[4px_4px_0px_0px_#000000]">
-      <h3 className="text-2xl font-bold text-[#000000] mb-3">
-        💜 {data.motivation_title}
+      <h3 className="text-2xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+        {data.motivation_title}
       </h3>
       <p className="text-base text-[#000000] leading-relaxed italic">
         {data.acknowledgment}
@@ -235,11 +264,14 @@ const TeacherMotivationResponse = ({ data }) => (
     {data.immediate_tips && data.immediate_tips.length > 0 && (
       <div className="bg-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          ⚡ Immediate Tips (Use Today!)
+          <Rocket size={20} /> Immediate Tips (Use Today!)
         </h4>
         <div className="space-y-3">
           {data.immediate_tips.map((tip, idx) => (
-            <div key={idx} className="flex gap-3 bg-white border-2 border-[#000000] p-3 rounded">
+            <div
+              key={idx}
+              className="flex gap-3 bg-white border-2 border-[#000000] p-3 rounded"
+            >
               <span className="flex-shrink-0 w-7 h-7 bg-[#FDE047] border-2 border-[#000000] rounded-full flex items-center justify-center text-sm font-bold">
                 {idx + 1}
               </span>
@@ -254,7 +286,7 @@ const TeacherMotivationResponse = ({ data }) => (
     {data.long_term_strategies && data.long_term_strategies.length > 0 && (
       <div className="bg-[#D4F1C5] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          🎯 Long-term Strategies
+          <Target size={20} /> Long-term Strategies
         </h4>
         <ul className="space-y-2">
           {data.long_term_strategies.map((strategy, idx) => (
@@ -271,7 +303,7 @@ const TeacherMotivationResponse = ({ data }) => (
     {data.inspiration && (
       <div className="bg-gradient-to-r from-[#F99DA8] to-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          ✨ Remember This
+          <Sparkles size={20} /> Remember This
         </h4>
         <p className="text-base text-[#000000] leading-relaxed font-medium">
           {data.inspiration}
@@ -283,11 +315,14 @@ const TeacherMotivationResponse = ({ data }) => (
     {data.self_care_practices && data.self_care_practices.length > 0 && (
       <div className="bg-[#E0EEEF] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          🧘 Self-care Practices
+          <Flower2 size={20} /> Self-care Practices
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {data.self_care_practices.map((practice, idx) => (
-            <div key={idx} className="flex items-start gap-2 bg-white border border-[#000000] p-3 rounded">
+            <div
+              key={idx}
+              className="flex items-start gap-2 bg-white border border-[#000000] p-3 rounded"
+            >
               <span className="text-[#000000]">•</span>
               <span className="text-sm text-[#000000]">{practice}</span>
             </div>
@@ -300,7 +335,7 @@ const TeacherMotivationResponse = ({ data }) => (
     {data.perspective_shifts && data.perspective_shifts.length > 0 && (
       <div className="bg-white border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          🔄 Perspective Shifts
+          <RotateCcw size={20} /> Perspective Shifts
         </h4>
         <ul className="space-y-2">
           {data.perspective_shifts.map((shift, idx) => (
@@ -321,7 +356,7 @@ const CrisisHandlerResponse = ({ data }) => (
     {data.crisis_type && (
       <div className="bg-[#F99DA8] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h3 className="text-xl font-bold text-[#000000] mb-2 flex items-center gap-2">
-          🚨 Crisis: {data.crisis_type}
+          <Info size={20} /> Crisis: {data.crisis_type}
         </h3>
         {data.severity && (
           <span className="inline-block bg-white border-2 border-[#000000] px-3 py-1 rounded text-sm font-bold">
@@ -335,7 +370,7 @@ const CrisisHandlerResponse = ({ data }) => (
     {data.immediate_actions && data.immediate_actions.length > 0 && (
       <div className="bg-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          ⚡ Immediate Actions
+          <Zap size={20} /> Immediate Actions
         </h4>
         <ol className="space-y-3">
           {data.immediate_actions.map((action, idx) => (
@@ -343,7 +378,9 @@ const CrisisHandlerResponse = ({ data }) => (
               <span className="flex-shrink-0 w-7 h-7 bg-[#F99DA8] border-2 border-[#000000] rounded-full flex items-center justify-center text-sm font-bold">
                 {idx + 1}
               </span>
-              <span className="text-sm text-[#000000] flex-1 pt-0.5">{action}</span>
+              <span className="text-sm text-[#000000] flex-1 pt-0.5">
+                {action}
+              </span>
             </li>
           ))}
         </ol>
@@ -351,27 +388,28 @@ const CrisisHandlerResponse = ({ data }) => (
     )}
 
     {/* De-escalation Techniques */}
-    {data.deescalation_techniques && data.deescalation_techniques.length > 0 && (
-      <div className="bg-[#D4F1C5] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
-        <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          🕊️ De-escalation Techniques
-        </h4>
-        <ul className="space-y-2">
-          {data.deescalation_techniques.map((technique, idx) => (
-            <li key={idx} className="flex items-start gap-2">
-              <span className="text-[#000000]">•</span>
-              <span className="text-sm text-[#000000]">{technique}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+    {data.deescalation_techniques &&
+      data.deescalation_techniques.length > 0 && (
+        <div className="bg-[#D4F1C5] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+          <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+            <Handshake size={20} /> De-escalation Techniques
+          </h4>
+          <ul className="space-y-2">
+            {data.deescalation_techniques.map((technique, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <span className="text-[#000000]">•</span>
+                <span className="text-sm text-[#000000]">{technique}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
     {/* Prevention Strategies */}
     {data.prevention_strategies && data.prevention_strategies.length > 0 && (
       <div className="bg-[#E8D5FF] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          🛡️ Prevention Strategies
+          <ShieldCheck size={20} /> Prevention Strategies
         </h4>
         <ul className="space-y-2">
           {data.prevention_strategies.map((strategy, idx) => (
@@ -388,7 +426,7 @@ const CrisisHandlerResponse = ({ data }) => (
     {data.followup_actions && data.followup_actions.length > 0 && (
       <div className="bg-white border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
-          📋 Follow-up Actions
+          <Check size={20} /> Follow-up Actions
         </h4>
         <ul className="space-y-2">
           {data.followup_actions.map((action, idx) => (
@@ -408,35 +446,35 @@ const CrisisHandlerResponse = ({ data }) => (
  */
 const ResponseFormatter = ({ toolUsed, result, text }) => {
   // If no structured result, show plain text
-  if (!result || typeof result !== 'object') {
+  if (!result || typeof result !== "object") {
     return <DefaultResponse text={text} />;
   }
 
   // Format based on tool type
   switch (toolUsed) {
-    case 'activity_generator':
+    case "activity_generator":
       return <ActivityResponse data={result} />;
-    
-    case 'expert_teacher':
+
+    case "expert_teacher":
       return <ExpertTeacherResponse data={result} />;
-    
-    case 'content_explainer':
+
+    case "content_explainer":
       return <ContentExplanationResponse data={result} />;
-    
-    case 'teacher_motivation':
+
+    case "teacher_motivation":
       return <TeacherMotivationResponse data={result} />;
-    
-    case 'crisis_handler':
+
+    case "crisis_handler":
       // Crisis handler returns activity-like structure
       if (result.activity_name) {
         return <ActivityResponse data={result} />;
       }
       return <CrisisHandlerResponse data={result} />;
-    
-    case 'classroom_guidance':
+
+    case "classroom_guidance":
       // Classroom guidance can use expert teacher format
       return <ExpertTeacherResponse data={result} />;
-    
+
     default:
       return <DefaultResponse text={text} />;
   }

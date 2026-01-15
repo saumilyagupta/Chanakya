@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ActiveListeningMode from "./pages/ActiveListeningMode";
 import Dashboard from "./pages/Dashboard";
 import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
@@ -27,6 +28,7 @@ function App() {
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/alm" element={<ActiveListeningMode />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/chat" element={<ChatInterface />} />
               <Route path="/faqs" element={<FAQs />} />
