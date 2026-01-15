@@ -1,0 +1,50 @@
+.star-rating-component {
+  display: inline-flex;
+  gap: var(--space-xs);
+}
+
+.star-rating-component.readonly {
+  pointer-events: none;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-secondary-light);
+  transition: all var(--transition-fast);
+}
+
+.star-btn:not(:disabled):hover {
+  transform: scale(1.15);
+}
+
+.star-btn.filled {
+  color: var(--color-accent);
+}
+
+.star-btn svg {
+  display: block;
+}
+
+/* Size variants */
+.star-rating-component.small .star-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.star-rating-component.medium .star-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+.star-rating-component.large .star-btn svg {
+  width: 48px;
+  height: 48px;
+}
+
+.star-rating-component.xlarge .star-btn svg {
+  width: 64px;
+  height: 64px;
+}

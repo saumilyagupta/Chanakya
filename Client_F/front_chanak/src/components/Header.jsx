@@ -45,13 +45,13 @@ function Header() {
         <div className="flex gap-2 md:gap-4 justify-end pr-0">
           <Link
             to="/signup"
-            className="px-4 md:px-8 py-2 md:py-3 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+            className="px-3 md:px-6 py-1.5 md:py-2 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
           >
             Sign-Up
           </Link>
           <Link
             to="/login"
-            className="px-4 md:px-8 py-2 md:py-3 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+            className="px-3 md:px-6 py-1.5 md:py-2 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
           >
             Login
           </Link>

@@ -1,0 +1,89 @@
+.student-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-secondary-light);
+  transition: all var(--transition-fast);
+}
+
+.student-card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.student-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-name {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.student-name:hover {
+  color: var(--color-primary);
+}
+
+.student-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.student-confidence {
+  margin-top: var(--space-xs);
+}
+
+.student-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.student-actions .btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--color-secondary-light);
+  color: var(--color-text-muted);
+}
+
+.student-actions .btn-icon:hover {
+  background: var(--color-secondary-light);
+  color: var(--color-text-primary);
+}
+
+.student-actions .btn-icon svg {
+  width: 18px;
+  height: 18px;
+}

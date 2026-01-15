@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import ChatInterface from "./pages/ChatInterface";
+import ModulePage from "./pages/ModulePage";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
               <Route path="/alm" element={<ActiveListeningMode />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/chat" element={<ChatInterface />} />
+              <Route path="/module" element={<ModulePage />} />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />

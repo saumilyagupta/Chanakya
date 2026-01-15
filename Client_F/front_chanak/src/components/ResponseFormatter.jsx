@@ -26,13 +26,40 @@ import {
   Check,
 } from "lucide-react";
 
+// Utility function to parse text with bold formatting (**text**)
+const parseBoldText = (text) => {
+  if (!text) return text;
+  
+  const parts = [];
+  let lastIndex = 0;
+  const regex = /\*\*(.*?)\*\*/g;
+  let match;
+  
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    // Add bold text
+    parts.push(<strong key={match.index} className="font-bold">{match[1]}</strong>);
+    lastIndex = regex.lastIndex;
+  }
+  
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
+};
+
 const ActivityResponse = ({ data }) => (
   <div className="space-y-4">
     <div className="bg-[#EDF4EC] border-2 border-[#000000] p-4 rounded-lg">
       <h3 className="text-xl font-bold text-[#000000] mb-2 flex items-center gap-2">
         <ClipboardList size={18} /> {data.activity_name}
       </h3>
-      <p className="text-sm text-[#000000]">{data.description}</p>
+      <p className="text-sm text-[#000000]">{parseBoldText(data.description)}</p>
       <div className="mt-2 flex items-center gap-2 text-xs text-[#000000]">
         <span className="bg-white border border-[#000000] px-2 py-1 rounded">
           Duration: {data.duration_minutes} minutes
@@ -48,7 +75,7 @@ const ActivityResponse = ({ data }) => (
         {data.materials_needed?.map((item, idx) => (
           <li key={idx} className="flex items-start gap-2">
             <span className="text-[#000000]">•</span>
-            <span className="text-[#000000]">{item}</span>
+            <span className="text-[#000000]">{parseBoldText(item)}</span>
           </li>
         ))}
       </ul>
@@ -58,27 +85,27 @@ const ActivityResponse = ({ data }) => (
       <h4 className="font-bold text-[#000000] mb-3 flex items-center gap-2">
         <List size={18} /> Steps
       </h4>
-      <ol className="space-y-3">
+      <div className="space-y-3">
         {data.steps?.map((step, idx) => (
-          <li key={idx} className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-[#DDD6FE] border-2 border-[#000000] rounded-full flex items-center justify-center text-xs font-bold">
+          <div key={idx} className="flex gap-3 bg-white border-2 border-[#000000] p-3 rounded">
+            <span className="flex-shrink-0 w-6 h-6 bg-[#D4F1C5] border-2 border-[#000000] rounded-full flex items-center justify-center text-xs font-bold">
               {idx + 1}
             </span>
-            <span className="text-sm text-[#000000] flex-1 pt-0.5">{step}</span>
-          </li>
+            <span className="text-sm text-[#000000] flex-1 pt-0.5">{parseBoldText(step)}</span>
+          </div>
         ))}
-      </ol>
+      </div>
     </div>
 
-    <div className="bg-[#D4F1C5] border-2 border-[#000000] p-4 rounded-lg">
+    <div className="bg-[#FDE047] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
       <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
         <BookOpen size={18} /> Learning Outcome
       </h4>
-      <p className="text-sm text-[#000000]">{data.learning_outcome}</p>
+      <p className="text-sm text-[#000000]">{parseBoldText(data.learning_outcome)}</p>
     </div>
 
     {data.tips && data.tips.length > 0 && (
-      <div className="bg-[#E8D5FF] border-2 border-[#000000] p-4 rounded-lg">
+      <div className="bg-gradient-to-r from-[#E8D5FF] to-[#DDD6FE] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
         <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2">
           <Lightbulb size={18} /> Tips
         </h4>
@@ -86,7 +113,7 @@ const ActivityResponse = ({ data }) => (
           {data.tips.map((tip, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">•</span>
-              <span className="text-[#000000]">{tip}</span>
+              <span className="text-[#000000]">{parseBoldText(tip)}</span>
             </li>
           ))}
         </ul>
@@ -99,7 +126,7 @@ const ExpertTeacherResponse = ({ data }) => (
   <div className="space-y-4">
     <div className="bg-white border-2 border-[#000000] p-4 rounded-lg">
       <p className="text-sm text-[#000000] leading-relaxed whitespace-pre-wrap">
-        {data.explanation}
+        {parseBoldText(data.explanation)}
       </p>
     </div>
 
@@ -112,7 +139,7 @@ const ExpertTeacherResponse = ({ data }) => (
           {data.key_points.map((point, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">•</span>
-              <span className="text-[#000000]">{point}</span>
+              <span className="text-[#000000]">{parseBoldText(point)}</span>
             </li>
           ))}
         </ul>
@@ -143,7 +170,7 @@ const ExpertTeacherResponse = ({ data }) => (
           {data.teaching_tips.map((tip, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">•</span>
-              <span className="text-[#000000]">{tip}</span>
+              <span className="text-[#000000]">{parseBoldText(tip)}</span>
             </li>
           ))}
         </ul>
@@ -159,7 +186,7 @@ const ExpertTeacherResponse = ({ data }) => (
           {data.common_misconceptions.map((misconception, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">•</span>
-              <span className="text-[#000000]">{misconception}</span>
+              <span className="text-[#000000]">{parseBoldText(misconception)}</span>
             </li>
           ))}
         </ul>
@@ -187,7 +214,7 @@ const ContentExplanationResponse = ({ data }) => (
   <div className="space-y-4">
     <div className="bg-white border-2 border-[#000000] p-4 rounded-lg">
       <p className="text-sm text-[#000000] leading-relaxed whitespace-pre-wrap">
-        {data.explanation}
+        {parseBoldText(data.explanation)}
       </p>
     </div>
 
@@ -200,7 +227,7 @@ const ContentExplanationResponse = ({ data }) => (
           {data.key_points.map((point, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">•</span>
-              <span className="text-[#000000]">{point}</span>
+              <span className="text-[#000000]">{parseBoldText(point)}</span>
             </li>
           ))}
         </ul>
@@ -215,7 +242,7 @@ const ContentExplanationResponse = ({ data }) => (
         <ul className="space-y-2 text-sm">
           {data.examples.map((example, idx) => (
             <li key={idx} className="text-[#000000]">
-              {example}
+              {parseBoldText(example)}
             </li>
           ))}
         </ul>
@@ -244,7 +271,7 @@ const ContentExplanationResponse = ({ data }) => (
 
 const DefaultResponse = ({ text }) => (
   <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-    {text}
+    {parseBoldText(text)}
   </p>
 );
 
@@ -256,7 +283,7 @@ const TeacherMotivationResponse = ({ data }) => (
         {data.motivation_title}
       </h3>
       <p className="text-base text-[#000000] leading-relaxed italic">
-        {data.acknowledgment}
+        {parseBoldText(data.acknowledgment)}
       </p>
     </div>
 
@@ -275,7 +302,7 @@ const TeacherMotivationResponse = ({ data }) => (
               <span className="flex-shrink-0 w-7 h-7 bg-[#FDE047] border-2 border-[#000000] rounded-full flex items-center justify-center text-sm font-bold">
                 {idx + 1}
               </span>
-              <p className="text-sm text-[#000000] flex-1 pt-0.5">{tip}</p>
+              <p className="text-sm text-[#000000] flex-1 pt-0.5">{parseBoldText(tip)}</p>
             </div>
           ))}
         </div>
@@ -292,7 +319,7 @@ const TeacherMotivationResponse = ({ data }) => (
           {data.long_term_strategies.map((strategy, idx) => (
             <li key={idx} className="flex items-start gap-3">
               <span className="text-[#000000] text-lg">✓</span>
-              <span className="text-sm text-[#000000] flex-1">{strategy}</span>
+              <span className="text-sm text-[#000000] flex-1">{parseBoldText(strategy)}</span>
             </li>
           ))}
         </ul>
@@ -306,7 +333,7 @@ const TeacherMotivationResponse = ({ data }) => (
           <Sparkles size={20} /> Remember This
         </h4>
         <p className="text-base text-[#000000] leading-relaxed font-medium">
-          {data.inspiration}
+          {parseBoldText(data.inspiration)}
         </p>
       </div>
     )}
@@ -324,7 +351,7 @@ const TeacherMotivationResponse = ({ data }) => (
               className="flex items-start gap-2 bg-white border border-[#000000] p-3 rounded"
             >
               <span className="text-[#000000]">•</span>
-              <span className="text-sm text-[#000000]">{practice}</span>
+              <span className="text-sm text-[#000000]">{parseBoldText(practice)}</span>
             </div>
           ))}
         </div>
@@ -341,7 +368,7 @@ const TeacherMotivationResponse = ({ data }) => (
           {data.perspective_shifts.map((shift, idx) => (
             <li key={idx} className="flex items-start gap-3">
               <span className="text-[#000000] text-lg">→</span>
-              <span className="text-sm text-[#000000] flex-1">{shift}</span>
+              <span className="text-sm text-[#000000] flex-1">{parseBoldText(shift)}</span>
             </li>
           ))}
         </ul>
@@ -398,7 +425,7 @@ const CrisisHandlerResponse = ({ data }) => (
             {data.deescalation_techniques.map((technique, idx) => (
               <li key={idx} className="flex items-start gap-2">
                 <span className="text-[#000000]">•</span>
-                <span className="text-sm text-[#000000]">{technique}</span>
+                <span className="text-sm text-[#000000]">{parseBoldText(technique)}</span>
               </li>
             ))}
           </ul>
@@ -415,7 +442,7 @@ const CrisisHandlerResponse = ({ data }) => (
           {data.prevention_strategies.map((strategy, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">✓</span>
-              <span className="text-sm text-[#000000]">{strategy}</span>
+              <span className="text-sm text-[#000000]">{parseBoldText(strategy)}</span>
             </li>
           ))}
         </ul>
@@ -432,7 +459,7 @@ const CrisisHandlerResponse = ({ data }) => (
           {data.followup_actions.map((action, idx) => (
             <li key={idx} className="flex items-start gap-2">
               <span className="text-[#000000]">→</span>
-              <span className="text-sm text-[#000000]">{action}</span>
+              <span className="text-sm text-[#000000]">{parseBoldText(action)}</span>
             </li>
           ))}
         </ul>
