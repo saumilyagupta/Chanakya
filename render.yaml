@@ -9,12 +9,11 @@ services:
     buildCommand: "cd Server && pip install -r requirements.txt"
     startCommand: "cd Server/Web_server && uvicorn main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /health
+    pythonVersion: "3.11.9"
     envVars:
-      # Python Version
-      - key: PYTHON_VERSION
-        value: "3.11"
-      
-      # Required: Google Gemini API
+      # Environment
+      - key: ENV
+        value: "production"
       - key: GEMINI_API_KEY
         sync: false
       
