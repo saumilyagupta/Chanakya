@@ -86,6 +86,19 @@ class StudentResponse(Base):
     question = relationship("Question", back_populates="responses")
 
 
+class ClassReflection(Base):
+    """Stores post-class reflection sessions with AI-generated feedback."""
+    __tablename__ = "class_reflections"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    topic = Column(String(200), nullable=False)
+    subject = Column(String(100), nullable=False)
+    class_level = Column(String(50), nullable=False)  # e.g., "Class 6", "Class 10"
+    transcript = Column(Text, nullable=False)
+    feedback_json = Column(JSON, nullable=True)  # Stores the AI-generated feedback
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 def get_db():
     db = SessionLocal()
     try:

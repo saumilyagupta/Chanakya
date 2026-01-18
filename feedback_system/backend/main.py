@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
-from routers import classes, students, questions, sessions, analytics
+from routers import classes, students, questions, sessions, analytics, reflection
 
 app = FastAPI(
     title="Sahayak Pro API",
@@ -24,6 +24,7 @@ app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(questions.router, prefix="/api/questions", tags=["Questions"])
 app.include_router(sessions.router, prefix="/api/sessions", tags=["Sessions"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(reflection.router, prefix="/api/reflection", tags=["Reflection"])
 
 
 @app.on_event("startup")
