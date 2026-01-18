@@ -28,7 +28,7 @@ async def test_complete_flow():
     # Get API key
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
-        print("❌ Error: Please set GOOGLE_API_KEY or GEMINI_API_KEY environment variable")
+        print("❌ Error: Please set GEMINI_API_KEYor GEMINI_API_KEY environment variable")
         return
     
     print("🚀 Initializing Chanakya System...")

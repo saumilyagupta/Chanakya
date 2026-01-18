@@ -18,7 +18,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Add auth token if available
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,7 +35,8 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized - redirect to login
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -48,10 +49,8 @@ apiClient.interceptors.response.use(
 export const queryOrchestrator = async (query, context = {}) => {
   const response = await apiClient.post('/api/query/query', {
     query,
-    context: {
-      session_id: `session_${Date.now()}`,
-      ...context,
-    },
+    session_id: context.session_id || `session_${Date.now()}`,
+    context: context,
   });
   return response.data;
 };
@@ -94,7 +93,7 @@ export const signup = async (userData) => {
 export const login = async (credentials) => {
   const response = await apiClient.post('/api/auth/login', credentials);
   if (response.data.token) {
-    localStorage.setItem('auth_token', response.data.token);
+    localStorage.setItem('access_token', response.data.token);
   }
   return response.data;
 };
@@ -104,7 +103,8 @@ export const login = async (credentials) => {
  */
 export const logout = async () => {
   const response = await apiClient.post('/api/auth/logout');
-  localStorage.removeItem('auth_token');
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('user');
   return response.data;
 };
 
@@ -112,15 +112,15 @@ export const logout = async () => {
  * Get user profile
  */
 export const getUserProfile = async () => {
-  const response = await apiClient.get('/api/users/profile');
+  const response = await apiClient.get('/api/users/me');
   return response.data;
 };
 
 /**
- * Chat History - Get recent sessions
+ * Chat History - Get recent sessions for authenticated user
  */
 export const getChatHistory = async (limit = 20) => {
-  const response = await apiClient.get(`/api/query/history?limit=${limit}`);
+  const response = await apiClient.get(`/api/chat/history?limit=${limit}`);
   return response.data;
 };
 
@@ -128,7 +128,7 @@ export const getChatHistory = async (limit = 20) => {
  * Chat History - Get specific session messages
  */
 export const getSessionMessages = async (sessionId) => {
-  const response = await apiClient.get(`/api/query/history/${sessionId}`);
+  const response = await apiClient.get(`/api/chat/session/${sessionId}/messages`);
   return response.data;
 };
 
@@ -136,7 +136,7 @@ export const getSessionMessages = async (sessionId) => {
  * Chat History - Delete a session
  */
 export const deleteSession = async (sessionId) => {
-  const response = await apiClient.delete(`/api/query/history/${sessionId}`);
+  const response = await apiClient.delete(`/api/chat/session/${sessionId}`);
   return response.data;
 };
 

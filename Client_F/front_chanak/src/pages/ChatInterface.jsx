@@ -86,62 +86,29 @@ function ChatInterface() {
             text: msg.content,
           };
 
-          // Parse metadata if it exists
-          if (msg.metadata) {
+          // For assistant messages, reconstruct the full data structure from metadata
+          if (msg.role === "assistant" && msg.metadata) {
             try {
               const metadata =
                 typeof msg.metadata === "string"
                   ? JSON.parse(msg.metadata)
                   : msg.metadata;
 
-              // Check if metadata has actual content (not just empty object)
-              const hasMetadata = metadata && Object.keys(metadata).length > 0;
-
-              console.log(
-                "Message metadata:",
-                metadata,
-                "Has content:",
-                hasMetadata
-              ); // Debug log
-
-              // For bot messages with metadata, reconstruct the data structure
-              if (msg.role === "assistant" && hasMetadata && metadata.result) {
+              // If we have the full result data in metadata, use it
+              if (metadata.result) {
                 baseMessage.data = {
                   success: true,
-                  tool_used: metadata.tool_used,
+                  tool_used: msg.tool_used || metadata.tool_used,
                   reasoning: metadata.reasoning,
                   result: metadata.result,
-                  confidence: metadata.confidence,
+                  confidence: msg.confidence || metadata.confidence,
                   timestamp: metadata.timestamp,
                 };
-                baseMessage.tool_used = metadata.tool_used;
-                baseMessage.confidence = metadata.confidence;
-
-                // Extract text for fallback display
-                if (metadata.result.explanation) {
-                  baseMessage.text = metadata.result.explanation;
-                } else if (metadata.result.activity_name) {
-                  baseMessage.text = metadata.result.description;
-                } else if (metadata.result.motivation_title) {
-                  baseMessage.text = metadata.result.acknowledgment;
-                }
-
-                console.log(
-                  "Formatted bot message with metadata:",
-                  baseMessage
-                ); // Debug log
-              } else if (msg.role === "assistant" && !hasMetadata) {
-                // Old message without metadata - show informative message
-                baseMessage.text =
-                  "📜 This is an older conversation. For better formatted responses with activities and detailed breakdowns, please start a new chat!";
-                console.log("Old message without metadata"); // Debug log
+                baseMessage.tool_used = msg.tool_used || metadata.tool_used;
+                baseMessage.confidence = msg.confidence || metadata.confidence;
               }
             } catch (error) {
-              console.error(
-                "Error parsing message metadata:",
-                error,
-                msg.metadata
-              );
+              console.error("Error parsing message metadata:", error);
             }
           }
 
@@ -642,7 +609,7 @@ function ChatInterface() {
                 </div>
               </div>
             ) : (
-              <div className="max-w-3xl mx-auto space-y-8 pb-4">
+              <div className="max-w-4xl mx-auto space-y-8 pb-4">
                 {messages.map((message) => (
                   <div key={message.id} className="w-full">
                     {message.from === "teacher" ? (

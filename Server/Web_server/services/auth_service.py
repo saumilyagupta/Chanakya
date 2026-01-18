@@ -49,11 +49,11 @@ class AuthService:
         new_user = User(
             name=user_data.name,
             email=user_data.email,
-            password=hashed_pwd,
-            classesHandled=user_data.classesHandled,
+            hashed_password=hashed_pwd,
+            classes_handled=user_data.classesHandled,
             subjects=user_data.subjects,
-            schoolLocation=user_data.schoolLocation,
-            preferredLanguage=user_data.preferredLanguage
+            school_location=user_data.schoolLocation,
+            preferred_language=user_data.preferredLanguage
         )
         
         try:
@@ -63,10 +63,10 @@ class AuthService:
             print(f"   Name: {new_user.name}")
             print(f"   Email: {new_user.email}")
             print(f"   ID: {new_user.id}")
-            print(f"   Classes: {new_user.classesHandled}")
+            print(f"   Classes: {new_user.classes_handled}")
             print(f"   Subjects: {new_user.subjects}")
-            print(f"   Location: {new_user.schoolLocation}")
-            print(f"   Languages: {new_user.preferredLanguage}\n")
+            print(f"   Location: {new_user.school_location}")
+            print(f"   Languages: {new_user.preferred_language}\n")
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -81,10 +81,10 @@ class AuthService:
             id=str(new_user.id),
             name=new_user.name,
             email=new_user.email,
-            classesHandled=new_user.classesHandled,
+            classesHandled=new_user.classes_handled,
             subjects=new_user.subjects,
-            schoolLocation=new_user.schoolLocation,
-            preferredLanguage=(new_user.preferredLanguage if isinstance(new_user.preferredLanguage, list) else ([new_user.preferredLanguage] if new_user.preferredLanguage else []))
+            schoolLocation=new_user.school_location,
+            preferredLanguage=(new_user.preferred_language if isinstance(new_user.preferred_language, list) else ([new_user.preferred_language] if new_user.preferred_language else []))
         )
         
         return user_response, token
@@ -113,7 +113,7 @@ class AuthService:
             )
         
         # Verify password
-        if not verify_password(credentials.password[:72], user.password):
+        if not verify_password(credentials.password[:72], user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
@@ -135,10 +135,10 @@ class AuthService:
             id=str(user.id),
             name=user.name,
             email=user.email,
-            classesHandled=user.classesHandled,
+            classesHandled=user.classes_handled,
             subjects=user.subjects,
-            schoolLocation=user.schoolLocation,
-            preferredLanguage=(user.preferredLanguage if isinstance(user.preferredLanguage, list) else ([user.preferredLanguage] if user.preferredLanguage else []))
+            schoolLocation=user.school_location,
+            preferredLanguage=(user.preferred_language if isinstance(user.preferred_language, list) else ([user.preferred_language] if user.preferred_language else []))
         )
         
         return user_response, token

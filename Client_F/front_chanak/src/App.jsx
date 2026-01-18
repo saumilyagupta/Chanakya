@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
@@ -15,6 +16,14 @@ import QuestionSetup from "./pages/QuestionSetup";
 import LiveSession from "./pages/LiveSession";
 import ClassSummary from "./pages/ClassSummary";
 import NotFound from "./pages/NotFound";
+
+// Dashboard imports
+import DashboardLayout from "./components/dashboard/DashboardLayout";
+import ColdStartSetup from "./pages/dashboard/ColdStartSetup";
+import QuestionSetup from "./pages/dashboard/QuestionSetup";
+import LiveSession from "./pages/dashboard/LiveSession";
+import ClassSummary from "./pages/dashboard/ClassSummary";
+import StudentProfile from "./pages/dashboard/StudentProfile";
 
 function App() {
   return (
@@ -32,8 +41,25 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/alm" element={<ActiveListeningMode />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/chat" element={<ChatInterface />} />
+              
+              {/* Dashboard Routes */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<ColdStartSetup />} />
+                <Route path="setup" element={<ColdStartSetup />} />
+                <Route path="questions/:classId" element={<QuestionSetup />} />
+                <Route path="session/:sessionId" element={<LiveSession />} />
+                <Route path="summary/:sessionId" element={<ClassSummary />} />
+                <Route path="student/:studentId" element={<StudentProfile />} />
+              </Route>
+              
+              <Route 
+                path="/chat" 
+                element={
+                  <ProtectedRoute>
+                    <ChatInterface />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/module" element={<ModulePage />} />
               <Route
                 path="/personalized-support"

@@ -13,8 +13,15 @@ import logging
 import os
 import uuid
 from typing import List, Optional, Dict, Any, Tuple
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+
+# Load environment variables from .env file in Server directory
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_server_dir = os.path.dirname(os.path.dirname(_current_dir))
+_env_path = os.path.join(_server_dir, '.env')
+load_dotenv(_env_path)
 
 from ..models.schemas import (
     Lesson,
@@ -209,12 +216,17 @@ class AssignmentGenerator:
         Initialize the assignment generator.
         
         Args:
-            api_key: Google AI API key. If None, reads from GOOGLE_API_KEY env var.
+            api_key: Google AI API key. If None, reads from GEMINI_API_KEYenv var.
             enable_validation: Whether to enable question answerability validation.
         """
-        self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         if not self.api_key:
-            raise ValueError("Google API key is required. Set GOOGLE_API_KEY environment variable.")
+            # Debug: Check if env var exists
+            all_env_keys = [k for k in os.environ.keys() if 'GEMINI' in k or 'API' in k]
+            raise ValueError(
+                f"Google API key is required. Set GEMINI_API_KEY environment variable. "
+                f"Found environment keys with 'GEMINI' or 'API': {all_env_keys}"
+            )
         
         self.client = genai.Client(api_key=self.api_key)
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
@@ -493,15 +505,46 @@ Make sure the question is different from typical questions and tests {difficulty
             
             # Parse response
             text = self._clean_json_response(response.text)
-            parsed = json.loads(text)
+            try:
+                parsed = json.loads(text)
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse MCQ JSON response: {e}")
+                logger.error(f"Response text: {text[:500]}")
+                # Use fallback
+                parsed = {}
             
-            # Create MCQ options
+            # Log what we received for debugging
+            logger.info(f"MCQ generation response keys: {list(parsed.keys())}")
+            logger.info(f"Number of options received: {len(parsed.get('options', []))}")
+            
+            # Create MCQ options with validation
             options = []
-            for opt in parsed.get("options", []):
+            raw_options = parsed.get("options", [])
+            
+            if not raw_options:
+                logger.warning("No options in parsed response, creating fallback options")
+            
+            for i, opt in enumerate(raw_options):
+                if not isinstance(opt, dict):
+                    logger.warning(f"Option {i} is not a dict: {opt}")
+                    continue
+                    
+                option_text = opt.get("option_text", f"Option {chr(65 + i)}")
+                is_correct = opt.get("is_correct", False)
+                
+                # Ensure is_correct is boolean
+                if isinstance(is_correct, str):
+                    is_correct = is_correct.lower() in ['true', '1', 'yes']
+                
                 options.append(MCQOption(
-                    option_text=opt.get("option_text", "Option"),
-                    is_correct=opt.get("is_correct", False)
+                    option_text=option_text,
+                    is_correct=bool(is_correct)
                 ))
+            
+            logger.info(f"Created {len(options)} MCQOption objects")
+            if options:
+                correct_count = sum(1 for opt in options if opt.is_correct)
+                logger.info(f"Options with is_correct=True: {correct_count}")
             
             # Ensure exactly 4 options with 1 correct
             options = self._ensure_valid_mcq_options(options)
@@ -855,11 +898,20 @@ The answer should be 1-2 paragraphs with a detailed marking scheme."""
     
     def _ensure_valid_mcq_options(self, options: List[MCQOption]) -> List[MCQOption]:
         """Ensure MCQ has exactly 4 options with exactly 1 correct."""
+        # If no options at all, create 4 placeholder options with first one correct
+        if not options:
+            return [
+                MCQOption(option_text="Option A", is_correct=True),
+                MCQOption(option_text="Option B", is_correct=False),
+                MCQOption(option_text="Option C", is_correct=False),
+                MCQOption(option_text="Option D", is_correct=False),
+            ]
+        
         # Count correct options
         correct_count = sum(1 for opt in options if opt.is_correct)
         
         # If no correct option, make the first one correct
-        if correct_count == 0 and options:
+        if correct_count == 0:
             options[0] = MCQOption(option_text=options[0].option_text, is_correct=True)
             correct_count = 1
         

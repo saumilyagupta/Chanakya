@@ -29,6 +29,16 @@ from module.generators.lesson_generator import LessonGenerator
 from module.generators.assignment_generator import AssignmentGenerator
 from module.exporters.export_service import ExportService
 
+# Import settings for API key
+try:
+    from config import settings
+except ImportError:
+    # Fallback for different import paths
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from config import settings
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -61,7 +71,7 @@ def get_lesson_generator() -> LessonGenerator:
     """Get or create LessonGenerator instance."""
     global _lesson_generator
     if _lesson_generator is None:
-        _lesson_generator = LessonGenerator()
+        _lesson_generator = LessonGenerator(api_key=settings.GEMINI_API_KEY)
     return _lesson_generator
 
 
@@ -69,7 +79,7 @@ def get_assignment_generator() -> AssignmentGenerator:
     """Get or create AssignmentGenerator instance."""
     global _assignment_generator
     if _assignment_generator is None:
-        _assignment_generator = AssignmentGenerator()
+        _assignment_generator = AssignmentGenerator(api_key=settings.GEMINI_API_KEY)
     return _assignment_generator
 
 

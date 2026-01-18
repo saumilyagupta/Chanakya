@@ -12,8 +12,15 @@ import time
 import logging
 import os
 from typing import List, Optional, Dict, Any, Tuple
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+
+# Load environment variables from .env file in Server directory
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_server_dir = os.path.dirname(os.path.dirname(_current_dir))
+_env_path = os.path.join(_server_dir, '.env')
+load_dotenv(_env_path)
 
 from ..models.schemas import (
     Lesson,
@@ -236,12 +243,17 @@ class LessonGenerator:
         Initialize the lesson generator.
         
         Args:
-            api_key: Google AI API key. If None, reads from GOOGLE_API_KEY env var.
+            api_key: Google AI API key. If None, reads from GEMINI_API_KEYenv var.
             enable_validation: Whether to enable hallucination validation.
         """
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
-            raise ValueError("Google API key is required. Set GOOGLE_API_KEY environment variable.")
+            # Debug: Check if env var exists
+            all_env_keys = [k for k in os.environ.keys() if 'GEMINI' in k or 'API' in k]
+            raise ValueError(
+                f"Google API key is required. Set GEMINI_API_KEY environment variable. "
+                f"Found environment keys with 'GEMINI' or 'API': {all_env_keys}"
+            )
         
         self.client = genai.Client(api_key=self.api_key)
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
