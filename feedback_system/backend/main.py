@@ -10,9 +10,15 @@ app = FastAPI(
 )
 
 # CORS middleware for React frontend
+# Allow both feedback_system frontend and Client_F frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173", 
+        "http://localhost:3000", 
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",  # Alternative Vite port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

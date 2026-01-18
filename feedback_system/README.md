@@ -34,6 +34,7 @@ cd backend
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+powershell =>>> .\venv\Scripts\Activate.ps1
 
 # Install dependencies
 pip install -r requirements.txt

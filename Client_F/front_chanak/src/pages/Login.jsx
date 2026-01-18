@@ -44,9 +44,9 @@ function Login() {
 
       toast.success("Logged in successfully!");
 
-      // Redirect to chat page after brief delay
+      // Redirect to main page after brief delay
       setTimeout(() => {
-        navigate("/chat");
+        navigate("/");
       }, 1000);
     } catch (error) {
       const errorMessage =
