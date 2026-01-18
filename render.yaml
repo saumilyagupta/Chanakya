@@ -12,7 +12,7 @@ services:
     envVars:
       # Python Version
       - key: PYTHON_VERSION
-        value: "3.11.0"
+        value: "3.11"
       
       # Required: Google Gemini API
       - key: GEMINI_API_KEY
