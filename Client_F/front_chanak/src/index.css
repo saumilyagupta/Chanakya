@@ -160,3 +160,19 @@ button:focus-visible {
 .chat-page header {
   display: none !important;
 }
+
+/* Scale in animation for popups */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
