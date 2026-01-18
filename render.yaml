@@ -1,0 +1,59 @@
+services:
+  # Chanakya Backend API
+  - type: web
+    name: chanakya-backend
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: "cd Server && pip install -r requirements.txt"
+    startCommand: "cd Server/Web_server && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      # Python Version
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      
+      # Required: Google Gemini API
+      - key: GEMINI_API_KEY
+        sync: false
+      
+      # MongoDB Configuration
+      - key: MONGODB_URL
+        sync: false
+      - key: DATABASE_NAME
+        value: "Chanakya"
+      
+      # JWT Configuration
+      - key: SECRET_KEY
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE_DAYS
+        value: "7"
+      
+      # CORS Configuration (will be updated after Vercel deployment)
+      - key: CORS_ORIGINS
+        value: "http://localhost:5173,http://localhost:3000"
+      
+      # Environment
+      - key: ENV
+        value: "production"
+      - key: DEBUG
+        value: "false"
+      
+      # Twilio Configuration (Optional)
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: TWILIO_WEBHOOK_URL
+        sync: false
+      
+      # Sarvam AI Configuration (Optional)
+      - key: SARVAM_API_KEY
+        sync: false
+      
+      # Logging
+      - key: LOG_LEVEL
+        value: "INFO"

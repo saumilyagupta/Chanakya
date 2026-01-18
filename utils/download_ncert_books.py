@@ -20,7 +20,7 @@ import re
 BASE_URL = "https://ncert.nic.in/textbook.php"
 DOWNLOAD_DELAY = 1.5  # seconds between downloads
 MAX_RETRIES = 3
-TIMEOUT = 60000  # milliseconds for Playwright operations (increased for slow connections)
+TIMEOUT = 180000  # milliseconds for Playwright operations (increased for slow connections)
 TIMEOUT_SHORT = 30000  # shorter timeout for fallback operations
 PROGRESS_FILE = "progress_state.json"
 LOG_FILE = "download_log.txt"

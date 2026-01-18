@@ -35,35 +35,25 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+Server/.env
+Web_server/.env
+
+# Sensitive configuration
+*.pem
+*.key
+*.crt
+
 # Database files
 *.db
 *.sqlite
 *.sqlite3
 
-# Logs and state
-download_log.txt
-generation_log.txt
-progress_state.json
-*.log
-
-# Node.js / Frontend
-node_modules/
-feedback_system/frontend/node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-dist/
-build/
-.next/
-out/
-.nuxt/
-.cache/
-
-# Environment variables
-.env
-.env.local
-.env.*.local
+# Exception: Keep embeddings database for deployment (if small enough)
+# !embedding/ncert_books.db
 
 # Processed/generated data
 Finaldata/

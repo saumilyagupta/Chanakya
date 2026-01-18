@@ -48,6 +48,9 @@ python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 email-validator>=2.0.0
 bcrypt==4.0.1
+
+# Twilio Integration
+twilio>=8.0.0
 # Sarvam AI
 sarvamai>=0.1.22
 python-multipart>=0.0.6

@@ -7,5 +7,6 @@ from .query import router as query_router
 from .chat import router as chat_router
 from .sarvam import router as sarvam_router
 from .module_router import router as module_router
+from .twilio import router as twilio_router
 
-__all__ = ["auth_router", "users_router", "query_router", "chat_router", "sarvam_router", "module_router"]
+__all__ = ["auth_router", "users_router", "query_router", "chat_router", "sarvam_router", "module_router", "twilio_router"]
