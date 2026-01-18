@@ -28,7 +28,7 @@ class Settings:
     # CORS Configuration
     CORS_ORIGINS: list[str] = os.getenv(
         "CORS_ORIGINS", 
-        "http://localhost:5173,http://localhost:3000"
+        "http://localhost:5173,http://localhost:3000,https://*.vercel.app"
     ).split(",")
     
     # Environment
@@ -37,5 +37,11 @@ class Settings:
     
     # Gemini API Configuration
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    
+    # Twilio Configuration
+    TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")
+    TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
+    TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "")
+    TWILIO_WEBHOOK_URL: str = os.getenv("TWILIO_WEBHOOK_URL", "")
 
 settings = Settings()

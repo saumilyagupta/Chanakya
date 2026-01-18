@@ -1,9 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  const handleChatClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      alert("please login/sign-up");
+    }
+  };
 
   return (
     <header className="bg-[#FFFFFF] border-2 border-[#000000] px-4 md:px-8 py-3 md:py-6 grid-texture">
@@ -28,16 +37,11 @@ function Header() {
             Home
           </NavLink>
           <NavLink
-            to="/faqs"
+            to="/chat"
+            onClick={handleChatClick}
             className="text-sm md:text-lg text-[#000000] no-underline hover:text-[#000000] relative transition-colors hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-[2px] hover:after:bg-[#D1D5DB] hover:after:transition-all hover:after:duration-300"
           >
-            FAQs
-          </NavLink>
-          <NavLink
-            to="/contact"
-            className="text-sm md:text-lg text-[#000000] no-underline hover:text-[#000000] relative transition-colors hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-[2px] hover:after:bg-[#D1D5DB] hover:after:transition-all hover:after:duration-300"
-          >
-            Contact
+            Chat
           </NavLink>
         </nav>
 
@@ -92,18 +96,14 @@ function Header() {
                 Home
               </NavLink>
               <NavLink
-                to="/faqs"
-                onClick={() => setIsMenuOpen(false)}
+                to="/chat"
+                onClick={(e) => {
+                  setIsMenuOpen(false);
+                  handleChatClick(e);
+                }}
                 className="text-base text-[#000000] no-underline hover:text-[#000000] py-2 px-3 border-2 border-[#000000] bg-white hover:bg-gray-100 transition-colors"
               >
-                FAQs
-              </NavLink>
-              <NavLink
-                to="/contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-base text-[#000000] no-underline hover:text-[#000000] py-2 px-3 border-2 border-[#000000] bg-white hover:bg-gray-100 transition-colors"
-              >
-                Contact
+                Chat
               </NavLink>
             </nav>
 

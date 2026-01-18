@@ -32,7 +32,7 @@ from services import orchestrator_service
 import structlog
 
 logger = structlog.get_logger(__name__)
-from routers import sarvam_router, module_router
+from routers import sarvam_router, module_router, twilio_router
 
 
 @asynccontextmanager
@@ -82,6 +82,7 @@ app.include_router(chat_router, prefix="/api/chat", tags=["Chat History"])
 #app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 app.include_router(sarvam_router, prefix="/api/sarvam", tags=["Sarvam AI"])
 app.include_router(module_router, prefix="/api/module", tags=["MODULE - Lesson Builder"])
+app.include_router(twilio_router, prefix="/api/twilio", tags=["Twilio Integration"])
 
 
 @app.get("/")

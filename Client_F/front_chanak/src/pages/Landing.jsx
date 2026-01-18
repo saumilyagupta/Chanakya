@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -225,6 +227,9 @@ const RotatingText = forwardRef((props, ref) => {
 RotatingText.displayName = "RotatingText";
 
 function Landing() {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-[#FFFFFF]">
       {/* Top Section - Two Equal Blocks */}
@@ -252,6 +257,40 @@ function Landing() {
           </p>
         </div>
       </section>
+
+      {/* Mode Selection Section - Only visible when logged in */}
+      {isAuthenticated && (
+        <section className="w-full bg-[#FCF4AC] border-2 border-[#000000] p-8 md:p-16 grid-texture">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <button
+                onClick={() => navigate("/module")}
+                className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                module mode
+              </button>
+              <button
+                onClick={() => navigate("/chat")}
+                className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                chat mode
+              </button>
+              <button
+                onClick={() => navigate("/alm")}
+                className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                active listening mode
+              </button>
+              <button
+                onClick={() => navigate("/personalized-support")}
+                className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                personalized-Q/A mode
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Bottom Section - Full Width */}
       <section className="w-full bg-[#A1D7FD] border-2 border-[#000000] p-2 md:p-4 flex flex-col md:flex-row items-center gap-4 md:gap-8 grid-texture">
