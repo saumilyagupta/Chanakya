@@ -7,7 +7,7 @@ import RatingPopup from '../../components/dashboard/RatingPopup'
 function LiveSession() {
   const { sessionId } = useParams()
   const navigate = useNavigate()
-  
+
   const [session, setSession] = useState(null)
   const [suggestion, setSuggestion] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -16,11 +16,11 @@ function LiveSession() {
   const [questionsAsked, setQuestionsAsked] = useState(0)
   const [sessionEnded, setSessionEnded] = useState(false)
   const [error, setError] = useState(null)
-  
+
   useEffect(() => {
     loadSession()
   }, [sessionId])
-  
+
   const loadSession = async () => {
     try {
       const data = await sessionsApi.get(sessionId)
@@ -37,7 +37,7 @@ function LiveSession() {
       setLoading(false)
     }
   }
-  
+
   const fetchNextSuggestion = useCallback(async () => {
     setFetchingNext(true)
     try {
@@ -55,25 +55,26 @@ function LiveSession() {
       setLoading(false)
     }
   }, [sessionId])
-  
+
   const handleAsk = () => {
     setShowRating(true)
   }
-  
+
   const handleSkip = async () => {
     if (!suggestion) return
-    
+
     try {
-      await sessionsApi.skip(sessionId, suggestion.student_id)
+      // Pass the difficulty from the suggestion
+      await sessionsApi.skip(sessionId, suggestion.student_id, suggestion.difficulty)
       fetchNextSuggestion()
     } catch (error) {
       console.error('Failed to skip:', error)
     }
   }
-  
+
   const handleRatingSubmit = async (rating) => {
     if (!suggestion) return
-    
+
     try {
       await sessionsApi.respond(sessionId, {
         student_id: suggestion.student_id,
@@ -82,7 +83,7 @@ function LiveSession() {
         difficulty_asked: suggestion.difficulty,
         skipped: false
       })
-      
+
       setQuestionsAsked(prev => prev + 1)
       setShowRating(false)
       fetchNextSuggestion()
@@ -90,10 +91,10 @@ function LiveSession() {
       console.error('Failed to submit response:', error)
     }
   }
-  
+
   const handleEndSession = async () => {
     if (!confirm('End this class session?')) return
-    
+
     try {
       await sessionsApi.end(sessionId)
       setSessionEnded(true)
@@ -102,16 +103,16 @@ function LiveSession() {
       console.error('Failed to end session:', error)
     }
   }
-  
+
   const handleViewSummary = () => {
     navigate(`/dashboard/summary/${sessionId}`)
   }
-  
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (showRating) return
-      
+
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         if (suggestion) handleAsk()
@@ -123,11 +124,11 @@ function LiveSession() {
         handleEndSession()
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [suggestion, showRating])
-  
+
   if (loading) {
     return (
       <div className="dash-loading-container">
@@ -136,7 +137,7 @@ function LiveSession() {
       </div>
     )
   }
-  
+
   if (error) {
     return (
       <div className="dash-error-container">
@@ -167,8 +168,8 @@ function LiveSession() {
             </div>
           </div>
         </div>
-        
-        <button 
+
+        <button
           className="dash-btn dash-btn-secondary"
           onClick={sessionEnded ? handleViewSummary : handleEndSession}
         >
@@ -176,46 +177,46 @@ function LiveSession() {
             <>
               View Summary
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <polyline points="9 18 15 12 9 6"/>
+                <polyline points="9 18 15 12 9 6" />
               </svg>
             </>
           ) : (
             <>
               End Session
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
               </svg>
             </>
           )}
         </button>
       </div>
-      
+
       {/* Main Content */}
       <div className="dash-session-content">
         {sessionEnded ? (
           <div className="dash-session-ended">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
             <h2>Session Complete!</h2>
             <p>You asked {questionsAsked} questions in this session.</p>
             <button className="dash-btn dash-btn-primary dash-btn-lg" onClick={handleViewSummary}>
               View Class Summary
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                <polyline points="9 18 15 12 9 6"/>
+                <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
           </div>
         ) : (
           <>
-            <SuggestionCard 
+            <SuggestionCard
               suggestion={suggestion}
               loading={fetchingNext}
               onAsk={handleAsk}
               onSkip={handleSkip}
             />
-            
+
             {/* Keyboard Shortcuts Help */}
             <div className="dash-shortcuts-help">
               <span><span className="dash-kbd">Enter</span> Ask</span>
@@ -225,10 +226,10 @@ function LiveSession() {
           </>
         )}
       </div>
-      
+
       {/* Rating Popup */}
       {showRating && suggestion && (
-        <RatingPopup 
+        <RatingPopup
           studentName={suggestion.student_name}
           difficulty={suggestion.difficulty}
           onSubmit={handleRatingSubmit}
