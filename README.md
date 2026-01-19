@@ -1,34 +1,150 @@
-# Chanakya
+# 🎓 Chanakya
 
-> Real-time classroom decision-support system for Indian primary school teachers
+> **Real-time AI-powered classroom decision-support system for Indian primary school teachers**
 
-## Overview
+Chanakya addresses the "implementation gap" in teacher training by providing just-in-time pedagogical support during live classroom moments. It combines multilingual NLP, RAG-based knowledge retrieval, and AI-powered feedback to help teachers deliver better learning outcomes.
 
-Chanakya addresses the "implementation gap" in teacher training by providing just-in-time pedagogical support during live classroom moments.
+---
 
-## NLP Layer (Simplified)
+## ✨ Key Features
 
-The NLP layer simply converts teacher utterances in **any Indian language** to clear **English understanding** using **Gemini 2.5 Flash**.
+- 🌐 **Multilingual Support** - Hindi, Bengali, Tamil, Telugu, and 12+ Indian languages
+- 🤖 **AI-Powered Assistance** - Gemini 2.5 Flash integration for intelligent responses
+- 📚 **NCERT RAG System** - Semantic search across NCERT textbooks
+- 🎙️ **Voice Support** - Speech-to-text and text-to-speech via Sarvam AI
+- 📊 **Teaching Analytics** - Real-time feedback and performance insights
+- 👨‍🏫 **Sahayak Pro** - Smart student feedback system
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Python 3.11+** | **Node.js 18+** | **MongoDB**
+- API Keys: [Google Gemini](https://aistudio.google.com/apikey), [Sarvam AI](https://www.sarvam.ai/)
+
+### 1. Clone & Setup Backend
+
+```powershell
+# Clone repository
+git clone https://github.com/Kautilya346/Chanakya.git
+cd Chanakya
+
+# Setup Python environment
+cd Server
+python -m venv venv
+.\venv\Scripts\Activate.ps1    # Windows PowerShell
+pip install -r requirements.txt
+
+# Configure environment
+copy .env.example .env
+# Edit .env with your GEMINI_API_KEY and SARVAM_API_KEY
+```
+
+### 2. Setup Frontend
+
+```powershell
+cd ..\Client_F\front_chanak
+npm install
+```
+
+Configure `Client_F/front_chanak/.env`:
+```env
+VITE_SARVAM_API_KEY=your-sarvam-key
+VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
+VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
+VITE_API_URL=http://localhost:3000
+```
+
+### 3. Run the Application
+
+**Terminal 1 - Backend (Port 3000):**
+```powershell
+cd Server\Web_server
+..\venv\Scripts\Activate.ps1
+python main.py
+```
+
+**Terminal 2 - Frontend (Port 5173):**
+```powershell
+cd Client_F\front_chanak
+npm run dev
+```
+
+### 4. Verify Setup
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3000 |
+| API Docs | http://localhost:3000/docs |
+| Health Check | http://localhost:3000/health |
+
+---
+
+## 📁 Project Structure
+
+```
+Chanakya/
+├── Client_F/front_chanak/      # React + Vite Frontend
+│   ├── src/                    # React components & pages
+│   └── .env                    # Frontend environment config
+│
+├── Server/                     # Python Backend
+│   ├── Web_server/             # FastAPI Application (main.py)
+│   ├── nlp/                    # NLP Pipeline (Gemini integration)
+│   ├── orchestrator/           # LangGraph Orchestration
+│   ├── module/                 # Lesson Builder (MODULE)
+│   └── requirements.txt        # Python dependencies
+│
+├── embedding/                  # RAG System for NCERT Books
+│   ├── generate_embeddings.py  # PDF → Embeddings pipeline
+│   ├── query_books.py          # Semantic search interface
+│   └── ncert_books.db          # SQLite vector database
+│
+├── feedback_system/            # Sahayak Pro Feedback Engine
+├── Finaldata/                  # NCERT PDF Books
+└── main.py                     # Direct RAG query script
+```
+
+---
+
+## 🔌 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/login` | POST | User authentication |
+| `/api/auth/register` | POST | User registration |
+| `/api/query` | POST | AI-powered query processing |
+| `/api/chat/history` | GET | Chat history retrieval |
+| `/api/sarvam/stt` | POST | Speech-to-text (Indian languages) |
+| `/api/sarvam/tts` | POST | Text-to-speech (Indian languages) |
+| `/api/classes` | GET/POST | Class management |
+| `/api/students` | GET/POST | Student management |
+| `/api/questions` | GET/POST | Question bank |
+| `/api/sessions` | GET/POST | Teaching sessions |
+| `/api/analytics` | GET | Teaching analytics |
+| `/api/reflection` | GET/POST | Teaching reflection analysis |
+
+📚 **Full API documentation:** http://localhost:3000/docs
+
+---
+
+## 🌐 NLP Layer
+
+The NLP layer converts teacher utterances in **any Indian language** to clear **English understanding** using **Gemini 2.5 Flash**.
 
 ### Supported Languages
-- Hindi, Bengali, Marathi, Tamil, Telugu, Kannada, Malayalam
-- Gujarati, Odia, Punjabi, Assamese, Urdu
-- Code-mixed speech (Hindi-English, etc.)
+Hindi, Bengali, Marathi, Tamil, Telugu, Kannada, Malayalam, Gujarati, Odia, Punjabi, Assamese, Urdu, and code-mixed speech (Hindi-English, etc.)
 
-### How It Works
+### Examples
 
-```
-Teacher (any language) → Gemini 2.5 Flash → English understanding
-```
-
-**Input:** `"Bachche sun nahi rahe hain"`  
-**Output:** `"The children are not listening"`
-
-**Input:** `"இந்த பாடம் புரியவில்லை அவர்களுக்கு"`  
-**Output:** `"They are not understanding this lesson"`
-
-**Input:** `"Addition ka carry samajh nahi aa raha inko"`  
-**Output:** `"They are not understanding the carry concept in addition"`
+| Input | Output |
+|-------|--------|
+| `"Bachche sun nahi rahe hain"` | `"The children are not listening"` |
+| `"இந்த பாடம் புரியவில்லை அவர்களுக்கு"` | `"They are not understanding this lesson"` |
+| `"Addition ka carry samajh nahi aa raha inko"` | `"They are not understanding the carry concept in addition"` |
 
 ### Usage
 
@@ -36,10 +152,7 @@ Teacher (any language) → Gemini 2.5 Flash → English understanding
 from nlp.pipeline import NLPPipeline
 from nlp.schemas import TeacherUtterance
 
-# Initialize
 pipeline = NLPPipeline(gemini_api_key="your-key")
-
-# Process
 utterance = TeacherUtterance(text="Bachche sun nahi rahe hain")
 result = pipeline.process_sync(utterance)
 
@@ -48,273 +161,11 @@ print(result.detected_language)      # "hi"
 print(result.confidence)             # 0.95
 ```
 
-### Output Schema
-
-```python
-class NLPOutput:
-    english_understanding: str   # Clear English version
-    detected_language: str       # Language code (hi, ta, bn, etc.)
-    raw_input: str              # Original input
-    confidence: float           # 0.0 to 1.0
-    processing_time_ms: float   # Processing time
-    error: Optional[str]        # Error if any
-```
-
-## Project Structure
-
-```
-Chanakya/
-├── README.md
-├── Client/                    # Future: Mobile/Web interface
-└── Server/
-    ├── requirements.txt
-    ├── .env                   # Your API key (not in git)
-    ├── .env.example           # Template
-    ├── test_nlp.py           # Test runner
-    └── nlp/
-        ├── __init__.py
-        ├── schemas.py        # Simple input/output schemas
-        ├── gemini_processor.py  # Gemini 2.5 Flash integration
-        └── pipeline.py       # Main pipeline
-```
-
-## Quick Start
-
-```bash
-# Setup
-cd Server
-python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows
-pip install -r requirements.txt
-
-# Configure
-copy .env.example .env
-# Edit .env and add your GEMINI_API_KEY
-
-# Test
-python test_nlp.py
-```
-
-## License
-
-[TBD]
-# NCERT Books RAG System
-
-A comprehensive system for downloading NCERT textbooks, generating embeddings, and querying them using Retrieval-Augmented Generation (RAG) with Gemini LLM.
-
-## Overview
-
-This project consists of two main components:
-
-1. **Book Downloader**: Downloads NCERT textbooks from the official website
-2. **RAG System**: Generates embeddings from PDFs and enables semantic search with LLM-powered answers
-
 ---
 
-## Part 1: NCERT Books Downloader
+## 📚 RAG System for NCERT Books
 
-A Python-based web scraper to download all NCERT textbooks (PDFs) from the official NCERT website (`https://ncert.nic.in/textbook.php`). The script automatically downloads books for all classes, subjects, and languages, organizing them in a structured directory format.
-
-## Features
-
-- **Comprehensive Coverage**: Downloads books for all classes (I-XII) and all available subjects
-- **Multi-language Support**: Downloads books in all available languages (English, Hindi, Urdu)
-- **Organized Storage**: Automatically organizes books by `Class/Subject/Language`
-- **Resume Capability**: Can resume interrupted downloads from the last checkpoint
-- **Error Handling**: Robust error handling with retries and detailed logging
-- **Rate Limiting**: Respectful delays between downloads to avoid overwhelming the server
-- **Progress Tracking**: Real-time progress updates and detailed logging
-
-## Requirements
-
-- Python 3.7 or higher
-- Internet connection
-- Required Python packages (see `requirements.txt`)
-
-## Installation
-
-1. Clone or download this repository
-
-2. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Install Playwright browsers:
-```bash
-playwright install chromium
-```
-
-## Usage
-
-### Basic Usage
-
-Simply run the script to download all NCERT books:
-
-```bash
-python download_ncert_books.py
-```
-
-### Command Line Options
-
-- `--no-resume`: Start fresh, ignoring any previous progress
-  ```bash
-  python download_ncert_books.py --no-resume
-  ```
-
-- `--delay SECONDS`: Set custom delay between downloads (default: 1.5 seconds)
-  ```bash
-  python download_ncert_books.py --delay 2.0
-  ```
-
-### Examples
-
-Download all books with default settings:
-```bash
-python download_ncert_books.py
-```
-
-Start fresh download (ignore previous progress):
-```bash
-python download_ncert_books.py --no-resume
-```
-
-Download with longer delays (more respectful to server):
-```bash
-python download_ncert_books.py --delay 3.0
-```
-
-## Directory Structure
-
-Downloaded books are organized in the following structure:
-
-```
-books/
-├── Class_1/
-│   ├── Mathematics/
-│   │   ├── English/
-│   │   │   └── Mathematics_English.pdf
-│   │   ├── Hindi/
-│   │   │   └── Mathematics_Hindi.pdf
-│   │   └── Urdu/
-│   │       └── Mathematics_Urdu.pdf
-│   └── Science/
-│       ├── English/
-│       └── Hindi/
-├── Class_2/
-│   └── ...
-└── ...
-```
-
-## Progress Tracking
-
-The script maintains progress in two ways:
-
-1. **Progress State File** (`progress_state.json`): Tracks which books have been successfully downloaded, allowing the script to resume from where it left off.
-
-2. **Download Log** (`download_log.txt`): Detailed log file containing:
-   - Timestamp of each operation
-   - Success/failure status
-   - Error messages (if any)
-   - Download statistics
-
-## How It Works
-
-1. **Browser Automation**: Uses Playwright to navigate the NCERT website and interact with dynamic dropdowns
-2. **Book Discovery**: Systematically iterates through all classes, subjects, and books
-3. **Link Extraction**: Extracts download links for all available language versions
-4. **PDF Download**: Downloads PDF files using the `requests` library
-5. **Validation**: Verifies downloaded files are valid PDFs
-6. **Organization**: Saves files in organized directory structure
-
-## Configuration
-
-You can modify the following constants in `download_ncert_books.py`:
-
-- `DOWNLOAD_DELAY`: Delay between downloads (default: 1.5 seconds)
-- `MAX_RETRIES`: Maximum retry attempts for failed downloads (default: 3)
-- `TIMEOUT`: Timeout for browser operations in milliseconds (default: 30000)
-- `BOOKS_DIR`: Directory name for downloaded books (default: "books")
-
-## Error Handling
-
-The script includes comprehensive error handling:
-
-- **Network Errors**: Automatic retries with exponential backoff
-- **Timeout Errors**: Configurable timeouts for all operations
-- **Invalid Files**: Validation to ensure downloaded files are valid PDFs
-- **Missing Books**: Gracefully skips books that are not available
-- **Resume on Failure**: Can resume interrupted downloads
-
-## Logging
-
-All operations are logged to both:
-- Console (real-time output)
-- `download_log.txt` file (detailed log)
-
-Log levels include:
-- **INFO**: General progress information
-- **WARNING**: Non-critical issues (e.g., book not available in a language)
-- **ERROR**: Critical errors that prevent downloads
-
-## Notes
-
-- The script respects the NCERT website by including delays between requests
-- Some books may not be available in all languages
-- The download process may take several hours depending on:
-  - Number of books available
-  - Internet connection speed
-  - Server response times
-- The script can be safely interrupted and resumed later
-
-## Troubleshooting
-
-### Playwright Installation Issues
-
-If you encounter issues with Playwright:
-
-```bash
-# Reinstall Playwright
-pip uninstall playwright
-pip install playwright
-playwright install chromium
-```
-
-### Download Failures
-
-If downloads fail:
-
-1. Check your internet connection
-2. Verify the NCERT website is accessible
-3. Check `download_log.txt` for specific error messages
-4. Try running with `--no-resume` to start fresh
-5. Increase the delay with `--delay` option
-
-### Missing Books
-
-Some books may not be available in all languages. This is normal and the script will log warnings for missing books.
-
-## License
-
-This script is provided as-is for educational purposes. Please respect the NCERT website's terms of service and use responsibly.
-
-## Disclaimer
-
-This tool is for personal/educational use only. Please ensure you comply with NCERT's terms of service and copyright policies when using downloaded materials.
-
----
-
-## Part 2: RAG System for NCERT Books
-
-A Retrieval-Augmented Generation (RAG) system that enables semantic search and question-answering over NCERT textbooks using embeddings and Gemini LLM.
-
-### Features
-
-- **PDF Processing**: Extracts text from PDFs using LlamaParse Fast model
-- **Embedding Generation**: Creates embeddings using `sentence-transformers/sentence-t5-large`
-- **Semantic Search**: Finds relevant content using cosine similarity
-- **LLM Integration**: Generates answers using Google Gemini models
-- **Source Citations**: Provides page-level citations with class, subject, book, and page number
+Retrieval-Augmented Generation (RAG) system for semantic search and question-answering over NCERT textbooks.
 
 ### Architecture
 
@@ -324,238 +175,205 @@ PDF Books → LlamaParse → Text Extraction → Embeddings → SQLite Database
 User Query → Embedding → Similarity Search → Context → Gemini LLM → Answer
 ```
 
-### Requirements
+### Quick Usage
 
-- Python 3.7 or higher
-- API Keys:
-  - LlamaParse API key (from https://cloud.llamaindex.ai/)
-  - Google Gemini API key (from https://makersuite.google.com/app/apikey)
-
-### Installation
-
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Set up environment variables:
-Create a `.env` file in the project root:
-```bash
-LLAMA_CLOUD_API_KEY=your_llama_parse_api_key
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-3. Verify API keys:
-```bash
-python embedding/check_api_keys.py
-```
-
-### Quick Start
-
-#### 1. Generate Embeddings
-
-Process all PDFs and generate embeddings:
-
-```bash
-python embedding/generate_embeddings.py
-```
-
-**Options:**
-- `--books-dir`: Directory containing PDFs (default: `Finaldata`)
-- `--db-path`: Database path (default: `embedding/ncert_books.db`)
-- `--max-files`: Process only N files (for testing)
-- `--no-skip-existing`: Reprocess all files
-
-**Example:**
-```bash
-# Process all books
+```powershell
+# Generate embeddings (first time only)
 python embedding/generate_embeddings.py
 
-# Test with 5 files
-python embedding/generate_embeddings.py --max-files 5
-```
-
-#### 2. Query the Books
-
-**Using main.py (Direct approach - no orchestrator):**
-```bash
+# Query the books
 python main.py "What is photosynthesis?" --db-path embedding/ncert_books.db
-```
 
-**Using query_books.py (With orchestrator):**
-```bash
-python embedding/query_books.py "What is photosynthesis?"
-```
-
-**Interactive mode:**
-```bash
+# Interactive mode
 python embedding/query_books.py --interactive
-```
-
-### Main Scripts
-
-#### `main.py` - Direct Query Script
-
-Simplified query script that uses database and embedding service directly (no orchestrator).
-
-**Usage:**
-```bash
-python main.py "Your question" [OPTIONS]
-```
-
-**Options:**
-- `--db-path`: Path to SQLite database (default: `embedding/ncert_books.db`)
-- `--top-k`: Number of documents to retrieve (default: 5)
-- `--class`: Filter by class (e.g., `Class_7`)
-- `--subject`: Filter by subject (e.g., `Science`)
-- `--language`: Filter by language (e.g., `English`)
-- `--model`: Gemini model name (default: `models/gemini-2.0-flash`)
-- `--temperature`: LLM temperature (default: 0.7)
-
-**Examples:**
-```bash
-# Basic query
-python main.py "What is photosynthesis?"
 
 # With filters
 python main.py "Explain cells" --class "Class_7" --subject "Science"
-
-# Custom model and temperature
-python main.py "Your question" --model models/gemini-2.5-flash --temperature 0.5
 ```
 
-#### `embedding/generate_embeddings.py` - Embedding Generation
+### Options
 
-Processes PDFs, extracts text, generates embeddings, and stores in SQLite.
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--db-path` | SQLite database path | `embedding/ncert_books.db` |
+| `--top-k` | Number of results | 5 |
+| `--class` | Filter by class | All |
+| `--subject` | Filter by subject | All |
+| `--model` | Gemini model | `models/gemini-2.0-flash` |
 
-**Usage:**
-```bash
-python embedding/generate_embeddings.py [OPTIONS]
+---
+
+## 📥 NCERT Books Downloader
+
+Download all NCERT textbooks from the official website.
+
+```powershell
+# Download all books
+python download_ncert_books.py
+
+# Resume interrupted download
+python download_ncert_books.py
+
+# Start fresh
+python download_ncert_books.py --no-resume
+
+# Custom delay
+python download_ncert_books.py --delay 3.0
 ```
 
-#### `embedding/query_books.py` - Query with Orchestrator
+### Downloaded Structure
 
-Full-featured query script using the RAG orchestrator.
-
-**Usage:**
-```bash
-python embedding/query_books.py "Your question" [OPTIONS]
+```
+books/
+├── Class_1/
+│   ├── Mathematics/
+│   │   ├── English/
+│   │   │   └── Mathematics_English.pdf
+│   │   └── Hindi/
+│   │       └── Mathematics_Hindi.pdf
+│   └── Science/
+└── Class_2/
+    └── ...
 ```
 
-### Embedding System Components
+---
 
-#### `embedding/database.py`
-- SQLite database operations
-- Stores documents with embeddings (BLOB)
-- Implements cosine similarity search
-- Supports filtering by class, subject, language
+## 🔧 Environment Variables
 
-#### `embedding/embedding_service.py`
-- Generates embeddings using `sentence-transformers/sentence-t5-large`
-- Handles both document and query embeddings
-- Batch processing support
+### Server (`Server/.env`)
 
-#### `embedding/pdf_extractor.py`
-- Extracts text from PDFs using LlamaParse Fast model
-- Page-level text extraction
-- Extracts metadata from file paths
+```env
+# Required
+GEMINI_API_KEY=your-gemini-api-key
 
-#### `embedding/process_books.py`
-- Main processing pipeline
-- Coordinates PDF extraction, embedding generation, and database storage
+# Optional
+ENVIRONMENT=development
+LOG_LEVEL=INFO
+SARVAM_API_KEY=your-sarvam-api-key
+MONGODB_URI=mongodb://localhost:27017/chanakya
 
-#### `embedding/rag_orchestrator.py`
-- RAG orchestrator (optional, used by query_books.py)
-- Retrieves relevant documents
-- Generates answers using Gemini LLM
-
-### Database Schema
-
-```sql
-CREATE TABLE documents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content TEXT NOT NULL,
-    embedding BLOB NOT NULL,
-    source TEXT NOT NULL  -- Format: "class|subject|bookname|language|page_number"
-);
+# Twilio (for voice/SMS)
+TWILIO_ACCOUNT_SID=your-sid
+TWILIO_AUTH_TOKEN=your-token
+TWILIO_PHONE_NUMBER=your-number
 ```
 
-### Example Workflow
+### Frontend (`Client_F/front_chanak/.env`)
 
-1. **Generate embeddings:**
-   ```bash
-   python embedding/generate_embeddings.py
-   ```
-
-2. **Query using main.py:**
-   ```bash
-   python main.py "What is the water cycle?" --top-k 5
-   ```
-
-3. **Query using orchestrator:**
-   ```bash
-   python embedding/query_books.py "Explain photosynthesis" --interactive
-   ```
-
-### Available Gemini Models
-
-- `models/gemini-2.0-flash` (default) - Fast and efficient
-- `models/gemini-2.5-flash` - Newer, faster version
-- `models/gemini-2.5-pro` - Most capable model
-
-List available models:
-```bash
-python embedding/list_gemini_models.py
+```env
+VITE_SARVAM_API_KEY=your-sarvam-key
+VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
+VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
+VITE_API_URL=http://localhost:3000
 ```
 
-### Troubleshooting
+---
 
-#### API Key Issues
-```bash
-# Check API keys
+## 🧪 Testing
+
+```powershell
+# Backend tests
+cd Server
+.\venv\Scripts\Activate.ps1
+pytest
+
+# Specific tests
+python test_nlp.py                    # NLP pipeline
+python test_orchestrator.py           # Orchestrator
+python test_classroom_guidance.py     # Classroom guidance
+python test_teaching_feedback.py      # Feedback system
+
+# Frontend lint
+cd Client_F\front_chanak
+npm run lint
+```
+
+---
+
+## 🚢 Deployment
+
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for production deployment instructions.
+
+### Quick Deploy
+
+```powershell
+# Build frontend
+cd Client_F\front_chanak
+npm run build
+
+# Production server
+cd Server\Web_server
+python main.py  # Or use: uvicorn main:app --host 0.0.0.0 --port 3000
+```
+
+---
+
+## 🔧 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **MongoDB connection error** | Ensure MongoDB is running: `mongod` |
+| **ModuleNotFoundError** | Activate venv and run `pip install -r requirements.txt` |
+| **CORS error** | Check backend is on port 3000, verify `VITE_API_URL` |
+| **Invalid API key** | Check `.env` files for correct keys (no quotes/spaces) |
+| **Orchestrator not ready** | Check `GEMINI_API_KEY` is set correctly |
+
+### Check API Keys
+
+```powershell
 python embedding/check_api_keys.py
 ```
 
-#### Database Not Found
-```bash
-# Make sure embeddings are generated first
-python embedding/generate_embeddings.py
-```
+### List Available Gemini Models
 
-#### Model Not Found
-If you get model errors, check available models:
-```bash
+```powershell
 python embedding/list_gemini_models.py
 ```
 
-### Directory Structure
+---
 
-```
-.
-├── main.py                          # Main query script (direct approach)
-├── embedding/
-│   ├── database.py                 # Database operations
-│   ├── embedding_service.py        # Embedding generation
-│   ├── pdf_extractor.py            # PDF text extraction
-│   ├── process_books.py            # Processing pipeline
-│   ├── rag_orchestrator.py         # RAG orchestrator
-│   ├── generate_embeddings.py      # Generate embeddings script
-│   ├── query_books.py              # Query script (with orchestrator)
-│   ├── check_api_keys.py           # API key checker
-│   ├── list_gemini_models.py       # List available Gemini models
-│   └── ncert_books.db              # SQLite database
-├── Finaldata/                       # PDF books directory
-└── .env                             # API keys (not in git)
+## 📝 Available Scripts
+
+### Backend
+
+```powershell
+cd Server\Web_server && python main.py     # Run server
+cd Server && pytest                         # Run tests
+python embedding/generate_embeddings.py    # Generate embeddings
+python main.py "query"                     # Query RAG
 ```
 
-### Notes
+### Frontend
 
-- The embedding system uses `sentence-transformers/sentence-t5-large` for embeddings
-- LlamaParse Fast model is used for PDF extraction
-- All embeddings are stored as BLOB in SQLite
-- Source format: `"class|subject|bookname|language|page_number"`
-- The system supports filtering by class, subject, and language
+```powershell
+npm run dev      # Development server
+npm run build    # Production build
+npm run preview  # Preview build
+npm run lint     # Lint code
+```
 
-### License
+---
 
-This project is provided as-is for educational purposes. Please respect NCERT's terms of service and copyright policies.
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is provided for educational purposes. Please respect NCERT's terms of service and copyright policies when using downloaded materials.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for Indian Teachers**
+
+[Report Bug](https://github.com/Kautilya346/Chanakya/issues) · [Request Feature](https://github.com/Kautilya346/Chanakya/issues)
+
+</div>
