@@ -5,7 +5,7 @@ Handles incoming voice calls and SMS, processes queries through orchestrator
 import os
 import structlog
 from fastapi import APIRouter, Request, Response, HTTPException, Depends, Form
-from typing import Optional
+from typing import Optional, Any
 import aiohttp
 
 logger = structlog.get_logger(__name__)
@@ -19,6 +19,7 @@ try:
 except ImportError:
     TWILIO_AVAILABLE = False
     logger.warning("Twilio SDK not installed. Install with: pip install twilio")
+    TwilioClient = Any
 
 from services.orchestrator_service import orchestrator_service
 from services.chat_service import ChatService

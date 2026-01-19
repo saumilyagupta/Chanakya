@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { classesApi, studentsApi } from "../utils/classroomApi";
+import { classesApi, studentsApi } from "../api/dashboardApi";
 import StudentCard from "../components/StudentCard";
 import StarRating from "../components/StarRating";
 import ClassDashboard from "../components/ClassDashboard";
@@ -337,11 +337,10 @@ function Personalized_student_support() {
                   {classes.map((cls) => (
                     <div
                       key={cls.id}
-                      className={`group p-4 rounded-lg cursor-pointer transition-all border-2 ${
-                        selectedClass?.id === cls.id
+                      className={`group p-4 rounded-lg cursor-pointer transition-all border-2 ${selectedClass?.id === cls.id
                           ? "bg-[#EFF0C6] border-[#000000]"
                           : "bg-white border-[#000000] hover:bg-gray-50"
-                      }`}
+                        }`}
                       onClick={() => setSelectedClass(cls)}
                     >
                       <div className="flex items-center justify-between">
@@ -426,11 +425,10 @@ function Personalized_student_support() {
                   {/* Tabs */}
                   <div className="flex border-gray-200 gap-2">
                     <button
-                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 border-b-2 -mb-[2px] ${
-                        activeTab === "dashboard"
+                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 border-b-2 -mb-[2px] ${activeTab === "dashboard"
                           ? "border-blue-500 text-blue-600 bg-blue-50"
                           : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-white bg-white"
-                      }`}
+                        }`}
                       onClick={() => setActiveTab("dashboard")}
                     >
                       <svg
@@ -448,11 +446,10 @@ function Personalized_student_support() {
                       Dashboard
                     </button>
                     <button
-                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 border-b-2 -mb-[2px] ${
-                        activeTab === "students"
+                      className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 border-b-2 -mb-[2px] ${activeTab === "students"
                           ? "border-black text-blue-600 bg-blue-50"
                           : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-white bg-white"
-                      }`}
+                        }`}
                       onClick={() => setActiveTab("students")}
                     >
                       <svg
@@ -539,15 +536,14 @@ function Personalized_student_support() {
                               <button
                                 key={level}
                                 type="button"
-                                className={`flex-1 px-4 py-2 rounded-lg border-2 font-medium transition-colors ${
-                                  studentLevel === level
+                                className={`flex-1 px-4 py-2 rounded-lg border-2 font-medium transition-colors ${studentLevel === level
                                     ? level === "weak"
                                       ? "bg-red-500 text-white border-red-600"
                                       : level === "strong"
-                                      ? "bg-green-500 text-white border-green-600"
-                                      : "bg-yellow-500 text-white border-yellow-600"
+                                        ? "bg-green-500 text-white border-green-600"
+                                        : "bg-yellow-500 text-white border-yellow-600"
                                     : "bg-white text-[#000000] border-[#000000] hover:bg-gray-50"
-                                }`}
+                                  }`}
                                 onClick={() => setStudentLevel(level)}
                               >
                                 {level.charAt(0).toUpperCase() + level.slice(1)}
