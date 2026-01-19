@@ -6,6 +6,8 @@ from beanie import init_beanie
 from config import settings
 from models.user import User
 from models.chat_session import ChatSession, ChatMessage
+from models.classroom import Class, Student, Question, ClassSession, StudentResponse
+from models.reflection import ClassReflection
 
 
 class Database:
@@ -26,7 +28,11 @@ async def connect_to_mongo():
     # Initialize Beanie with document models
     await init_beanie(
         database=db.database,
-        document_models=[User, ChatSession, ChatMessage]
+        document_models=[
+            User, ChatSession, ChatMessage,
+            Class, Student, Question, ClassSession, StudentResponse,
+            ClassReflection
+        ]
     )
     print(f"✅ Connected to MongoDB: {settings.DATABASE_NAME}")
 

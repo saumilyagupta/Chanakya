@@ -94,10 +94,10 @@ function ActiveListeningMode() {
 
   // Create and start a new MediaRecorder instance
   const createAndStartRecorder = useCallback((stream) => {
-    const recorderMimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
-      ? 'audio/webm;codecs=opus' 
+    const recorderMimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus'
       : 'audio/webm';
-    
+
     const mediaRecorder = new MediaRecorder(stream, { mimeType: recorderMimeType });
     audioChunksRef.current = [];
 
@@ -129,8 +129,8 @@ function ActiveListeningMode() {
 
   // Stop current recorder and start a new one (for chunking)
   const rotateRecorder = useCallback(() => {
-    if (mediaRecorderRef.current && streamRef.current && 
-        mediaRecorderRef.current.state === "recording") {
+    if (mediaRecorderRef.current && streamRef.current &&
+      mediaRecorderRef.current.state === "recording") {
       // Stop current recorder (triggers onstop which processes the chunk)
       mediaRecorderRef.current.stop();
       // Start a new recorder with the same stream
@@ -161,7 +161,7 @@ function ActiveListeningMode() {
 
       // Create first recorder
       mediaRecorderRef.current = createAndStartRecorder(stream);
-      
+
       // Set up interval to rotate recorders every 25 seconds
       chunkIntervalRef.current = setInterval(() => {
         rotateRecorder();
@@ -177,8 +177,8 @@ function ActiveListeningMode() {
   };
 
   const pauseRecording = () => {
-    if (mediaRecorderRef.current && isRecording && !isPaused && 
-        mediaRecorderRef.current.state === "recording") {
+    if (mediaRecorderRef.current && isRecording && !isPaused &&
+      mediaRecorderRef.current.state === "recording") {
       // Clear the rotation interval while paused
       if (chunkIntervalRef.current) {
         clearInterval(chunkIntervalRef.current);
@@ -191,8 +191,8 @@ function ActiveListeningMode() {
   };
 
   const resumeRecording = () => {
-    if (mediaRecorderRef.current && isRecording && isPaused && 
-        mediaRecorderRef.current.state === "paused") {
+    if (mediaRecorderRef.current && isRecording && isPaused &&
+      mediaRecorderRef.current.state === "paused") {
       mediaRecorderRef.current.resume();
       // Restart the rotation interval
       chunkIntervalRef.current = setInterval(() => {
@@ -213,21 +213,21 @@ function ActiveListeningMode() {
     if (mediaRecorderRef.current && isRecording) {
       const recorderState = mediaRecorderRef.current.state;
       console.log(`stopRecording called, MediaRecorder state: ${recorderState}`);
-      
+
       setIsProcessing(true);
-      
+
       // Only stop if recorder is active (recording or paused)
       if (recorderState === "recording" || recorderState === "paused") {
         // stop() triggers onstop which processes the final chunk
         mediaRecorderRef.current.stop();
       }
-      
+
       // Stop all audio tracks
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
       }
-      
+
       setIsRecording(false);
       setIsPaused(false);
       setShowOptions(true);
@@ -250,7 +250,8 @@ function ActiveListeningMode() {
 
     setIsAnalyzing(true);
     try {
-      const response = await apiClient.post("/api/reflection/analyze", {
+      // Updated endpoint to match unified API: POST /api/reflection (not /analyze)
+      const response = await apiClient.post("/api/reflection", {
         topic: classInfo.topic,
         subject: classInfo.subject,
         class_level: classInfo.classLevel,
@@ -524,15 +525,14 @@ function ActiveListeningMode() {
                     }
                   }}
                   disabled={isRecording || isProcessing || isAnalyzing || !canStartRecording}
-                  className={`w-16 h-16 rounded-full border-2 border-[#000000] flex items-center justify-center shadow-[3px_3px_0px_0px_#000000] transition-all ${
-                    isRecording
+                  className={`w-16 h-16 rounded-full border-2 border-[#000000] flex items-center justify-center shadow-[3px_3px_0px_0px_#000000] transition-all ${isRecording
                       ? "bg-red-500 cursor-not-allowed"
                       : isProcessing || isAnalyzing
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : !canStartRecording
-                      ? "bg-gray-200 cursor-not-allowed opacity-60"
-                      : "bg-[#FDE047] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
-                  }`}
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : !canStartRecording
+                          ? "bg-gray-200 cursor-not-allowed opacity-60"
+                          : "bg-[#FDE047] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
+                    }`}
                   aria-label="Start recording"
                 >
                   {isRecording ? (
@@ -650,11 +650,10 @@ function ActiveListeningMode() {
                     <button
                       onClick={analyzeTeaching}
                       disabled={isAnalyzing || pendingChunks > 0 || !transcript.trim()}
-                      className={`w-full px-4 py-3 text-sm font-bold border-2 border-[#000000] rounded-lg shadow-[3px_3px_0px_0px_#000000] transition-all ${
-                        isAnalyzing || pendingChunks > 0 || !transcript.trim()
+                      className={`w-full px-4 py-3 text-sm font-bold border-2 border-[#000000] rounded-lg shadow-[3px_3px_0px_0px_#000000] transition-all ${isAnalyzing || pendingChunks > 0 || !transcript.trim()
                           ? "bg-gray-200 cursor-not-allowed"
                           : "bg-[#F99DA8] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
-                      }`}
+                        }`}
                     >
                       {isAnalyzing ? (
                         <span className="flex items-center justify-center gap-2">

@@ -1,9 +1,9 @@
 /**
- * API Service using Axios
+ * API Service using Axios - Unified Server on Port 3000
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Create axios instance with default config
 const apiClient = axios.create({
