@@ -10,26 +10,86 @@ This guide will help you set up and run the Chanakya application locally.
 
 Before you begin, ensure you have the following installed on your system:
 
-- **Python 3.11+** - [Download Python](https://www.python.org/downloads/)
-- **Node.js 18+** - [Download Node.js](https://nodejs.org/)
-- **MongoDB** - [Download MongoDB](https://www.mongodb.com/try/download/community) (or use MongoDB Atlas)
-- **Git** - [Download Git](https://git-scm.com/)
+| Requirement | Version | Download |
+|-------------|---------|----------|
+| **Python** | 3.11+ | [python.org](https://www.python.org/downloads/) |
+| **Node.js** | 18+ | [nodejs.org](https://nodejs.org/) |
+| **MongoDB** | Any | [mongodb.com](https://www.mongodb.com/try/download/community) or use MongoDB Atlas |
+| **Git** | Any | [git-scm.com](https://git-scm.com/) |
 
 ---
 
 ## 🔑 Required API Keys
 
-You'll need the following API keys:
-
 | Service | Purpose | Get Key From |
-|---------|---------|--------------|
+|---------|---------|--------------| 
 | **Google Gemini API** | AI/LLM capabilities | [Google AI Studio](https://aistudio.google.com/apikey) |
 | **Sarvam AI API** | Indian language STT/TTS | [Sarvam AI](https://www.sarvam.ai/) |
 | **LlamaParse API** (Optional) | PDF text extraction | [LlamaIndex Cloud](https://cloud.llamaindex.ai/) |
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚡ Method 1: One-Command Setup (Recommended)
+
+The fastest and easiest way to set up the project.
+
+### Windows
+
+```cmd
+# 1. Clone repository
+git clone https://github.com/Kautilya346/Chanakya.git
+cd Chanakya
+
+# 2. Run setup script (installs everything)
+setup.bat
+
+# 3. Configure environment
+# Edit .env file with your API keys
+
+# 4. Start the application
+run.bat
+```
+
+### Unix/Linux/Mac
+
+```bash
+# 1. Clone repository
+git clone https://github.com/Kautilya346/Chanakya.git
+cd Chanakya
+
+# 2. Make scripts executable
+chmod +x setup.sh run.sh
+
+# 3. Run setup script (installs everything)
+./setup.sh
+
+# 4. Configure environment
+# Edit .env file with your API keys
+
+# 5. Start the application
+./run.sh
+```
+
+### What the Setup Script Does
+
+1. ✅ Checks for Python 3.9+ and Node.js 18+
+2. ✅ Creates Python virtual environment (`venv/`)
+3. ✅ Installs Python dependencies from `requirements.txt` and `Server/requirements.txt`
+4. ✅ Installs frontend npm packages
+5. ✅ Creates `.env` file from template if missing
+
+### What the Run Script Does
+
+1. ✅ Activates the Python virtual environment
+2. ✅ Starts the backend server (port 3000)
+3. ✅ Starts the frontend dev server (port 5173)
+4. ✅ Opens two terminal windows for easy monitoring
+
+---
+
+## 🔧 Method 2: Manual Setup (Step-by-Step)
+
+For users who prefer manual control over each step.
 
 ### Step 1: Clone the Repository
 
@@ -38,136 +98,135 @@ git clone https://github.com/Kautilya346/Chanakya.git
 cd Chanakya
 ```
 
-### Step 2: Backend Setup (Server)
+### Step 2: Create Python Virtual Environment
 
 ```powershell
-# Navigate to Server directory
-cd Server
-
 # Create virtual environment
 python -m venv venv
 
-# Activate virtual environment (Windows PowerShell)
+# Activate (Windows PowerShell)
 .\venv\Scripts\Activate.ps1
 
-# OR for Command Prompt
+# Activate (Windows CMD)
 .\venv\Scripts\activate.bat
 
-# Install Python dependencies
-pip install -r requirements.txt
+# Activate (Unix/Linux/Mac)
+source venv/bin/activate
 ```
 
-### Step 3: Configure Backend Environment Variables
-
-Create a `.env` file in the `Server` directory:
+### Step 3: Install Python Dependencies
 
 ```powershell
-# Copy the example file
-copy .env.example .env
+# Upgrade pip
+pip install --upgrade pip
+
+# Install root dependencies
+pip install -r requirements.txt
+
+# Install server dependencies
+pip install -r Server/requirements.txt
 ```
 
-Edit the `.env` file with your credentials:
+### Step 4: Install Frontend Dependencies
+
+```powershell
+cd Client_F\front_chanak
+npm install
+cd ..\..
+```
+
+### Step 5: Configure Environment Variables
+
+Edit the `.env` file in the project root with your credentials:
 
 ```env
-# Google Gemini API Key (Required)
+# ==================== Required ====================
 GEMINI_API_KEY=your-gemini-api-key-here
 
-# Environment
-ENVIRONMENT=development
-
-# Logging
-LOG_LEVEL=INFO
-
-# Sarvam AI Configuration
+# ==================== Sarvam AI (Voice Features) ====================
 SARVAM_API_KEY=your-sarvam-api-key-here
-
-# MongoDB URI (Optional - defaults to localhost)
-MONGODB_URI=mongodb://localhost:27017/chanakya
-```
-
-### Step 4: Frontend Setup
-
-```powershell
-# Navigate to Frontend directory
-cd ..\Client_F\front_chanak
-
-# Install Node.js dependencies
-npm install
-```
-
-### Step 5: Configure Frontend Environment Variables
-
-Create or edit the `.env` file in `Client_F/front_chanak`:
-
-```env
-# Sarvam AI Configuration
 VITE_SARVAM_API_KEY=your-sarvam-api-key-here
 VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
 VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
 
-# API Configuration (Backend URL)
+# ==================== API Configuration ====================
 VITE_API_URL=http://localhost:3000
+
+# ==================== MongoDB ====================
+MONGODB_URL=mongodb+srv://your-connection-string
+DATABASE_NAME=Chanakya
+
+# ==================== JWT Configuration ====================
+SECRET_KEY=your-secret-key-change-this-in-production
+ACCESS_TOKEN_EXPIRE_DAYS=7
+
+# ==================== Environment ====================
+ENV=development
+DEBUG=true
+LOG_LEVEL=INFO
+
+# ==================== Twilio (Optional) ====================
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
+TWILIO_WEBHOOK_URL=
+
+# ==================== CORS Configuration ====================
+CORS_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:3000
 ```
 
----
+### Step 6: Run the Application
 
-## 🚀 Running the Application
-
-### Start MongoDB (if running locally)
+**Terminal 1 - Backend Server:**
 
 ```powershell
-# Make sure MongoDB is running
-# Default is usually: mongod --dbpath "C:\data\db"
+# Activate virtual environment
+.\venv\Scripts\Activate.ps1   # Windows PowerShell
+# OR
+source venv/bin/activate       # Unix/Linux/Mac
+
+# Run the backend server
+python Server/Web_server/main.py
 ```
 
-### Start the Backend Server
+**Terminal 2 - Frontend Server:**
 
 ```powershell
-# Navigate to Server/Web_server directory
-cd Server\Web_server
-
-# Activate virtual environment if not already activated
-..\venv\Scripts\Activate.ps1
-
-# Run the FastAPI server
-python main.py
-```
-
-The backend will start at: **http://localhost:3000**
-
-- API Documentation: http://localhost:3000/docs
-- Health Check: http://localhost:3000/health
-
-### Start the Frontend (New Terminal Window)
-
-```powershell
-# Navigate to Frontend directory
 cd Client_F\front_chanak
-
-# Start the development server
 npm run dev
 ```
-
-The frontend will start at: **http://localhost:5173** (default Vite port)
 
 ---
 
 ## ✅ Verify Setup
 
-1. **Backend Health Check:**
-   Open http://localhost:3000/health in your browser. You should see:
-   ```json
-   {
-     "status": "healthy",
-     "orchestrator_ready": true
-   }
-   ```
+### 1. Backend Health Check
 
-2. **API Documentation:**
-   Open http://localhost:3000/docs to view the Swagger API documentation.
+Open http://localhost:3000/health in your browser. You should see:
 
-3. **Frontend:**
-   Open http://localhost:5173 to access the Chanakya web interface.
+```json
+{
+  "status": "healthy",
+  "orchestrator_ready": true
+}
+```
+
+### 2. API Documentation
+
+Open http://localhost:3000/docs to view the Swagger API documentation.
+
+### 3. Frontend
+
+Open http://localhost:5173 to access the Chanakya web interface.
+
+### Quick Reference
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3000 |
+| API Docs | http://localhost:3000/docs |
+| Health Check | http://localhost:3000/health |
 
 ---
 
@@ -175,63 +234,71 @@ The frontend will start at: **http://localhost:5173** (default Vite port)
 
 ```
 Chanakya/
-├── Client_F/                    # Frontend Application
-│   └── front_chanak/           # React + Vite Application
-│       ├── src/                # React source files
-│       ├── public/             # Static assets
-│       ├── .env                # Environment variables
-│       └── package.json        # Node.js dependencies
+├── setup.bat / setup.sh       # One-command setup scripts
+├── run.bat / run.sh           # One-command run scripts
+├── .env                       # Unified environment configuration
+├── venv/                      # Python virtual environment (created by setup)
 │
-├── Server/                      # Backend Server
-│   ├── Web_server/             # FastAPI Application
-│   │   ├── main.py             # Entry point (port 3000)
-│   │   ├── routers/            # API route handlers
-│   │   ├── models/             # Database models
-│   │   ├── schemas/            # Pydantic schemas
-│   │   └── services/           # Business logic
-│   ├── nlp/                    # NLP Pipeline
-│   ├── orchestrator/           # LangGraph Orchestration
-│   ├── module/                 # Lesson Builder Module
-│   ├── requirements.txt        # Python dependencies
-│   └── .env                    # Environment variables
+├── Client_F/                  # Frontend Application
+│   └── front_chanak/          # React + Vite Application
+│       ├── src/               # React source files
+│       ├── public/            # Static assets
+│       └── vite.config.js     # Vite config (loads .env from root)
 │
-├── embedding/                   # RAG System
-│   ├── generate_embeddings.py  # Generate embeddings from PDFs
-│   ├── query_books.py          # Query the RAG system
-│   └── ncert_books.db          # SQLite embeddings database
+├── Server/                    # Backend Server
+│   ├── Web_server/            # FastAPI Application
+│   │   ├── main.py            # Entry point (port 3000)
+│   │   ├── routers/           # API route handlers
+│   │   ├── models/            # Database models
+│   │   ├── schemas/           # Pydantic schemas
+│   │   └── services/          # Business logic
+│   ├── nlp/                   # NLP Pipeline
+│   ├── orchestrator/          # LangGraph Orchestration
+│   ├── module/                # Lesson Builder Module
+│   └── requirements.txt       # Python dependencies
 │
-├── feedback_system/             # Sahayak Pro Feedback System
-├── Finaldata/                   # NCERT PDF Books
-├── main.py                      # Direct query script for RAG
-└── README.md                    # Detailed documentation
+├── embedding/                 # RAG System
+│   ├── generate_embeddings.py # Generate embeddings from PDFs
+│   ├── query_books.py         # Query the RAG system
+│   └── ncert_books.db         # SQLite embeddings database
+│
+├── Finaldata/                 # NCERT PDF Books
+└── main.py                    # Direct query script for RAG
 ```
 
 ---
 
-## 🛠️ Available Scripts
+## 🛠️ Available Commands
 
-### Backend Commands
+### Setup & Run Scripts
+
+| Command | Description |
+|---------|-------------|
+| `setup.bat` (Windows) | Install all dependencies and set up project |
+| `setup.sh` (Unix) | Install all dependencies and set up project |
+| `run.bat` (Windows) | Start both backend and frontend servers |
+| `run.sh` (Unix) | Start both backend and frontend servers |
+
+### Backend Commands (with venv activated)
 
 ```powershell
-# From Server directory (with venv activated)
-
 # Run the web server
-cd Web_server && python main.py
+python Server/Web_server/main.py
 
 # Run tests
-pytest
+cd Server && pytest
 
 # Test NLP pipeline
-python test_nlp.py
+python Server/tests/test_nlp.py
 
 # Test orchestrator
-python test_orchestrator.py
+python Server/tests/test_orchestrator.py
 ```
 
 ### Frontend Commands
 
 ```powershell
-# From Client_F/front_chanak directory
+cd Client_F/front_chanak
 
 npm run dev      # Start development server
 npm run build    # Build for production
@@ -242,8 +309,6 @@ npm run lint     # Run ESLint
 ### RAG System Commands
 
 ```powershell
-# From root Chanakya directory
-
 # Generate embeddings from NCERT books
 python embedding/generate_embeddings.py
 
@@ -278,34 +343,46 @@ Full API documentation available at: http://localhost:3000/docs
 
 ### Common Issues
 
-**1. MongoDB Connection Error**
+**1. "Python/Node not found" during setup**
+- Ensure Python 3.9+ and Node.js 18+ are installed
+- Add them to your system PATH
+- Restart your terminal after installation
+
+**2. MongoDB Connection Error**
 ```
 Error: Could not connect to MongoDB
 ```
 - Ensure MongoDB is running: `mongod`
 - Check if MongoDB is listening on port 27017
-- Verify the `MONGODB_URI` in your `.env` file
+- Verify the `MONGODB_URL` in your `.env` file
 
-**2. Module Not Found Error**
+**3. Module Not Found Error**
 ```
 ModuleNotFoundError: No module named 'xxx'
 ```
 - Ensure virtual environment is activated
-- Run `pip install -r requirements.txt` again
+- Run `pip install -r Server/requirements.txt` again
 
-**3. CORS Error in Browser**
+**4. CORS Error in Browser**
 ```
 Access to fetch has been blocked by CORS policy
 ```
 - Check that backend is running on port 3000
-- Verify `VITE_API_URL` in frontend `.env` file
+- Verify `CORS_ORIGINS` in `.env` includes your frontend URL
 
-**4. API Key Errors**
+**5. API Key Errors**
 ```
 Error: Invalid API key
 ```
-- Double-check your API keys in `.env` files
+- Double-check your API keys in `.env` file
 - Ensure no extra spaces or quotes around keys
+
+**6. Port Already in Use**
+```
+Error: Address already in use
+```
+- Kill the process using the port: `npx kill-port 3000` or `npx kill-port 5173`
+- Or use a different port
 
 ---
 

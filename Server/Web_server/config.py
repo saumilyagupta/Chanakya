@@ -6,8 +6,9 @@ from typing import Optional
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env file from parent Server directory
-env_path = Path(__file__).parent.parent / '.env'
+# Load .env file from root directory (Chanakya/)
+root_dir = Path(__file__).parent.parent.parent
+env_path = root_dir / '.env'
 load_dotenv(dotenv_path=env_path)
 
 class Settings:

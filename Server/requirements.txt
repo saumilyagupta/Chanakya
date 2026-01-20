@@ -2,7 +2,7 @@
 # ============================
 
 # Core
-pydantic>=2.0.0
+pydantic>=2.5.0
 python-dateutil>=2.8.0
 numpy>=1.24.0
 
@@ -10,17 +10,13 @@ numpy>=1.24.0
 sentence-transformers>=2.2.0
 torch>=2.0.0
 
-# Gemini AI (new package)
+# Gemini AI
+google-generativeai>=0.8.0
 google-genai>=1.0.0
 
 # LangGraph for orchestration
 langgraph>=1.0.0
 langchain-core>=0.3.72,<1.0.0
-
-# Optional: IndicBERT (for future fine-tuning)
-# transformers>=4.35.0
-# torch>=2.0.0
-# sentencepiece>=0.1.99
 
 # Async support
 aiohttp>=3.9.0
@@ -42,22 +38,25 @@ pytest-asyncio>=0.23.0
 # Development
 python-dotenv>=1.0.0
 
-# Web Server (FastAPI) - Critical: Install in this order
-uvicorn>=0.24.0
+# Web Server (FastAPI)
+uvicorn>=0.27.0
 h11>=0.14.0
-fastapi>=0.104.0
+fastapi>=0.109.0
 motor>=3.3.0
 beanie>=1.23.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 email-validator>=2.0.0
-bcrypt==4.0.1
+bcrypt>=4.0.1
+python-multipart>=0.0.6
+httpx>=0.26.0
+sqlalchemy>=2.0.25
 
 # Twilio Integration
 twilio>=8.0.0
+
 # Sarvam AI
 sarvamai>=0.1.22
-python-multipart>=0.0.6
 
 # Export libraries (MODULE)
 reportlab>=4.0.0

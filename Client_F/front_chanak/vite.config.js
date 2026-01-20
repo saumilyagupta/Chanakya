@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 // Unified API URL - All APIs now run on port 3000
 const API_URL = process.env.API_URL || 'http://localhost:3000'
@@ -7,6 +8,8 @@ const API_URL = process.env.API_URL || 'http://localhost:3000'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Load .env from root directory (Chanakya/)
+  envDir: path.resolve(__dirname, '../../'),
   server: {
     proxy: {
       // Dashboard API endpoints - proxied to unified server

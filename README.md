@@ -13,7 +13,7 @@ Chanakya addresses the "implementation gap" in teacher training by providing jus
 - 📚 **NCERT RAG System** - Semantic search across NCERT textbooks
 - 🎙️ **Voice Support** - Speech-to-text and text-to-speech via Sarvam AI
 - 📊 **Teaching Analytics** - Real-time feedback and performance insights
-- 👨‍🏫 **Sahayak Pro** - Smart student feedback system
+- 👨‍🏫 **Dashboard** - Smart student feedback and classroom management
 
 ---
 
@@ -21,49 +21,103 @@ Chanakya addresses the "implementation gap" in teacher training by providing jus
 
 ### Prerequisites
 
-- **Python 3.11+** | **Node.js 18+** | **MongoDB**
+- **Python 3.11+** | **Node.js 18+** | **MongoDB** (Atlas or local)
 - API Keys: [Google Gemini](https://aistudio.google.com/apikey), [Sarvam AI](https://www.sarvam.ai/)
 
-### 1. Clone & Setup Backend
+---
 
-```powershell
+## ⚡ One-Command Setup (Recommended)
+
+The fastest way to get started is using our setup scripts:
+
+### Windows
+```cmd
 # Clone repository
 git clone https://github.com/Kautilya346/Chanakya.git
 cd Chanakya
 
-# Setup Python environment
-cd Server
-python -m venv venv
-.\venv\Scripts\Activate.ps1    # Windows PowerShell
-pip install -r requirements.txt
+# Run setup (installs everything)
+setup.bat
 
-# Configure environment
-copy .env.example .env
-# Edit .env with your GEMINI_API_KEY and SARVAM_API_KEY
+# Start the application
+run.bat
 ```
 
-### 2. Setup Frontend
+### Unix/Linux/Mac
+```bash
+# Clone repository
+git clone https://github.com/Kautilya346/Chanakya.git
+cd Chanakya
+
+# Make scripts executable & run setup
+chmod +x setup.sh run.sh
+./setup.sh
+
+# Start the application
+./run.sh
+```
+
+**What the scripts do:**
+1. ✅ Check for Python and Node.js
+2. ✅ Create Python virtual environment (`venv/`)
+3. ✅ Install all Python dependencies
+4. ✅ Install all npm packages
+5. ✅ Verify environment configuration
+
+---
+
+## 🔧 Manual Setup (Alternative)
+
+If you prefer manual control, follow these steps:
+
+### Step 1: Clone & Configure Environment
+
+```bash
+git clone https://github.com/Kautilya346/Chanakya.git
+cd Chanakya
+
+# Edit .env with your API keys
+# Required: GEMINI_API_KEY, VITE_SARVAM_API_KEY
+```
+
+### Step 2: Backend Setup
 
 ```powershell
-cd ..\Client_F\front_chanak
+# Create virtual environment
+python -m venv venv
+
+# Activate (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Activate (Windows CMD)
+.\venv\Scripts\activate.bat
+
+# Activate (Unix/Linux/Mac)
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r Server/requirements.txt
+```
+
+### Step 3: Frontend Setup
+
+```powershell
+cd Client_F\front_chanak
 npm install
+cd ..\..
 ```
 
-Configure `Client_F/front_chanak/.env`:
-```env
-VITE_SARVAM_API_KEY=your-sarvam-key
-VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
-VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
-VITE_API_URL=http://localhost:3000
-```
-
-### 3. Run the Application
+### Step 4: Run the Application
 
 **Terminal 1 - Backend (Port 3000):**
 ```powershell
-cd Server\Web_server
-..\venv\Scripts\Activate.ps1
-python main.py
+# Activate venv first
+.\venv\Scripts\Activate.ps1  # Windows
+source venv/bin/activate      # Unix
+
+# Run backend
+python Server/Web_server/main.py
 ```
 
 **Terminal 2 - Frontend (Port 5173):**
@@ -72,7 +126,9 @@ cd Client_F\front_chanak
 npm run dev
 ```
 
-### 4. Verify Setup
+---
+
+## ✅ Verify Setup
 
 | Service | URL |
 |---------|-----|
@@ -83,29 +139,60 @@ npm run dev
 
 ---
 
+## 🔑 Environment Configuration
+
+All configuration is stored in a single `.env` file in the project root:
+
+```env
+# ==================== Required ====================
+GEMINI_API_KEY=your-gemini-api-key
+
+# ==================== Sarvam AI (Voice) ====================
+VITE_SARVAM_API_KEY=your-sarvam-key
+VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
+VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
+
+# ==================== API URL ====================
+VITE_API_URL=http://localhost:3000
+
+# ==================== MongoDB ====================
+MONGODB_URL=your-mongodb-connection-string
+DATABASE_NAME=Chanakya
+
+# ==================== Optional ====================
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
+```
+
+---
+
 ## 📁 Project Structure
 
 ```
 Chanakya/
-├── Client_F/front_chanak/      # React + Vite Frontend
-│   ├── src/                    # React components & pages
-│   └── .env                    # Frontend environment config
+├── setup.bat / setup.sh       # One-command setup scripts
+├── run.bat / run.sh           # One-command run scripts
+├── .env                       # Unified environment configuration
 │
-├── Server/                     # Python Backend
-│   ├── Web_server/             # FastAPI Application (main.py)
-│   ├── nlp/                    # NLP Pipeline (Gemini integration)
-│   ├── orchestrator/           # LangGraph Orchestration
-│   ├── module/                 # Lesson Builder (MODULE)
-│   └── requirements.txt        # Python dependencies
+├── Client_F/front_chanak/     # React + Vite Frontend
+│   ├── src/                   # React components & pages
+│   └── vite.config.js         # Vite configuration
 │
-├── embedding/                  # RAG System for NCERT Books
-│   ├── generate_embeddings.py  # PDF → Embeddings pipeline
-│   ├── query_books.py          # Semantic search interface
-│   └── ncert_books.db          # SQLite vector database
+├── Server/                    # Python Backend
+│   ├── Web_server/            # FastAPI Application (main.py)
+│   ├── nlp/                   # NLP Pipeline (Gemini integration)
+│   ├── orchestrator/          # LangGraph Orchestration
+│   ├── module/                # Lesson Builder (MODULE)
+│   └── requirements.txt       # Python dependencies
 │
-├── feedback_system/            # Sahayak Pro Feedback Engine
-├── Finaldata/                  # NCERT PDF Books
-└── main.py                     # Direct RAG query script
+├── embedding/                 # RAG System for NCERT Books
+│   ├── generate_embeddings.py # PDF → Embeddings pipeline
+│   ├── query_books.py         # Semantic search interface
+│   └── ncert_books.db         # SQLite vector database
+│
+├── Finaldata/                 # NCERT PDF Books
+└── main.py                    # Direct RAG query script
 ```
 
 ---
@@ -146,34 +233,11 @@ Hindi, Bengali, Marathi, Tamil, Telugu, Kannada, Malayalam, Gujarati, Odia, Punj
 | `"இந்த பாடம் புரியவில்லை அவர்களுக்கு"` | `"They are not understanding this lesson"` |
 | `"Addition ka carry samajh nahi aa raha inko"` | `"They are not understanding the carry concept in addition"` |
 
-### Usage
-
-```python
-from nlp.pipeline import NLPPipeline
-from nlp.schemas import TeacherUtterance
-
-pipeline = NLPPipeline(gemini_api_key="your-key")
-utterance = TeacherUtterance(text="Bachche sun nahi rahe hain")
-result = pipeline.process_sync(utterance)
-
-print(result.english_understanding)  # "The children are not listening"
-print(result.detected_language)      # "hi"
-print(result.confidence)             # 0.95
-```
-
 ---
 
 ## 📚 RAG System for NCERT Books
 
 Retrieval-Augmented Generation (RAG) system for semantic search and question-answering over NCERT textbooks.
-
-### Architecture
-
-```
-PDF Books → LlamaParse → Text Extraction → Embeddings → SQLite Database
-                                                              ↓
-User Query → Embedding → Similarity Search → Context → Gemini LLM → Answer
-```
 
 ### Quick Usage
 
@@ -191,97 +255,18 @@ python embedding/query_books.py --interactive
 python main.py "Explain cells" --class "Class_7" --subject "Science"
 ```
 
-### Options
-
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--db-path` | SQLite database path | `embedding/ncert_books.db` |
-| `--top-k` | Number of results | 5 |
-| `--class` | Filter by class | All |
-| `--subject` | Filter by subject | All |
-| `--model` | Gemini model | `models/gemini-2.0-flash` |
-
----
-
-## 📥 NCERT Books Downloader
-
-Download all NCERT textbooks from the official website.
-
-```powershell
-# Download all books
-python download_ncert_books.py
-
-# Resume interrupted download
-python download_ncert_books.py
-
-# Start fresh
-python download_ncert_books.py --no-resume
-
-# Custom delay
-python download_ncert_books.py --delay 3.0
-```
-
-### Downloaded Structure
-
-```
-books/
-├── Class_1/
-│   ├── Mathematics/
-│   │   ├── English/
-│   │   │   └── Mathematics_English.pdf
-│   │   └── Hindi/
-│   │       └── Mathematics_Hindi.pdf
-│   └── Science/
-└── Class_2/
-    └── ...
-```
-
----
-
-## 🔧 Environment Variables
-
-### Server (`Server/.env`)
-
-```env
-# Required
-GEMINI_API_KEY=your-gemini-api-key
-
-# Optional
-ENVIRONMENT=development
-LOG_LEVEL=INFO
-SARVAM_API_KEY=your-sarvam-api-key
-MONGODB_URI=mongodb://localhost:27017/chanakya
-
-# Twilio (for voice/SMS)
-TWILIO_ACCOUNT_SID=your-sid
-TWILIO_AUTH_TOKEN=your-token
-TWILIO_PHONE_NUMBER=your-number
-```
-
-### Frontend (`Client_F/front_chanak/.env`)
-
-```env
-VITE_SARVAM_API_KEY=your-sarvam-key
-VITE_SARVAM_API_URL=https://api.sarvam.ai/speech-to-text
-VITE_SARVAM_TTS_API_URL=https://api.sarvam.ai/text-to-speech
-VITE_API_URL=http://localhost:3000
-```
-
 ---
 
 ## 🧪 Testing
 
 ```powershell
+# Activate virtual environment first
+.\venv\Scripts\Activate.ps1  # Windows
+source venv/bin/activate      # Unix
+
 # Backend tests
 cd Server
-.\venv\Scripts\Activate.ps1
 pytest
-
-# Specific tests
-python test_nlp.py                    # NLP pipeline
-python test_orchestrator.py           # Orchestrator
-python test_classroom_guidance.py     # Classroom guidance
-python test_teaching_feedback.py      # Feedback system
 
 # Frontend lint
 cd Client_F\front_chanak
@@ -302,8 +287,8 @@ cd Client_F\front_chanak
 npm run build
 
 # Production server
-cd Server\Web_server
-python main.py  # Or use: uvicorn main:app --host 0.0.0.0 --port 3000
+python Server/Web_server/main.py
+# Or use: uvicorn Server.Web_server.main:app --host 0.0.0.0 --port 3000
 ```
 
 ---
@@ -313,9 +298,9 @@ python main.py  # Or use: uvicorn main:app --host 0.0.0.0 --port 3000
 | Issue | Solution |
 |-------|----------|
 | **MongoDB connection error** | Ensure MongoDB is running: `mongod` |
-| **ModuleNotFoundError** | Activate venv and run `pip install -r requirements.txt` |
-| **CORS error** | Check backend is on port 3000, verify `VITE_API_URL` |
-| **Invalid API key** | Check `.env` files for correct keys (no quotes/spaces) |
+| **ModuleNotFoundError** | Activate venv and run `pip install -r Server/requirements.txt` |
+| **CORS error** | Check backend is on port 3000, verify frontend is on allowed origins |
+| **Invalid API key** | Check `.env` file for correct keys (no quotes/spaces) |
 | **Orchestrator not ready** | Check `GEMINI_API_KEY` is set correctly |
 
 ### Check API Keys
@@ -324,27 +309,26 @@ python main.py  # Or use: uvicorn main:app --host 0.0.0.0 --port 3000
 python embedding/check_api_keys.py
 ```
 
-### List Available Gemini Models
-
-```powershell
-python embedding/list_gemini_models.py
-```
-
 ---
 
 ## 📝 Available Scripts
 
-### Backend
+| Script | Description |
+|--------|-------------|
+| `setup.bat` / `setup.sh` | One-command project setup |
+| `run.bat` / `run.sh` | Start both frontend and backend |
 
+### Manual Commands
+
+**Backend:**
 ```powershell
-cd Server\Web_server && python main.py     # Run server
-cd Server && pytest                         # Run tests
-python embedding/generate_embeddings.py    # Generate embeddings
-python main.py "query"                     # Query RAG
+python Server/Web_server/main.py     # Run server
+cd Server && pytest                   # Run tests
+python embedding/generate_embeddings.py  # Generate embeddings
+python main.py "query"                # Query RAG
 ```
 
-### Frontend
-
+**Frontend:**
 ```powershell
 npm run dev      # Development server
 npm run build    # Production build

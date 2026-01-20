@@ -7,13 +7,9 @@ import os
 # Load environment variables from .env file
 from dotenv import load_dotenv
 
-# Load .env from Server directory
+# Load .env from root directory (Chanakya/)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 server_dir = os.path.dirname(current_dir)
-env_path = os.path.join(server_dir, '.env')
-load_dotenv(env_path)
-
-# Also try loading from root directory
 root_dir = os.path.dirname(server_dir)
 root_env_path = os.path.join(root_dir, '.env')
 load_dotenv(root_env_path)
