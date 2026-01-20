@@ -14,7 +14,7 @@ load_dotenv()
 
 # Try to import Google Generative AI, handle if not available
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -38,9 +38,8 @@ async def generate_questions_for_topic(
         return generate_fallback_questions(topic, subject, easy_count, medium_count, hard_count)
     
     try:
-        # Configure Gemini
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Configure Gemini with new API
+        client = genai.Client(api_key=api_key)
         
         prompt = f"""Generate classroom questions for teaching {subject}, specifically about the topic: "{topic}"
 
@@ -60,7 +59,10 @@ Return ONLY a JSON object in this exact format (no markdown, no code blocks):
 
 Do not include any other text, just the JSON."""
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-exp',
+            contents=prompt
+        )
         content = response.text.strip()
         
         # Parse JSON response
@@ -84,7 +86,13 @@ Do not include any other text, just the JSON."""
         return result
         
     except Exception as e:
-        print(f"AI generation failed: {e}")
+        error_msg = str(e)
+        print(f"AI generation failed: {error_msg}")
+        
+        # If rate limited, inform user
+        if "429" in error_msg or "quota" in error_msg.lower() or "rate" in error_msg.lower():
+            print("Note: API rate limit reached. Using fallback questions. Please try again in a few moments.")
+        
         return generate_fallback_questions(topic, subject, easy_count, medium_count, hard_count)
 
 
