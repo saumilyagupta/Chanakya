@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="chanak_main.png" alt="Chanakya Banner" width="600px" style="border-radius: 10px; margin-bottom: 20px;" />
+<img src="chanak_main.png" alt="Chanakya Banner" width="280px" style="border-radius: 10px; margin-bottom: 20px;" />
 
 # 🎓 Chanakya
 
