@@ -237,9 +237,9 @@ function Landing() {
         {/* Left Block - Yellow */}
         <div className="w-full md:w-1/2 bg-[#FDE047] border-2 border-[#000000] p-4 md:p-8 flex items-center grid-texture">
           <p className="text-[#000000] text-base md:text-2xl">
-            An AI-powered classroom companion offering real-time listening,
-            instant crisis support, smart pre-class planning, activity ideas and
-            multilingual help.
+            AI-powered classroom companion that supports teachers
+            before class, during class, and after class — with real-time listening,
+            instant crisis help, smart lesson planning, and multilingual support.
           </p>
         </div>
 
@@ -250,11 +250,22 @@ function Landing() {
             alt="Chanakya Character"
             className="w-48 h-48 md:w-71 md:h-71 object-contain"
           />
-          <p className="text-[#000000] text-base md:text-2xl">
-            An AI-powered classroom companion offering real-time listening,
-            instant crisis support, smart pre-class planning, activity ideas and
-            multilingual help.
+          <p className="text-[#000000] font-extrabold uppercase text-3xl md:text-5xl lg:text-6xl tracking-wide">
+            <RotatingText
+              texts={["ASSIST", "COACH", "GUIDE", "FRIEND"]}
+
+              mainClassName="px-3 md:px-4 bg-[#000000] text-[#DDD6FE] overflow-hidden py-1 md:py-2 rounded-lg inline-flex"
+              staggerFrom="first"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-120%" }}
+              staggerDuration={0.04}
+              splitLevelClassName="overflow-hidden"
+              transition={{ type: "spring", damping: 30, stiffness: 400 }}
+              rotationInterval={2200}
+            />
           </p>
+
         </div>
       </section>
 
@@ -304,8 +315,9 @@ function Landing() {
             <span className="text-[#000000]">NOT</span> JUST AN ASSISTANT.
           </h2>
           <p className="text-[#000000] text-base md:text-2xl">
-            An EdTech solution focused on providing continuous support for
-            teachers' day-to-day academic and classroom activities.
+            A continuous support system for teachers -
+            helping them plan better, handle live classrooms,
+            and reflect on teaching without waiting for a mentor visit.
           </p>
         </div>
       </section>
@@ -359,6 +371,22 @@ function Landing() {
             </button>
             <button className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all">
               Deep thinking Mode
+            </button>
+          </div>
+
+          {/* Row - Personalized-Q/A Generator & Offline Mode */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto mt-6 md:mt-8">
+            <button
+              onClick={() => navigate("/personalized-support")}
+              className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+            >
+              Personalized-Q/A Generator
+            </button>
+            <button
+              onClick={() => alert("Offline Mode Coming Soon!")}
+              className="bg-white border-2 border-[#000000] px-4 md:px-6 py-3 md:py-4 text-black font-bold text-sm md:text-base shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+            >
+              Offline Mode
             </button>
           </div>
         </div>

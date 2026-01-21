@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <footer className="bg-[#fff8f8] border-t-2 border-[#000000] px-8 py-6">
+    <footer className="bg-[#ffffff]  border-2 border-[#000000] px-8 py-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Left - Brand */}
         <div className="text-center md:text-left">
@@ -11,9 +11,11 @@ function Footer() {
         {/* Center - Team Credit */}
         <div className="text-center">
           <p className="text-sm text-[#000000]">
-            Designed and Developed by Team Mirage for ShikshaLokam
+            Designed and Developed by{" "}
+            <span className="font-semibold">Team Mirage</span> for ShikshaLokam
           </p>
         </div>
+
 
         {/* Right - Copyright */}
         <div className="text-center md:text-right">
