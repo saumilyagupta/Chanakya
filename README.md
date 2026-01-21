@@ -1,9 +1,11 @@
-<div align="left">
-  <img src="chanak_main.png" alt="Chanakya" width="200px" align="left" style="margin-right: 20px; margin-bottom: 10px;" />
-  
-  <div>
-    
-# 🎓 Chanakya
+<table>
+<tr>
+<td width="200px">
+<img src="chanak_main.png" alt="Chanakya" width="200px" />
+</td>
+<td>
+
+# Chanakya
 
 ### Real-time AI-powered classroom decision-support system for Indian primary school teachers
 
@@ -13,14 +15,11 @@
 [![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
 [![License](https://img.shields.io/badge/License-Educational-orange.svg)](LICENSE)
 
-<br clear="left"/>
-
 **Chanakya addresses the "implementation gap" in teacher training by providing just-in-time pedagogical support during live classroom moments. It combines multilingual NLP, RAG-based knowledge retrieval, and AI-powered feedback to help teachers deliver better learning outcomes.**
 
-  </div>
-</div>
-
----
+</td>
+</tr>
+</table>
 
 ## ✨ Key Features
 
