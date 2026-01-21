@@ -301,10 +301,30 @@ class ChanakyaOrchestrator:
     
     async def _detect_language(self, text: str) -> str:
         """
-        Detect language of input text using LLM.
+        Detect language of input text using character analysis first, then LLM.
         
         Returns: Full language name (e.g., 'English', 'Hindi', 'Tamil', 'Hinglish')
         """
+        # Fast character-based detection for Devanagari scripts
+        if any('\u0900' <= char <= '\u097F' for char in text):
+            self.logger.info("language_detection", detected='Hindi', method='character_analysis')
+            return 'Hindi'
+        
+        # Check for other Indic scripts
+        if any('\u0A80' <= char <= '\u0AFF' for char in text):
+            self.logger.info("language_detection", detected='Gujarati', method='character_analysis')
+            return 'Gujarati'
+        if any('\u0B00' <= char <= '\u0B7F' for char in text):
+            self.logger.info("language_detection", detected='Tamil', method='character_analysis')
+            return 'Tamil'
+        if any('\u0C00' <= char <= '\u0C7F' for char in text):
+            self.logger.info("language_detection", detected='Telugu', method='character_analysis')
+            return 'Telugu'
+        if any('\u0980' <= char <= '\u09FF' for char in text):
+            self.logger.info("language_detection", detected='Bengali', method='character_analysis')
+            return 'Bengali'
+        
+        # Fallback to LLM for Hinglish/English detection
         try:
             response = await self.client.aio.models.generate_content(
                 model=self.model_name,
@@ -313,22 +333,16 @@ class ChanakyaOrchestrator:
                         role="user",
                         parts=[types.Part(text=f"""Identify the language. Look for these patterns:
 
-**Hindi** (Devanagari script):
-- Contains Devanagari characters: न, म, त, ग, क, र, व, etc.
-- Example: "गणित में वृत्त क्या होता है?"
-- If you see Devanagari script, it's Hindi
-
 **Hinglish** (Hindi + English mix in Roman script):
 - Contains Hindi words in Roman script: kya, hai, mein, ka, ko, se, ke, hota, hoti, kar, karo, etc.
 - Examples: "kya hai", "explain karo", "photosynthesis kya hota hai", "mujhe batao"
 - If you see words like: kya, hai, kaise, kahan, kab, kyun, mein - it's Hinglish
 
-**English**: Pure English, no Hindi words or Devanagari script
-**Other**: Tamil, Bengali, Telugu, Gujarati, Marathi, Kannada, Malayalam
+**English**: Pure English, no Hindi words
 
 Text: "{text}"
 
-Respond with ONLY ONE word from: Hindi, Hinglish, English, Tamil, Bengali, Telugu, Gujarati, Marathi, Kannada, Malayalam
+Respond with ONLY ONE word: Hinglish or English
 
 Language:""")]
                     )
@@ -1403,7 +1417,7 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                     tool=tool_name
                 )
                 
-                # Handle ActivityOutput (activity_generator)
+                # Handle ActivityOutput (from activity_generator, crisis_handler, etc.)
                 if isinstance(result, ActivityOutput):
                     # Translate activity fields
                     result.activity_name = await self._translate_text(result.activity_name, detected_lang)

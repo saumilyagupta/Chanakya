@@ -194,12 +194,17 @@ class CrisisHandlerTool:
         
         Args:
             crisis_description: Description of the classroom crisis
-            context: Optional context (grade level, subject, etc.)
+            context: Optional context (grade level, subject, detected_language, etc.)
         
         Returns:
             ActivityOutput with the crisis intervention
         """
         start_time = time.time()
+        
+        # Detect target language from context
+        target_lang = 'English'
+        if context and context.get('detected_language'):
+            target_lang = context['detected_language']
         
         # Build the prompt with context if provided
         context_str = ""
@@ -216,6 +221,10 @@ class CrisisHandlerTool:
             user_prompt += f"\n\nContext:{context_str}"
         
         user_prompt += "\n\nProvide an IMMEDIATE intervention that works in under 2 minutes. The teacher needs help RIGHT NOW."
+        
+        # Add language instruction if not English
+        if target_lang != 'English':
+            user_prompt += f"\n\nIMPORTANT: Generate the response in {target_lang} language. All text fields (activity_name, description, steps, tips, learning_outcome) must be in {target_lang}."
         
         try:
             response = await self.client.aio.models.generate_content(

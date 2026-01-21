@@ -1,7 +1,7 @@
 import apiClient from './apiClient'
 
 // Use feedback_system backend URL - adjust if different
-const FEEDBACK_BACKEND_URL = import.meta.env.VITE_FEEDBACK_BACKEND_URL || 'http://localhost:8000'
+const FEEDBACK_BACKEND_URL = import.meta.env.VITE_FEEDBACK_BACKEND_URL || 'http://localhost:3000'
 
 // Create a separate axios instance for feedback_system backend
 import axios from 'axios'

@@ -42,7 +42,7 @@ function Personalized_student_support() {
       console.error("Failed to load classes:", error);
       // Show user-friendly error
       alert(
-        "Failed to load classes. Make sure the backend is running on http://localhost:8000"
+        "Failed to load classes. Make sure the backend is running on http://localhost:3000"
       );
     } finally {
       setLoading(false);
