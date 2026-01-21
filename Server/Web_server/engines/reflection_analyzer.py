@@ -15,11 +15,11 @@ load_dotenv()
 
 # Try to import Google Generative AI, handle if not available
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
-    print("Warning: google-generativeai not installed. Using fallback analysis.")
+    print("Warning: google-genai not installed. Using fallback analysis.")
 
 
 async def analyze_class_transcript(
@@ -52,9 +52,8 @@ async def analyze_class_transcript(
         return generate_smart_fallback(transcript, topic, subject, class_level)
     
     try:
-        # Configure Gemini
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Configure Gemini with new API
+        client = genai.Client(api_key=api_key)
         
         prompt = f"""You are an expert teaching coach for Indian schools, analyzing a classroom transcript.
 
@@ -113,7 +112,10 @@ Return ONLY valid JSON (no markdown code blocks):
 
 Be encouraging but honest. Give specific, actionable feedback based on the actual transcript content."""
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-exp',
+            contents=prompt
+        )
         content = response.text.strip()
         
         # Parse JSON response - handle markdown code blocks
