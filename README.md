@@ -98,7 +98,7 @@ Dynamically recommends which student to question and what difficulty level to us
 <tr>
 <td colspan="2" valign="top">
 
-### 📞 **Offline Mode (Twilio Integration)**
+### <img src="twilio_transp.png" alt="Twilio" width="24px" style="vertical-align: middle;" /> **Offline Mode (Twilio Integration)**
 #### *Zero-Internet AI Access*
 
 Enables teachers to interact with Chanakya's AI using regular phone calls or SMS—no internet, smartphone, or digital literacy required.
@@ -268,7 +268,7 @@ TWILIO_PHONE_NUMBER=
 ## 🏗️ Architecture
 
 <div align="center">
-  <img src="chanak_AD_fnl.png" alt="Chanakya Architecture Diagram" width="100%" />
+  <img src="chanak_AD_fnl (1).png" alt="Chanakya Architecture Diagram" width="100%" />
 </div>
 
 ---
