@@ -32,6 +32,89 @@
 
 ---
 
+## 🎯 Core Modes & Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 📝 **Module Creator Mode**
+#### *AI-Powered Lesson Builder*
+
+Transforms NCERT textbook content into structured, ready-to-teach lessons with automatic assignment generation.
+
+**What it does:**
+- Generates fixed 8-slide lesson presentations
+- Creates mixed assessments (MCQ, short answer, long answer)
+- Validates content alignment with curriculum
+- Exports in teacher-friendly formats
+
+</td>
+<td width="50%" valign="top">
+
+### 🎤 **Active Listening Mode**
+#### *Live Teaching Coach*
+
+Real-time classroom audio analysis that provides actionable feedback on your teaching effectiveness.
+
+**What it does:**
+- Records and transcribes classroom audio (Sarvam AI STT)
+- Automatic language detection for Indian languages
+- AI-powered teaching analysis engine
+- Structured feedback on engagement & improvement areas
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🚨 **Crisis Handling Mode**
+#### *Instant Classroom Interventions*
+
+Provides immediate, actionable strategies for managing live classroom disruptions without requiring devices or materials.
+
+**What it does:**
+- Handles noise, restlessness, low energy, loss of focus
+- Designed for large, rural classrooms
+- No device or material dependency
+- Context-aware intervention suggestions
+
+</td>
+<td width="50%" valign="top">
+
+### 🎯 **Personalized Q/A Generator**
+#### *Smart Student Engagement*
+
+Dynamically recommends which student to question and what difficulty level to use, based on real-time performance data.
+
+**What it does:**
+- Uses student profiles & performance history
+- Multi-factor priority scoring algorithm
+- Adaptive difficulty recommendations
+- Ensures equitable classroom participation
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+### 📞 **Offline Mode (Twilio Integration)**
+#### *Zero-Internet AI Access*
+
+Enables teachers to interact with Chanakya's AI using regular phone calls or SMS—no internet, smartphone, or digital literacy required.
+
+**What it does:**
+- Voice and SMS-based AI interaction via Twilio
+- Works on basic feature phones
+- Speech and text AI integration
+- Delivers guidance in low-connectivity areas
+
+</td>
+</tr>
+</table>
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -181,6 +264,18 @@ TWILIO_PHONE_NUMBER=
 ```
 
 ---
+
+## 🏗️ Architecture
+
+<div align="center">
+  <img src="chanak_AD_fnl.png" alt="Chanakya Architecture Diagram" width="100%" />
+</div>
+
+---
+## ✨ Special Features 
+
+
+
 
 ## 📁 Project Structure
 
@@ -352,17 +447,7 @@ npm run lint     # Lint code
 ```
 
 ---
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
+  
 ## 📄 License
 
 This project is provided for educational purposes. Please respect NCERT's terms of service and copyright policies when using downloaded materials.
