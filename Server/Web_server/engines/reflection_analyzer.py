@@ -8,10 +8,13 @@ teaching feedback, student engagement insights, and improvement suggestions.
 import os
 import json
 import re
+from pathlib import Path
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (Chanakya/)
+_root_dir = Path(__file__).resolve().parent.parent.parent.parent
+load_dotenv(dotenv_path=_root_dir / ".env")
 
 # Try to import Google Generative AI, handle if not available
 try:
@@ -113,7 +116,7 @@ Return ONLY valid JSON (no markdown code blocks):
 Be encouraging but honest. Give specific, actionable feedback based on the actual transcript content."""
 
         response = client.models.generate_content(
-            model='gemini-2.0-flash-exp',
+            model='gemini-2.0-flash-001',
             contents=prompt
         )
         content = response.text.strip()

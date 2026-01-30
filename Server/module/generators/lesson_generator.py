@@ -16,10 +16,10 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-# Load environment variables from .env file in Server directory
+# Load .env from project root (Chanakya/)
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_server_dir = os.path.dirname(os.path.dirname(_current_dir))
-_env_path = os.path.join(_server_dir, '.env')
+_root_dir = os.path.dirname(os.path.dirname(os.path.dirname(_current_dir)))
+_env_path = os.path.join(_root_dir, '.env')
 load_dotenv(_env_path)
 
 from ..models.schemas import (

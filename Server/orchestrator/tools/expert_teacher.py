@@ -7,6 +7,7 @@ Acts as a knowledgeable teacher who can explain concepts, answer questions,
 and provide educational guidance beyond the textbook content.
 """
 
+import json
 import structlog
 from typing import Optional, Dict, Any
 from google import genai
@@ -27,7 +28,7 @@ class ExpertTeacherTool(BaseTool):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-2.0-flash-exp",
+        model_name: str = "gemini-2.5-flash",
         temperature: float = 0.7,
     ):
         """
@@ -139,7 +140,6 @@ class ExpertTeacherTool(BaseTool):
             )
             
             # Parse JSON response
-            import json
             result = json.loads(response.text)
             
             # Log success

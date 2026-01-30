@@ -32,6 +32,7 @@ class QueryResponse(BaseModel):
     processing_time_ms: float = Field(..., description="Processing time in milliseconds")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
     error: Optional[str] = Field(None, description="Error message if query failed")
+    from_cache: bool = Field(False, description="True if response was served from cache (no LLM call)")
 
     class Config:
         json_schema_extra = {

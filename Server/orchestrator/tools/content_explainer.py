@@ -84,7 +84,7 @@ class ContentExplainerTool(BaseTool):
     def __init__(
         self,
         db_path: str = "orchestrator/tools/RAG/ncert_books.db",
-        model_name: str = "gemini-2.0-flash-exp",
+        model_name: str = "gemini-2.0-flash-001",
         embedding_model: str = "sentence-transformers/sentence-t5-large",
         top_k: int = 5,
         temperature: float = 0.3
