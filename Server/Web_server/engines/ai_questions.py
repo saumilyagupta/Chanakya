@@ -60,7 +60,7 @@ Return ONLY a JSON object in this exact format (no markdown, no code blocks):
 Do not include any other text, just the JSON."""
 
         response = client.models.generate_content(
-            model='gemini-2.0-flash-exp',
+            model='models/gemini-2.0-flash-001',
             contents=prompt
         )
         content = response.text.strip()
