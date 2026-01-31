@@ -350,7 +350,7 @@ function ChatInterface() {
   }, [isRecording]);
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
+    <div className="min-h-screen h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
       {/* Background Image with very low opacity */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -363,7 +363,7 @@ function ChatInterface() {
         }}
       />
 
-      <div className="relative z-10 flex w-full flex-1">
+      <div className="relative z-10 flex w-full flex-1 min-h-0">
         {/* Sidebar - Chat History */}
         <aside className="hidden md:flex flex-col w-56 bg-[#FFFFFF] border-r-2 border-[#000000]">
           {/* Sidebar Header
@@ -456,7 +456,7 @@ function ChatInterface() {
         </aside>
 
         {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col h-screen bg-[#FFFFFF]">
+        <main className="flex-1 flex flex-col bg-[#FFFFFF] min-h-0">
           {/* Mobile Header */}
           <div className="md:hidden flex items-center justify-between px-4 py-3 border-b-2 border-[#000000] bg-[#FFFFFF]">
             <Link to="/" className="text-lg font-bold text-[#000000]">
@@ -483,7 +483,7 @@ function ChatInterface() {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto px-4 py-8">
+          <div className="flex-1 overflow-y-auto px-4 py-8 min-h-0 max-h-[calc(100vh-200px)]">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full max-w-3xl mx-auto">
                 <div>
@@ -761,7 +761,7 @@ function ChatInterface() {
           </div>
 
           {/* Input Area */}
-          <div className="border-t-2 border-[#000000] bg-[#FFFFFF] px-4 py-2 mb-12">
+          <div className="flex-shrink-0 border-t-2 border-[#000000] bg-[#FFFFFF] px-4 py-2">
             <div className="max-w-5xl mx-auto">
               <div className="flex items-end gap-3 border-2 border-[#000000] rounded-lg px-3 py-3 bg-white shadow-[2px_2px_0px_0px_#000000]">
                 <button

@@ -102,7 +102,7 @@ class TeachingFeedbackAnalyzer:
     def __init__(self, api_key: str):
         """Initialize with Google API key."""
         self.client = genai.Client(api_key=api_key)
-        self.model_name = "gemini-2.0-flash-exp"
+        self.model_name = "models/gemini-2.0-flash-001"
         self.logger = structlog.get_logger("chanakya.teaching_feedback")
     
     async def analyze(self, session: TeachingSession) -> TeachingFeedback:

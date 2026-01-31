@@ -77,7 +77,7 @@ class TeacherMotivationTool(BaseTool):
     def __init__(self, api_key: str):
         """Initialize with Google API key."""
         self.client = genai.Client(api_key=api_key)
-        self.model_name = "gemini-2.0-flash-exp"
+        self.model_name = "models/gemini-2.0-flash-001"
     
     async def run(self, query: str, context: Optional[dict] = None) -> dict:
         """

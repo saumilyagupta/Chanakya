@@ -50,14 +50,12 @@ class OrchestratorState(TypedDict):
     context: Optional[dict]
     session_id: str
     
-    # Processing state
     messages: list  # Simple list of message dicts
     intent: Optional[str]
     selected_tool: Optional[str]
     tool_reasoning: Optional[str]
     confidence: float
     
-    # Retry and validation
     retry_count: int
     max_retries: int
     is_valid: bool
@@ -72,7 +70,6 @@ class OrchestratorState(TypedDict):
     needs_follow_up: bool
     follow_up_action: Optional[str]
     
-    # Fallback handling
     needs_fallback: bool
     fallback_from_tool: Optional[str]
     fallback_count: int

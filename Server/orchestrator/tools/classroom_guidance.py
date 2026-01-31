@@ -202,7 +202,7 @@ class ClassroomGuidanceTool(BaseTool):
     name = "classroom_guidance"
     description = "Provides practical tips and strategies for daily teaching challenges and student learning issues"
     
-    def __init__(self, api_key: str, model_name: str = "gemini-2.0-flash-exp", temperature: float = 0.7):
+    def __init__(self, api_key: str, model_name: str = "models/gemini-2.0-flash-001", temperature: float = 0.7):
         """
         Initialize the Classroom Guidance tool.
         
