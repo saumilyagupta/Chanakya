@@ -136,11 +136,15 @@ echo ""
 echo -e "${YELLOW}[5/6] Checking environment configuration...${NC}"
 
 if [ -f ".env" ]; then
-    echo -e "${GREEN}✓ .env file found${NC}"
+    echo -e "${GREEN}✓ .env file found (root)${NC}"
 else
     echo -e "${YELLOW}! .env file not found${NC}"
-    if [ -f "Server/.env.example" ]; then
-        echo -e "  Creating .env from template..."
+    if [ -f ".env.example" ]; then
+        echo -e "  Creating .env from root .env.example..."
+        cp .env.example .env
+        echo -e "${YELLOW}! Please edit .env with your API keys${NC}"
+    elif [ -f "Server/.env.example" ]; then
+        echo -e "  Creating .env from Server/.env.example..."
         cp Server/.env.example .env
         echo -e "${YELLOW}! Please edit .env with your API keys${NC}"
     fi

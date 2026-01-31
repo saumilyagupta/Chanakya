@@ -3,12 +3,16 @@ Orchestrator service for handling queries with ChanakyaOrchestrator.
 """
 import sys
 import os
+import json
+import re
 import time
+import threading
 from datetime import datetime
 
 # Add parent directory to path to import orchestrator
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
+from cachetools import TTLCache
 from orchestrator import ChanakyaOrchestrator
 from orchestrator.schemas import OrchestratorInput
 import structlog
@@ -18,6 +22,43 @@ from schemas.query import QueryRequest, QueryResponse
 
 logger = structlog.get_logger(__name__)
 
+# Leading phrases to strip for cache key only (conservative list to avoid merging different intents)
+_CACHE_NORMALIZE_PREFIXES = (
+    "what is ",
+    "what's ",
+    "tell me ",
+    "explain ",
+    "can you tell me ",
+    "can you explain ",
+)
+
+
+def _normalize_query_for_cache(query: str) -> str:
+    """
+    Normalize query for cache key so variants like "what is 2+2", "2+2", "2 + 2" hit the same entry.
+    Used only for building the cache key; original query is still sent to the orchestrator.
+    """
+    if not query:
+        return ""
+    s = query.strip().lower()
+    s = re.sub(r"\s+", " ", s)
+    s = s.rstrip("?")
+    s = s.strip()
+    for prefix in _CACHE_NORMALIZE_PREFIXES:
+        if s.startswith(prefix):
+            rest = s[len(prefix) :].strip()
+            if rest:
+                s = rest
+            break
+    return s
+
+
+def _query_cache_key(query_request: QueryRequest) -> tuple:
+    """Build a hashable cache key from normalized query and context (excludes session_id)."""
+    query_normalized = _normalize_query_for_cache(query_request.query)
+    context_str = json.dumps(query_request.context or {}, sort_keys=True)
+    return (query_normalized, context_str)
+
 
 class OrchestratorService:
     """Service for processing queries using ChanakyaOrchestrator."""
@@ -26,6 +67,14 @@ class OrchestratorService:
         """Initialize the orchestrator service."""
         self.orchestrator = None
         self.initialized = False
+        self._cache_enabled = getattr(settings, "QUERY_CACHE_ENABLED", True)
+        self._query_cache: TTLCache | None = None
+        self._cache_lock = threading.Lock()
+        if self._cache_enabled:
+            maxsize = getattr(settings, "QUERY_CACHE_MAX_SIZE", 500)
+            ttl = getattr(settings, "QUERY_CACHE_TTL_SECONDS", 3600)
+            self._query_cache = TTLCache(maxsize=maxsize, ttl=ttl)
+            logger.info("Query cache enabled", maxsize=maxsize, ttl_seconds=ttl)
         
     def initialize(self):
         """Initialize the ChanakyaOrchestrator with API key."""
@@ -62,6 +111,15 @@ class OrchestratorService:
                 status_code=503,
                 detail="Orchestrator service not initialized. Please try again later."
             )
+        
+        # Return cached response for repeated identical query (no LLM call)
+        if self._cache_enabled and self._query_cache is not None:
+            key = _query_cache_key(query_request)
+            with self._cache_lock:
+                cached = self._query_cache.get(key)
+            if cached is not None:
+                logger.info("Returning cached response for query", query=query_request.query[:100])
+                return cached.model_copy(update={"from_cache": True})
         
         start_time = time.time()
         
@@ -105,7 +163,7 @@ class OrchestratorService:
                 # If it's not a dict and not a model, convert to dict
                 result_dict = {"data": str(result_dict)}
             
-            return QueryResponse(
+            response = QueryResponse(
                 success=success,
                 tool_used=result.tool_used,
                 reasoning=result.reasoning,
@@ -115,6 +173,11 @@ class OrchestratorService:
                 timestamp=datetime.utcnow(),
                 error=result.error
             )
+            if self._cache_enabled and self._query_cache is not None and success:
+                key = _query_cache_key(query_request)
+                with self._cache_lock:
+                    self._query_cache[key] = response
+            return response
             
         except Exception as e:
             processing_time_ms = (time.time() - start_time) * 1000

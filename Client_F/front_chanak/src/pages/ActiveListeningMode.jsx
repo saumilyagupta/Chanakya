@@ -1,9 +1,23 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { transcribeAudio } from "../utils/sarvamApi";
 import apiClient from "../utils/apiClient";
+import {
+  createSession,
+  loadSession,
+  saveSession,
+  clearSession,
+  hasRecoverableSession,
+  saveChunk,
+  updateSessionTranscript,
+  completeSession,
+  syncToBackend,
+  setupOnlineListener,
+} from "../utils/sessionPersistence";
 
 // Chunk duration in milliseconds (25 seconds, safely under 30s API limit)
 const CHUNK_DURATION_MS = 25000;
+// Auto-save interval for crash recovery
+const AUTO_SAVE_INTERVAL_MS = 5000;
 
 function ActiveListeningMode() {
   // Recording states
@@ -12,6 +26,11 @@ function ActiveListeningMode() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [showOptions, setShowOptions] = useState(false);
+
+  // Session recovery states
+  const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
+  const [recoveredSession, setRecoveredSession] = useState(null);
+  const sessionIdRef = useRef(null);
 
   // Chunking states
   const [pendingChunks, setPendingChunks] = useState(0);
@@ -35,6 +54,7 @@ function ActiveListeningMode() {
   const chunkIndexRef = useRef(0);
   const chunkIntervalRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const autoSaveIntervalRef = useRef(null);
 
   const classLevels = [
     "Class 1",
@@ -77,6 +97,14 @@ function ActiveListeningMode() {
       if (text?.trim()) {
         setTranscript((prev) => {
           const newText = prev ? `${prev} ${text.trim()}` : text.trim();
+          
+          // Save chunk for crash recovery
+          if (sessionIdRef.current) {
+            saveChunk(sessionIdRef.current, text.trim(), chunkNum);
+            // Update session transcript in localStorage
+            updateSessionTranscript(sessionIdRef.current, newText, chunkNum);
+          }
+          
           return newText;
         });
         setProcessedChunks((prev) => prev + 1);
@@ -156,6 +184,11 @@ function ActiveListeningMode() {
       setChunkErrors(0);
       chunkIndexRef.current = 0;
 
+      // Create a new session for crash recovery
+      const session = createSession(classInfo);
+      sessionIdRef.current = session.sessionId;
+      console.log(`[Session] Created new session: ${session.sessionId}`);
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
@@ -167,9 +200,21 @@ function ActiveListeningMode() {
         rotateRecorder();
       }, CHUNK_DURATION_MS);
 
+      // Set up auto-save interval for crash recovery (every 5 seconds)
+      autoSaveIntervalRef.current = setInterval(() => {
+        if (sessionIdRef.current) {
+          const session = loadSession();
+          if (session && session.isActive) {
+            // Sync to backend periodically (non-blocking)
+            syncToBackend(apiClient, sessionIdRef.current, transcript, classInfo)
+              .catch(err => console.warn('[AutoSync] Background sync failed:', err.message));
+          }
+        }
+      }, AUTO_SAVE_INTERVAL_MS);
+
       setIsRecording(true);
       setIsPaused(false);
-      console.log("Recording started with 25s rotation intervals");
+      console.log("Recording started with 25s rotation intervals and auto-save enabled");
     } catch (error) {
       console.error("Error accessing microphone:", error);
       alert("Microphone access denied. Please enable microphone permissions.");
@@ -210,11 +255,23 @@ function ActiveListeningMode() {
       chunkIntervalRef.current = null;
     }
 
+    // Clear the auto-save interval
+    if (autoSaveIntervalRef.current) {
+      clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    }
+
     if (mediaRecorderRef.current && isRecording) {
       const recorderState = mediaRecorderRef.current.state;
       console.log(`stopRecording called, MediaRecorder state: ${recorderState}`);
 
       setIsProcessing(true);
+
+      // Mark session as completed (not active) for crash recovery
+      if (sessionIdRef.current) {
+        completeSession(sessionIdRef.current);
+        console.log(`[Session] Marked session ${sessionIdRef.current} as completed`);
+      }
 
       // Only stop if recorder is active (recording or paused)
       if (recorderState === "recording" || recorderState === "paused") {
@@ -277,7 +334,59 @@ function ActiveListeningMode() {
     setPendingChunks(0);
     setProcessedChunks(0);
     setChunkErrors(0);
+    setShowRecoveryDialog(false);
+    setRecoveredSession(null);
+    
+    // Clear saved session from localStorage
+    clearSession();
+    sessionIdRef.current = null;
+    console.log("[Session] Session reset and cleared");
   };
+
+  // Handle session recovery
+  const recoverSession = () => {
+    if (recoveredSession) {
+      setClassInfo({
+        topic: recoveredSession.topic,
+        subject: recoveredSession.subject,
+        classLevel: recoveredSession.classLevel,
+      });
+      setTranscript(recoveredSession.transcript || "");
+      setProcessedChunks(recoveredSession.chunkCount || 0);
+      sessionIdRef.current = recoveredSession.sessionId;
+      setShowOptions(true); // Show options to continue or analyze
+      console.log(`[Session] Recovered session: ${recoveredSession.sessionId}`);
+    }
+    setShowRecoveryDialog(false);
+    setRecoveredSession(null);
+  };
+
+  // Dismiss recovery (start fresh)
+  const dismissRecovery = () => {
+    clearSession();
+    setShowRecoveryDialog(false);
+    setRecoveredSession(null);
+    console.log("[Session] Recovery dismissed, starting fresh");
+  };
+
+  // Check for recoverable session on mount
+  useEffect(() => {
+    if (hasRecoverableSession()) {
+      const session = loadSession();
+      if (session) {
+        setRecoveredSession(session);
+        setShowRecoveryDialog(true);
+        console.log(`[Session] Found recoverable session: ${session.sessionId}`);
+      }
+    }
+    
+    // Set up online listener for sync when back online
+    const cleanupOnlineListener = setupOnlineListener(apiClient);
+    
+    return () => {
+      cleanupOnlineListener();
+    };
+  }, []);
 
   // Cleanup on unmount only
   useEffect(() => {
@@ -285,6 +394,10 @@ function ActiveListeningMode() {
       // Clear rotation interval
       if (chunkIntervalRef.current) {
         clearInterval(chunkIntervalRef.current);
+      }
+      // Clear auto-save interval
+      if (autoSaveIntervalRef.current) {
+        clearInterval(autoSaveIntervalRef.current);
       }
       // Stop recorder if active
       if (mediaRecorderRef.current) {
@@ -302,6 +415,66 @@ function ActiveListeningMode() {
       }
     };
   }, []); // Empty dependency array - only runs on unmount
+
+  // Recovery Dialog Component
+  const RecoveryDialog = () => {
+    if (!showRecoveryDialog || !recoveredSession) return null;
+
+    const timeSince = Math.round((Date.now() - recoveredSession.lastUpdate) / 60000);
+    const transcriptPreview = recoveredSession.transcript?.substring(0, 150) || "";
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white border-3 border-[#000000] rounded-xl shadow-[6px_6px_0px_0px_#000000] max-w-md w-full p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-[#FEF3C7] border-2 border-[#000000] rounded-full flex items-center justify-center">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[#000000]" style={{ fontFamily: "TT Firs Neue, sans-serif" }}>
+                Session Recovery
+              </h3>
+              <p className="text-xs text-gray-600">
+                Found an interrupted session
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-[#F3F4F6] border-2 border-[#000000] rounded-lg p-3 mb-4">
+            <div className="text-xs space-y-1">
+              <p><span className="font-semibold">Topic:</span> {recoveredSession.topic}</p>
+              <p><span className="font-semibold">Subject:</span> {recoveredSession.subject}</p>
+              <p><span className="font-semibold">Class:</span> {recoveredSession.classLevel}</p>
+              <p><span className="font-semibold">Chunks recorded:</span> {recoveredSession.chunkCount || 0}</p>
+              <p><span className="font-semibold">Last active:</span> {timeSince} minutes ago</p>
+            </div>
+            {transcriptPreview && (
+              <div className="mt-2 pt-2 border-t border-gray-300">
+                <p className="text-xs text-gray-600 italic">
+                  "{transcriptPreview}..."
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={recoverSession}
+              className="flex-1 py-2 px-4 text-sm font-bold bg-[#22C55E] text-white border-2 border-[#000000] rounded-lg shadow-[3px_3px_0px_0px_#000000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all"
+            >
+              Recover Session
+            </button>
+            <button
+              onClick={dismissRecovery}
+              className="flex-1 py-2 px-4 text-sm font-bold bg-white border-2 border-[#000000] rounded-lg shadow-[3px_3px_0px_0px_#000000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all"
+            >
+              Start Fresh
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Feedback Summary Component
   const FeedbackSummary = ({ feedback, onClose }) => {
@@ -427,6 +600,9 @@ function ActiveListeningMode() {
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
+      {/* Session Recovery Dialog */}
+      <RecoveryDialog />
+      
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

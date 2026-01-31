@@ -7,6 +7,7 @@ Acts as a knowledgeable teacher who can explain concepts, answer questions,
 and provide educational guidance beyond the textbook content.
 """
 
+import json
 import structlog
 from typing import Optional, Dict, Any
 from google import genai
@@ -139,7 +140,6 @@ class ExpertTeacherTool(BaseTool):
             )
             
             # Parse JSON response
-            import json
             result = json.loads(response.text)
             
             # Log success

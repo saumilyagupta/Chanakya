@@ -46,4 +46,9 @@ class Settings:
     TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "")
     TWILIO_WEBHOOK_URL: str = os.getenv("TWILIO_WEBHOOK_URL", "")
 
+    # Query cache (repeated identical queries return cached response, no LLM call)
+    QUERY_CACHE_ENABLED: bool = os.getenv("QUERY_CACHE_ENABLED", "true").lower() == "true"
+    QUERY_CACHE_MAX_SIZE: int = int(os.getenv("QUERY_CACHE_MAX_SIZE", "500"))
+    QUERY_CACHE_TTL_SECONDS: int = int(os.getenv("QUERY_CACHE_TTL_SECONDS", "3600"))
+
 settings = Settings()

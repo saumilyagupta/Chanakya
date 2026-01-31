@@ -26,6 +26,7 @@ function ChatInterface() {
   const [speakingMessageId, setSpeakingMessageId] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
+  const nextMessageIdRef = useRef(0);
 
   // Load chat history on mount
   useEffect(() => {
@@ -81,7 +82,7 @@ function ChatInterface() {
         // Convert backend messages to frontend format
         const formattedMessages = response.messages.map((msg, idx) => {
           const baseMessage = {
-            id: Date.now() + idx,
+            id: `session-${sessionId}-${idx}`,
             from: msg.role === "user" ? "teacher" : "bot",
             text: msg.content,
           };
@@ -146,15 +147,16 @@ function ChatInterface() {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
+    const userMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
+    const botMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
     setMessages((m) => [
       ...m,
-      { id: Date.now(), from: "teacher", text: userMessage },
+      { id: userMessageId, from: "teacher", text: userMessage },
     ]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const botMessageId = Date.now() + 1;
 
       // Use existing session ID or create new one
       const sessionId = currentSessionId || `session_${Date.now()}`;
@@ -193,6 +195,7 @@ function ChatInterface() {
           data: data, // Store full response for formatting
           tool_used: data.tool_used,
           confidence: data.confidence,
+          from_cache: data.from_cache === true,
         },
       ]);
 
@@ -211,7 +214,7 @@ function ChatInterface() {
       setMessages((m) => [
         ...m,
         {
-          id: Date.now() + 1,
+          id: `msg-${Date.now()}-${nextMessageIdRef.current++}`,
           from: "bot",
           text: errorMessage,
         },
@@ -641,6 +644,11 @@ function ChatInterface() {
                           <span className="text-base font-bold text-[#000000]">
                             Chanakya
                           </span>
+                          {message.from_cache && (
+                            <span className="text-xs text-[#000000] opacity-70 border border-[#000000] rounded px-2 py-0.5">
+                              From cache
+                            </span>
+                          )}
                           <button
                             onClick={() => {
                               if (speakingMessageId === message.id) {
