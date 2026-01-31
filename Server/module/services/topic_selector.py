@@ -13,6 +13,7 @@ from typing import List, Optional, Dict
 import numpy as np
 
 from ..models.schemas import TopicInfo, TextbookContent
+from .chapter_mapping import get_chapter_name
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +199,9 @@ class TopicSelectorService:
                     else:
                         page_range = f"{pages[0]}-{pages[-1]}"
                 
+                # Convert book code to human-readable chapter name
+                topic_name = get_chapter_name(book)
+                
                 # Extract chapter number from book code if possible
                 chapter_number = None
                 # Book codes like "fess201" - extract numeric part
@@ -207,7 +211,7 @@ class TopicSelectorService:
                     chapter_number = int(numeric_part[-2:]) if len(numeric_part) >= 2 else int(numeric_part)
                 
                 topics.append(TopicInfo(
-                    topic_name=book,
+                    topic_name=topic_name,  # Use human-readable name instead of book code
                     chapter_number=chapter_number,
                     page_range=page_range,
                     content_count=count

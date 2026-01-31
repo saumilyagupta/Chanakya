@@ -14,6 +14,7 @@ from .sessions import router as sessions_router
 from .analytics_router import router as analytics_router
 from .reflection_router import router as reflection_router
 from .twilio import router as twilio_router
+from .listening_router import router as listening_router
 
 __all__ = [
     "auth_router",
@@ -29,4 +30,5 @@ __all__ = [
     "analytics_router",
     "reflection_router",
     "twilio_router",
+    "listening_router",
 ]
