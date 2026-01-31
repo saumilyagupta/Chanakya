@@ -8,6 +8,7 @@ from models.user import User
 from models.chat_session import ChatSession, ChatMessage
 from models.classroom import Class, Student, Question, ClassSession, StudentResponse
 from models.reflection import ClassReflection
+from models.discuss import DiscussPost, DiscussReply
 
 
 class Database:
@@ -31,7 +32,8 @@ async def connect_to_mongo():
         document_models=[
             User, ChatSession, ChatMessage,
             Class, Student, Question, ClassSession, StudentResponse,
-            ClassReflection
+            ClassReflection,
+            DiscussPost, DiscussReply,
         ]
     )
     print(f"✅ Connected to MongoDB: {settings.DATABASE_NAME}")

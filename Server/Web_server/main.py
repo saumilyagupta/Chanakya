@@ -27,7 +27,7 @@ from routers import (
     auth_router, users_router, query_router, chat_router,
     sarvam_router, module_router, classes_router, students_router,
     questions_router, sessions_router, analytics_router, reflection_router,
-    listening_router
+    listening_router, discuss_router
 )
 from services import orchestrator_service
 import structlog
@@ -92,6 +92,7 @@ app.include_router(sessions_router, prefix="/api/sessions", tags=["Sessions"])
 app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(reflection_router, prefix="/api/reflection", tags=["Reflection"])
 app.include_router(listening_router, prefix="/api/listening", tags=["Active Listening"])
+app.include_router(discuss_router, prefix="/api/discuss", tags=["Discuss"])
 
 
 

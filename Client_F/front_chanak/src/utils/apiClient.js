@@ -48,4 +48,15 @@ export const authAPI = {
   },
 };
 
+export const discussAPI = {
+  list: (skip = 0, limit = 20) =>
+    apiClient.get("/api/discuss", { params: { skip, limit } }),
+  get: (postId) => apiClient.get(`/api/discuss/${postId}`),
+  createPost: (body, location = null, tags = []) =>
+    apiClient.post("/api/discuss", { body, location, tags }),
+  createReply: (postId, body) =>
+    apiClient.post(`/api/discuss/${postId}/reply`, { body }),
+  upvote: (postId) => apiClient.post(`/api/discuss/${postId}/upvote`),
+};
+
 export default apiClient;

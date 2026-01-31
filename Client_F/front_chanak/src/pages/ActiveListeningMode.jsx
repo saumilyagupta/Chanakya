@@ -97,14 +97,14 @@ function ActiveListeningMode() {
       if (text?.trim()) {
         setTranscript((prev) => {
           const newText = prev ? `${prev} ${text.trim()}` : text.trim();
-          
+
           // Save chunk for crash recovery
           if (sessionIdRef.current) {
             saveChunk(sessionIdRef.current, text.trim(), chunkNum);
             // Update session transcript in localStorage
             updateSessionTranscript(sessionIdRef.current, newText, chunkNum);
           }
-          
+
           return newText;
         });
         setProcessedChunks((prev) => prev + 1);
@@ -336,7 +336,7 @@ function ActiveListeningMode() {
     setChunkErrors(0);
     setShowRecoveryDialog(false);
     setRecoveredSession(null);
-    
+
     // Clear saved session from localStorage
     clearSession();
     sessionIdRef.current = null;
@@ -379,10 +379,10 @@ function ActiveListeningMode() {
         console.log(`[Session] Found recoverable session: ${session.sessionId}`);
       }
     }
-    
+
     // Set up online listener for sync when back online
     const cleanupOnlineListener = setupOnlineListener(apiClient);
-    
+
     return () => {
       cleanupOnlineListener();
     };
@@ -602,7 +602,7 @@ function ActiveListeningMode() {
     <div className="min-h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
       {/* Session Recovery Dialog */}
       <RecoveryDialog />
-      
+
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -615,7 +615,7 @@ function ActiveListeningMode() {
       />
 
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-xl bg-white border-2 border-[#000000] rounded-2xl shadow-[4px_4px_0px_0px_#000000] px-6 py-6 space-y-6">
+        <div className="w-full max-w-6xl bg-white border-2 border-[#000000] rounded-2xl shadow-[4px_4px_0px_0px_#000000] px-6 py-6 space-y-6">
           {/* Show Feedback Summary or Recording Interface */}
           {showFeedback && feedback ? (
             <FeedbackSummary feedback={feedback} onClose={resetSession} />
@@ -702,12 +702,12 @@ function ActiveListeningMode() {
                   }}
                   disabled={isRecording || isProcessing || isAnalyzing || !canStartRecording}
                   className={`w-16 h-16 rounded-full border-2 border-[#000000] flex items-center justify-center shadow-[3px_3px_0px_0px_#000000] transition-all ${isRecording
-                      ? "bg-red-500 cursor-not-allowed"
-                      : isProcessing || isAnalyzing
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : !canStartRecording
-                          ? "bg-gray-200 cursor-not-allowed opacity-60"
-                          : "bg-[#FDE047] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
+                    ? "bg-red-500 cursor-not-allowed"
+                    : isProcessing || isAnalyzing
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : !canStartRecording
+                        ? "bg-gray-200 cursor-not-allowed opacity-60"
+                        : "bg-[#FDE047] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
                     }`}
                   aria-label="Start recording"
                 >
@@ -827,8 +827,8 @@ function ActiveListeningMode() {
                       onClick={analyzeTeaching}
                       disabled={isAnalyzing || pendingChunks > 0 || !transcript.trim()}
                       className={`w-full px-4 py-3 text-sm font-bold border-2 border-[#000000] rounded-lg shadow-[3px_3px_0px_0px_#000000] transition-all ${isAnalyzing || pendingChunks > 0 || !transcript.trim()
-                          ? "bg-gray-200 cursor-not-allowed"
-                          : "bg-[#F99DA8] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
+                        ? "bg-gray-200 cursor-not-allowed"
+                        : "bg-[#F99DA8] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000000]"
                         }`}
                     >
                       {isAnalyzing ? (
