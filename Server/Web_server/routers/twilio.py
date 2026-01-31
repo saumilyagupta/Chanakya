@@ -27,6 +27,21 @@ from utils.jwt import decode_access_token
 
 router = APIRouter()
 
+# Track processed calls to prevent duplicate SMS
+processed_calls = set()
+
+
+def truncate_for_sms(text: str, max_chars: int = 155) -> str:
+    """Truncate text to fit in a single SMS segment (160 chars for GSM-7, leaving 5 for '...')"""
+    if len(text) <= max_chars:
+        return text
+    # Find the last space before max_chars to avoid cutting words
+    truncated = text[:max_chars]
+    last_space = truncated.rfind(' ')
+    if last_space > 0:
+        truncated = truncated[:last_space]
+    return truncated + '...'
+
 
 def get_twilio_client() -> Optional[TwilioClient]:
     """Get initialized Twilio client or None if not configured"""
@@ -135,7 +150,7 @@ async def handle_incoming_call(request: Request):
     
     # Record the message
     # Get webhook URL from environment or construct it
-    webhook_url = os.getenv("TWILIO_WEBHOOK_URL", "")
+    webhook_url = os.getenv("TWILIO_WEBHOOK_URL", "").rstrip('/')
     if webhook_url:
         recording_callback = f"{webhook_url}/api/twilio/recording"
     else:
@@ -146,7 +161,7 @@ async def handle_incoming_call(request: Request):
         action=recording_callback,
         method="POST",
         max_length=60,  # 60 seconds max
-        transcribe=False,  # We'll use Sarvam STT
+        transcribe=False,  # Use Sarvam STT instead
         play_beep=True,
         finish_on_key="#"
     )
@@ -172,48 +187,52 @@ async def handle_recording(request: Request):
     
     logger.info(f"Processing recording from {caller_number}, CallSid: {call_sid}")
     
+    # Check if we already processed this call
+    if call_sid in processed_calls:
+        logger.info(f"Call {call_sid} already processed, skipping")
+        return Response(content="<Response><Hangup/></Response>", media_type="application/xml")
+    
+    # Mark as processed
+    processed_calls.add(call_sid)
+    
     if not recording_url:
         logger.error("No recording URL provided")
         return Response(content="<Response><Say>Error: No recording received</Say></Response>", media_type="application/xml")
     
     try:
-        # Download the audio file
+        # Download audio file from Twilio
         auth_token = os.getenv("TWILIO_AUTH_TOKEN")
         account_sid = os.getenv("TWILIO_ACCOUNT_SID")
         
-        # Add .wav to get WAV format
-        recording_url_wav = f"{recording_url}.wav"
-        
-        logger.info(f"Downloading recording from {recording_url_wav}")
+        # Download MP3 format
+        recording_url_mp3 = f"{recording_url}.mp3"
+        logger.info(f"Downloading recording from {recording_url_mp3}")
         
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                recording_url_wav,
+                recording_url_mp3,
                 auth=aiohttp.BasicAuth(account_sid, auth_token)
             ) as resp:
                 if resp.status != 200:
                     raise Exception(f"Failed to download recording: {resp.status}")
-                
                 audio_content = await resp.read()
         
         logger.info(f"Downloaded {len(audio_content)} bytes of audio")
         
-        # Transcribe using Sarvam STT (check if available)
-        transcript = await transcribe_audio(audio_content)
+        # Transcribe using Sarvam STT
+        transcript = await transcribe_with_sarvam(audio_content)
         
         if not transcript:
             logger.error("Transcription failed or empty")
             await send_sms(caller_number, "Sorry, I couldn't understand your message. Please try again.")
-            # Just hang up, no voice feedback
             return Response(content="<Response><Hangup/></Response>", media_type="application/xml")
         
-        logger.info(f"Transcribed text: {transcript}")
+        logger.info(f"Transcribed: {transcript}")
         
         # Process through orchestrator
         if not orchestrator_service.is_ready():
             logger.error("Orchestrator not ready")
             await send_sms(caller_number, "Sorry, the system is not ready. Please try again later.")
-            # Just hang up, no voice feedback
             return Response(content="<Response><Hangup/></Response>", media_type="application/xml")
         
         # Create query request
@@ -243,16 +262,16 @@ async def handle_recording(request: Request):
         else:
             response_text = "Sorry, I couldn't process your request. Please try again."
         
-        logger.info(f"Orchestrator response: {response_text[:100]}...")
+        # Truncate to fit in single SMS segment (160 chars)
+        response_text = truncate_for_sms(response_text, 155)
+        
+        logger.info(f"Sending SMS response to {caller_number}")
         
         # Send response via SMS
         await send_sms(caller_number, response_text)
         
-        # TwiML response to end call immediately (no voice feedback)
-        twiml_response = VoiceResponse()
-        twiml_response.hangup()
-        
-        return Response(content=str(twiml_response), media_type="application/xml")
+        # Hang up
+        return Response(content="<Response><Hangup/></Response>", media_type="application/xml")
         
     except Exception as e:
         logger.error(f"Error processing recording: {str(e)}", exc_info=True)
@@ -270,6 +289,93 @@ async def handle_recording(request: Request):
         error_response = VoiceResponse()
         error_response.hangup()
         return Response(content=str(error_response), media_type="application/xml")
+
+
+@router.post("/recording/transcription")
+async def handle_transcription_callback(request: Request):
+    """
+    Handle Twilio transcription callback - processes the transcription when ready
+    """
+    if not TWILIO_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Twilio SDK not available")
+    
+    # Get form data from Twilio
+    form_data = await request.form()
+    
+    # Log all form fields for debugging
+    logger.info(f"Transcription callback form fields: {dict(form_data)}")
+    
+    # Try different field names that Twilio might use
+    transcription_text = (
+        form_data.get("TranscriptionText") or 
+        form_data.get("transcription_text") or
+        form_data.get("Transcript") or 
+        ""
+    )
+    recording_sid = form_data.get("RecordingSid", "")
+    call_sid = form_data.get("CallSid", "")
+    transcription_status = form_data.get("TranscriptionStatus", "")
+    
+    logger.info(f"Transcription callback - CallSid: {call_sid}, Status: {transcription_status}, Text length: {len(transcription_text)}")
+    
+    if not transcription_text or not transcription_text.strip():
+        logger.error(f"Empty transcription received. Status: {transcription_status}")
+        return Response(content="", status_code=200)
+    
+    # Get caller number directly from form data (it's included in the callback)
+    caller_number = form_data.get("From", form_data.get("Caller", "unknown"))
+    
+    logger.info(f"Processing transcription for {caller_number}: {transcription_text}")
+    
+    try:
+        
+        # Process through orchestrator
+        if not orchestrator_service.is_ready():
+            logger.error("Orchestrator not ready")
+            await send_sms(caller_number, "Sorry, the system is not ready. Please try again later.")
+            return Response(content="", status_code=200)
+        
+        # Create query request
+        from schemas.query import QueryRequest
+        query_request = QueryRequest(
+            query=transcription_text,
+            context={
+                "channel": "twilio_voice_transcription",
+                "caller": caller_number,
+                "call_sid": call_sid,
+                "recording_sid": recording_sid
+            },
+            session_id=f"twilio_{call_sid}"
+        )
+        
+        # Process query
+        response = await orchestrator_service.process_query(query_request)
+        
+        # Extract response text
+        response_text = ""
+        if response.success:
+            if hasattr(response, 'response') and response.response:
+                response_text = response.response
+            elif hasattr(response, 'content') and response.content:
+                response_text = response.content
+            else:
+                response_text = str(response.result) if hasattr(response, 'result') else "Response received."
+        else:
+            response_text = "Sorry, I couldn't process your request. Please try again."
+        
+        # Truncate to fit in single SMS segment (160 chars)
+        response_text = truncate_for_sms(response_text, 155)
+        
+        logger.info(f"Sending transcription response to {caller_number}")
+        
+        # Send response via SMS
+        await send_sms(caller_number, response_text)
+        
+        return Response(content="", status_code=200)
+        
+    except Exception as e:
+        logger.error(f"Error processing transcription: {str(e)}", exc_info=True)
+        return Response(content="", status_code=500)
 
 
 @router.post("/sms")
@@ -327,6 +433,9 @@ async def handle_incoming_sms(request: Request):
         else:
             response_text = "Sorry, I couldn't process your request. Please try again."
         
+        # Truncate to fit in single SMS segment (160 chars)
+        response_text = truncate_for_sms(response_text, 155)
+        
         logger.info(f"Sending SMS response to {sender_number}")
         
         # Send response via SMS
@@ -349,10 +458,70 @@ async def handle_incoming_sms(request: Request):
         return Response(content="", status_code=500)
 
 
+async def transcribe_with_sarvam(audio_content: bytes) -> Optional[str]:
+    """
+    Transcribe audio using Google Gemini API (already configured)
+    """
+    import tempfile
+    from google import genai
+    from google.genai import types
+    
+    temp_audio_path = None
+    
+    try:
+        # Use Gemini API (already configured)
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            logger.warning("GEMINI_API_KEY not configured")
+            return None
+        
+        # Configure Gemini client
+        client = genai.Client(api_key=api_key)
+        
+        # Save audio to temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
+            temp_file.write(audio_content)
+            temp_audio_path = temp_file.name
+        
+        logger.info(f"Transcribing audio with Gemini: {temp_audio_path}")
+        
+        # Upload audio file to Gemini (specify mime_type via config dict)
+        with open(temp_audio_path, 'rb') as f:
+            audio_file = client.files.upload(file=f, config={"mime_type": "audio/mpeg"})
+        
+        # Use Gemini 2.0 to transcribe
+        prompt = "Please transcribe this audio recording accurately. Only output the transcribed text, nothing else."
+        
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-001',
+            contents=[prompt, audio_file]
+        )
+        
+        transcript = response.text.strip()
+        
+        logger.info(f"Gemini transcription: {transcript}")
+        
+        return transcript if transcript else None
+        
+    except Exception as e:
+        logger.error(f"Gemini transcription error: {str(e)}", exc_info=True)
+        return None
+    finally:
+        # Clean up temp file
+        if temp_audio_path and os.path.exists(temp_audio_path):
+            try:
+                os.unlink(temp_audio_path)
+            except:
+                pass
+
+
 async def transcribe_audio(audio_content: bytes) -> Optional[str]:
     """
     Transcribe audio using Sarvam STT
     """
+    import tempfile
+    temp_audio_path = None
+    
     try:
         # Check if Sarvam is available
         try:
@@ -375,11 +544,16 @@ async def transcribe_audio(audio_content: bytes) -> Optional[str]:
         # Initialize Sarvam client
         client = SarvamAI(api_subscription_key=api_key)
         
-        # Transcribe
+        # Save audio to temporary file (Sarvam API requires file path or file object)
+        # Use MP3 format as it's more compatible with Sarvam
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
+            temp_file.write(audio_content)
+            temp_audio_path = temp_file.name
+        
+        # Transcribe using file path
         response = client.speech_to_text.transcribe(
-            audio=audio_content,
-            model="saaras",
-            language_code="auto"  # Auto-detect language
+            file=temp_audio_path,
+            model="saaras:v3"  # Latest Saaras model for speech-to-text
         )
         
         # Extract transcript
@@ -391,11 +565,18 @@ async def transcribe_audio(audio_content: bytes) -> Optional[str]:
         elif isinstance(response, dict):
             transcript = response.get('transcript', response.get('text', ''))
         
-        return transcript.strip()
+        return transcript.strip() if transcript else None
         
     except Exception as e:
         logger.error(f"Transcription error: {str(e)}", exc_info=True)
         return None
+    finally:
+        # Clean up temp file
+        if temp_audio_path and os.path.exists(temp_audio_path):
+            try:
+                os.unlink(temp_audio_path)
+            except:
+                pass
 
 
 async def send_sms(to_number: str, message: str):

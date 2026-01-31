@@ -166,34 +166,47 @@ async def speech_to_text(audio: UploadFile = File(...)):
         )
     
     try:
+        import tempfile
         client = SarvamAI(api_subscription_key=api_key)
         
         # Read audio file
         audio_content = await audio.read()
         
-        # Use Sarvam AI STT (adjust based on actual API)
-        # Note: You may need to adjust this based on Sarvam's actual STT API
-        response = client.speech_to_text.transcribe(
-            audio=audio_content,
-            model="saaras",  # Using Saaras model for English translation
-            language="auto"  # Auto-detect language
-        )
+        # Save to temp file as Sarvam API requires file path
+        temp_audio_path = None
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+                temp_file.write(audio_content)
+                temp_audio_path = temp_file.name
+            
+            # Use Sarvam AI STT with correct parameters
+            response = client.speech_to_text.transcribe(
+                file=temp_audio_path,
+                model="saaras:v3"  # Latest Saaras model
+            )
         
-        # Extract transcript from response
-        transcript = ""
-        if hasattr(response, 'transcript'):
-            transcript = response.transcript
-        elif hasattr(response, 'text'):
-            transcript = response.text
-        elif isinstance(response, dict):
-            transcript = response.get('transcript', response.get('text', ''))
-        elif isinstance(response, str):
-            transcript = response
-        
-        return {
-            "transcript": transcript,
-            "text": transcript
-        }
+            # Extract transcript from response
+            transcript = ""
+            if hasattr(response, 'transcript'):
+                transcript = response.transcript
+            elif hasattr(response, 'text'):
+                transcript = response.text
+            elif isinstance(response, dict):
+                transcript = response.get('transcript', response.get('text', ''))
+            elif isinstance(response, str):
+                transcript = response
+            
+            return {
+                "transcript": transcript,
+                "text": transcript
+            }
+        finally:
+            # Clean up temp file
+            if temp_audio_path and os.path.exists(temp_audio_path):
+                try:
+                    os.unlink(temp_audio_path)
+                except:
+                    pass
         
     except Exception as e:
         raise HTTPException(
