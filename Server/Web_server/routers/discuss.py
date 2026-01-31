@@ -21,6 +21,7 @@ from schemas.discuss import (
     ReplyResponse,
 )
 from services.user_service import UserService
+from services.chanakya_ai_service import get_chanakya_service
 from routers.users import get_current_user_id
 
 router = APIRouter()
@@ -55,8 +56,13 @@ async def _post_to_response(post: DiscussPost) -> PostResponse:
 
 async def _reply_to_response(reply: DiscussReply) -> ReplyResponse:
     """Build ReplyResponse with author_name."""
-    user = await UserService.get_user_by_id(reply.author_id)
-    author_name = user.name if user else "Unknown"
+    # Handle Chanakya AI special case
+    if reply.author_id == "chanakya_ai":
+        author_name = "Chanakya AI"
+    else:
+        user = await UserService.get_user_by_id(reply.author_id)
+        author_name = user.name if user else "Unknown"
+    
     return ReplyResponse(
         id=str(reply.id),
         post_id=reply.post_id,
@@ -158,3 +164,79 @@ async def toggle_upvote(
     post.upvote_ids = ids
     await post.save()
     return {"upvote_count": len(ids)}
+
+
+@router.post("/{post_id}/chanakya", response_model=ReplyResponse, status_code=status.HTTP_201_CREATED)
+async def ask_chanakya(
+    post_id: str,
+    payload: ReplyCreate,
+    user_id: str = Depends(get_current_user_id),
+):
+    """
+    Ask Chanakya AI a question with conversation context.
+    The payload.body should contain the query (can start with @chanakya or not).
+    Creates both the user's query as a reply and Chanakya's AI response as a separate reply.
+    """
+    if not _is_valid_object_id(post_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    
+    post = await DiscussPost.get(post_id)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    
+    # Get conversation history
+    replies_docs = await DiscussReply.find(DiscussReply.post_id == post_id).sort(DiscussReply.created_at).to_list()
+    replies_context = []
+    for r in replies_docs:
+        user = await UserService.get_user_by_id(r.author_id)
+        replies_context.append({
+            "author_name": user.name if user else "Unknown",
+            "body": r.body
+        })
+    
+    # Clean the query (remove @chanakya if present)
+    query = payload.body.strip()
+    if query.lower().startswith("@chanakya"):
+        query = query[9:].strip()  # Remove "@chanakya" prefix
+    
+    if not query:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Query cannot be empty after removing @chanakya"
+        )
+    
+    # Save the user's query as a reply
+    user_reply = DiscussReply(
+        post_id=post_id, 
+        author_id=user_id, 
+        body=f"@chanakya {query}"
+    )
+    await user_reply.insert()
+    
+    # Get AI response from Chanakya
+    try:
+        chanakya_service = get_chanakya_service()
+        ai_response = await chanakya_service.generate_response(
+            query=query,
+            original_post=post.body,
+            replies=replies_context
+        )
+        
+        # Create a system reply from Chanakya (using a special system user ID or create one)
+        # For now, we'll use a special marker in the author_id or body
+        chanakya_reply = DiscussReply(
+            post_id=post_id,
+            author_id="chanakya_ai",  # Special ID for AI
+            body=ai_response
+        )
+        await chanakya_reply.insert()
+        
+        # Return the Chanakya AI reply
+        return await _reply_to_response(chanakya_reply)
+        
+    except Exception as e:
+        # If AI fails, still return the user's query reply
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate AI response: {str(e)}"
+        )

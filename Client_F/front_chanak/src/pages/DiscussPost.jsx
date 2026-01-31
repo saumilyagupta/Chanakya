@@ -53,12 +53,24 @@ function DiscussPost() {
   const handleReply = (e) => {
     e.preventDefault();
     if (!id || !replyBody.trim() || submitting) return;
+    
+    // Check if the reply starts with @chanakya
+    const isChanakya = replyBody.trim().toLowerCase().startsWith("@chanakya");
+    
     setSubmitting(true);
-    discussAPI
-      .createReply(id, replyBody.trim())
+    
+    const apiCall = isChanakya 
+      ? discussAPI.askChanakya(id, replyBody.trim())
+      : discussAPI.createReply(id, replyBody.trim());
+    
+    apiCall
       .then(() => {
         setReplyBody("");
         refreshPost();
+      })
+      .catch((err) => {
+        console.error("Failed to post reply:", err);
+        alert(err.response?.data?.detail || "Failed to post reply");
       })
       .finally(() => setSubmitting(false));
   };
@@ -143,15 +155,31 @@ function DiscussPost() {
           {replies && replies.length > 0 && (
             <div className="border-t-2 border-[#000000] pt-4 space-y-3">
               <p className="font-bold text-[#000000]">Replies</p>
-              {replies.map((r) => (
-                <div
-                  key={r.id}
-                  className="p-3 border-2 border-[#000000] bg-[#F9FAFB]"
-                >
-                  <p className="font-bold text-sm text-[#000000]">{r.author_name}</p>
-                  <p className="text-sm text-[#374151] mt-1">{r.body}</p>
-                </div>
-              ))}
+              {replies.map((r) => {
+                const isChanakya = r.author_id === "chanakya_ai";
+                return (
+                  <div
+                    key={r.id}
+                    className={`p-3 border-2 border-[#000000] ${
+                      isChanakya 
+                        ? "bg-[#DBEAFE] border-[#2563EB]" 
+                        : "bg-[#F9FAFB]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-bold text-sm text-[#000000]">
+                        {isChanakya ? "🤖 Chanakya AI" : r.author_name}
+                      </p>
+                      {isChanakya && (
+                        <span className="px-2 py-0.5 text-xs font-medium border border-[#2563EB] bg-[#3B82F6] text-white rounded">
+                          AI Assistant
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-[#374151] mt-1 whitespace-pre-wrap">{r.body}</p>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -164,10 +192,17 @@ function DiscussPost() {
                 id="reply-body"
                 value={replyBody}
                 onChange={(e) => setReplyBody(e.target.value)}
-                placeholder="Write your reply…"
+                placeholder="Write your reply… (Tip: Start with @chanakya to get AI assistance)"
                 rows={3}
                 className="w-full p-3 border-2 border-[#000000] bg-[#FFFFFF] text-[#000000] resize-y"
               />
+              {replyBody.trim().toLowerCase().startsWith("@chanakya") && (
+                <div className="mt-2 p-2 bg-[#DBEAFE] border-2 border-[#2563EB] text-sm">
+                  <p className="font-medium text-[#1E40AF]">
+                    🤖 Chanakya AI will respond to your query with the conversation context
+                  </p>
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={!replyBody.trim() || submitting}

@@ -56,6 +56,8 @@ export const discussAPI = {
     apiClient.post("/api/discuss", { body, location, tags }),
   createReply: (postId, body) =>
     apiClient.post(`/api/discuss/${postId}/reply`, { body }),
+  askChanakya: (postId, query) =>
+    apiClient.post(`/api/discuss/${postId}/chanakya`, { body: query }),
   upvote: (postId) => apiClient.post(`/api/discuss/${postId}/upvote`),
 };
 

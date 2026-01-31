@@ -24,7 +24,7 @@ class DiscussReply(Document):
     """Reply to a discuss post."""
     post_id: str = Field(..., description="ID of the DiscussPost")
     author_id: str = Field(..., description="User ID of the author")
-    body: str = Field(..., min_length=1, max_length=2000)
+    body: str = Field(..., min_length=1, max_length=4000)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Settings:
