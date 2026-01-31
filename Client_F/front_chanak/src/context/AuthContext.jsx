@@ -31,6 +31,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
   };
 
   const value = {

@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const handleChatClick = (e) => {
     if (!isAuthenticated) {
@@ -43,22 +43,40 @@ function Header() {
           >
             Chat
           </NavLink>
+          <NavLink
+            to="/discuss"
+            className="text-sm md:text-lg text-[#000000] no-underline hover:text-[#000000] relative transition-colors hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-[2px] hover:after:bg-[#D1D5DB] hover:after:transition-all hover:after:duration-300"
+          >
+            Discuss
+          </NavLink>
         </nav>
 
-        {/* Auth Buttons - Right (no padding) */}
+        {/* Auth - Right */}
         <div className="flex gap-2 md:gap-4 justify-end pr-0">
-          <Link
-            to="/signup"
-            className="px-3 md:px-6 py-1.5 md:py-2 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
-          >
-            Sign-Up
-          </Link>
-          <Link
-            to="/login"
-            className="px-3 md:px-6 py-1.5 md:py-2 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
-          >
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={logout}
+              className="px-3 md:px-6 py-1.5 md:py-2 bg-[#E5E7EB] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/signup"
+                className="px-3 md:px-6 py-1.5 md:py-2 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                Sign-Up
+              </Link>
+              <Link
+                to="/login"
+                className="px-3 md:px-6 py-1.5 md:py-2 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-sm md:text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                Login
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -105,24 +123,46 @@ function Header() {
               >
                 Chat
               </NavLink>
+              <NavLink
+                to="/discuss"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-base text-[#000000] no-underline hover:text-[#000000] py-2 px-3 border-2 border-[#000000] bg-white hover:bg-gray-100 transition-colors"
+              >
+                Discuss
+              </NavLink>
             </nav>
 
-            {/* Auth Buttons */}
+            {/* Auth */}
             <div className="flex flex-col gap-3 pt-2">
-              <Link
-                to="/signup"
-                onClick={() => setIsMenuOpen(false)}
-                className="px-4 py-3 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all text-center"
-              >
-                Sign-Up
-              </Link>
-              <Link
-                to="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="px-4 py-3 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all text-center"
-              >
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    logout();
+                  }}
+                  className="px-4 py-3 bg-[#E5E7EB] border-2 border-[#000000] font-bold text-[#000000] text-base hover:shadow-[2px_2px_0px_0px_#000000] transition-all text-center"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-4 py-3 bg-[#F99DA8] border-2 border-[#000000] font-bold text-[#000000] text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all text-center"
+                  >
+                    Sign-Up
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-4 py-3 bg-[#FDE047] border-2 border-[#000000] font-bold text-[#000000] text-base no-underline hover:text-[#000000] shadow-[4px_4px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 transition-all text-center"
+                  >
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

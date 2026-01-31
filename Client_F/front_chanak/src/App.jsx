@@ -14,6 +14,9 @@ import Personalized_student_support from "./pages/Personalized_student_support";
 import QuestionSetup from "./pages/QuestionSetup";
 import LiveSession from "./pages/LiveSession";
 import ClassSummary from "./pages/ClassSummary";
+import Discuss from "./pages/Discuss";
+import DiscussNew from "./pages/DiscussNew";
+import DiscussPost from "./pages/DiscussPost";
 import NotFound from "./pages/NotFound";
 
 // Dashboard imports
@@ -62,6 +65,9 @@ function App() {
                 }
               />
               <Route path="/module" element={<ModulePage />} />
+              <Route path="/discuss" element={<Discuss />} />
+              <Route path="/discuss/new" element={<DiscussNew />} />
+              <Route path="/discuss/:id" element={<DiscussPost />} />
               <Route path="/personalized-support/*" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
