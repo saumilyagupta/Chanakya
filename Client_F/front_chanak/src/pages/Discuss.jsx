@@ -6,6 +6,18 @@ import { discussAPI } from "../utils/apiClient";
 
 const POSTS_PER_PAGE = 8;
 
+// Light palettes used across the project (Header, ActiveListeningMode, etc.)
+const POST_CARD_COLORS = [
+  "#FEF3C7", // amber
+  "#E0F2FE", // blue
+  "#DCFCE7", // green
+  "#EDE9FE", // violet
+  "#FCE7F3", // pink
+  "#F9FAFB", // gray
+  "#E5E7EB", // stone
+  "#FDE047", // yellow (pale)
+];
+
 function Discuss() {
   const { isAuthenticated } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +56,7 @@ function Discuss() {
   }, [skip]);
 
   return (
-    <div className="bg-[#FFFFFF] min-h-screen px-4 md:px-8 py-6 md:py-10">
+    <div className="bg-[#FFFFFF] min-h-screen px-4 md:px-8 py-6 md:py-10" >
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-[#000000]">
@@ -74,11 +86,14 @@ function Discuss() {
               {posts.length === 0 && !error ? (
                 <li className="p-6 text-[#6B7280]">No posts yet. Ask a question!</li>
               ) : (
-                posts.map((post) => (
+                posts.map((post, index) => (
                   <li key={post.id}>
                     <Link
                       to={`/discuss/${post.id}`}
-                      className="flex gap-3 md:gap-4 p-4 md:p-5 hover:bg-[#F9FAFB] transition-colors no-underline text-[#000000]"
+                      className="flex gap-3 md:gap-4 p-4 md:p-5 transition-colors no-underline text-[#000000] hover:brightness-95"
+                      style={{
+                        backgroundColor: POST_CARD_COLORS[index % POST_CARD_COLORS.length],
+                      }}
                     >
                       <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#E5E7EB] flex items-center justify-center font-bold text-sm">
                         {post.author_name

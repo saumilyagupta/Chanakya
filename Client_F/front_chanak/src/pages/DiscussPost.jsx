@@ -38,7 +38,7 @@ function DiscussPost() {
 
   const refreshPost = () => {
     if (!id) return;
-    discussAPI.get(id).then((res) => setData(res.data)).catch(() => {});
+    discussAPI.get(id).then((res) => setData(res.data)).catch(() => { });
   };
 
   const handleUpvote = () => {
@@ -102,7 +102,8 @@ function DiscussPost() {
         >
           ← Back to Discuss
         </Link>
-        <article className="border-2 border-[#000000] bg-[#FFFFFF] p-4 md:p-6 shadow-[4px_4px_0px_0px_#000000]">
+        <article className="border-2 border-[#000000] bg-[#CC952E]/20
+ p-4 md:p-6 shadow-[4px_4px_0px_0px_#000000]">
           <div className="flex gap-3 mb-4">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#E5E7EB] flex items-center justify-center font-bold text-sm shrink-0">
               {post.author_name?.slice(0, 2).toUpperCase() ?? "?"}
