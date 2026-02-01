@@ -13,7 +13,7 @@ from typing import List, Optional, Dict
 import numpy as np
 
 from ..models.schemas import TopicInfo, TextbookContent
-from .chapter_mapping import get_chapter_name
+from .chapter_mapping import get_chapter_name, get_book_code_from_name
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +232,7 @@ class TopicSelectorService:
         Args:
             class_name: The class to filter by
             subject: The subject to filter by
-            topic: The topic/book code to retrieve content for
+            topic: The topic name (human-readable) or book code to retrieve content for
             limit: Optional limit on number of results
             
         Returns:
@@ -240,8 +240,24 @@ class TopicSelectorService:
         """
         with self._get_connection() as conn:
             cursor = conn.cursor()
+            
+            # Try to convert human-readable topic name to book code
+            # If topic looks like a book code (e.g., gesc114), use it directly
+            # Otherwise, try reverse lookup
+            topic_code = topic
+            if not (topic.startswith('fesc') or topic.startswith('gesc') or 
+                    topic.startswith('hesc') or topic.startswith('fess') or
+                    topic.startswith('gess') or topic.startswith('hess')):
+                # Looks like a human-readable name, try reverse lookup
+                book_code = get_book_code_from_name(topic)
+                if book_code:
+                    topic_code = book_code
+                    logger.info(f"Converted topic name '{topic}' to book code '{topic_code}'")
+                else:
+                    logger.warning(f"Could not find book code for topic: {topic}, using as-is")
+            
             # Build the source pattern
-            pattern = f"{class_name}|{subject}|{topic}|%"
+            pattern = f"{class_name}|{subject}|{topic_code}|%"
             
             query = "SELECT content, source FROM documents WHERE source LIKE ?"
             if limit:

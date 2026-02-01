@@ -198,6 +198,36 @@ def _generate_fallback_name(book_code: str) -> str:
     return book_code.upper()
 
 
+def get_book_code_from_name(chapter_name: str) -> Optional[str]:
+    """
+    Reverse lookup: Get book code from human-readable chapter name.
+    
+    Args:
+        chapter_name: Human-readable chapter name like 'Chapter 14: Forests: Our Lifeline'
+        
+    Returns:
+        Book code like 'gesc114', or None if not found
+    """
+    # First try exact match
+    for code, name in CHAPTER_MAPPINGS.items():
+        if name == chapter_name:
+            return code
+    
+    # Try case-insensitive match
+    chapter_name_lower = chapter_name.lower().strip()
+    for code, name in CHAPTER_MAPPINGS.items():
+        if name.lower().strip() == chapter_name_lower:
+            return code
+    
+    # Try partial match (in case of minor differences)
+    for code, name in CHAPTER_MAPPINGS.items():
+        if chapter_name_lower in name.lower() or name.lower() in chapter_name_lower:
+            return code
+    
+    logger.warning(f"No book code found for chapter name: {chapter_name}")
+    return None
+
+
 def get_all_mappings() -> Dict[str, str]:
     """Get all chapter mappings."""
     return CHAPTER_MAPPINGS.copy()
