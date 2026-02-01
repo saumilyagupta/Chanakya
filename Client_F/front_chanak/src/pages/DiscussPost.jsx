@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { MessageCircle, ArrowUp } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { discussAPI } from "../utils/apiClient";
+import { parseBoldText } from "../components/ResponseFormatter";
 
 function DiscussPost() {
   const { id } = useParams();
@@ -53,16 +54,16 @@ function DiscussPost() {
   const handleReply = (e) => {
     e.preventDefault();
     if (!id || !replyBody.trim() || submitting) return;
-    
+
     // Check if the reply starts with @chanakya
     const isChanakya = replyBody.trim().toLowerCase().startsWith("@chanakya");
-    
+
     setSubmitting(true);
-    
-    const apiCall = isChanakya 
+
+    const apiCall = isChanakya
       ? discussAPI.askChanakya(id, replyBody.trim())
       : discussAPI.createReply(id, replyBody.trim());
-    
+
     apiCall
       .then(() => {
         setReplyBody("");
@@ -114,7 +115,7 @@ function DiscussPost() {
         >
           ← Back to Discuss
         </Link>
-        <article className="border-2 border-[#000000] bg-[#CC952E]/20
+        <article className="border-2 border-[#000000] bg-[#ffffff]
  p-4 md:p-6 shadow-[4px_4px_0px_0px_#000000]">
           <div className="flex gap-3 mb-4">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#E5E7EB] flex items-center justify-center font-bold text-sm shrink-0">
@@ -160,23 +161,22 @@ function DiscussPost() {
                 return (
                   <div
                     key={r.id}
-                    className={`p-3 border-2 border-[#000000] ${
-                      isChanakya 
-                        ? "bg-[#DBEAFE] border-[#2563EB]" 
-                        : "bg-[#F9FAFB]"
-                    }`}
+                    className={`p-3 border-2 border-[#000000] ${isChanakya
+                      ? "bg-[#EDF4EC] border-[#000000]"
+                      : "bg-[#F9FAFB]"
+                      }`}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-bold text-sm text-[#000000]">
-                        {isChanakya ? "🤖 Chanakya AI" : r.author_name}
+                        {isChanakya ? "Chanakya AI" : r.author_name}
                       </p>
                       {isChanakya && (
-                        <span className="px-2 py-0.5 text-xs font-medium border border-[#2563EB] bg-[#3B82F6] text-white rounded">
+                        <span className="px-2 py-0.5 text-xs font-medium border border-[#000000] bg-[#EDF4EC] text-[#80877F] rounded">
                           AI Assistant
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-[#374151] mt-1 whitespace-pre-wrap">{r.body}</p>
+                    <p className="text-sm text-[#374151] mt-1 whitespace-pre-wrap">{parseBoldText(r.body)}</p>
                   </div>
                 );
               })}
@@ -197,7 +197,7 @@ function DiscussPost() {
                 className="w-full p-3 border-2 border-[#000000] bg-[#FFFFFF] text-[#000000] resize-y"
               />
               {replyBody.trim().toLowerCase().startsWith("@chanakya") && (
-                <div className="mt-2 p-2 bg-[#DBEAFE] border-2 border-[#2563EB] text-sm">
+                <div className="mt-2 p-2 bg-[#EDF4EC] border-2 border-[#2563EB] text-sm">
                   <p className="font-medium text-[#1E40AF]">
                     🤖 Chanakya AI will respond to your query with the conversation context
                   </p>

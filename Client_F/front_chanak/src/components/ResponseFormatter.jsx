@@ -26,30 +26,27 @@ import {
   Check,
 } from "lucide-react";
 
-// Utility function to parse text with bold formatting (**text**)
-const parseBoldText = (text) => {
+// Utility function to parse text with bold formatting (**text**) - exported for use in Discuss, etc.
+export const parseBoldText = (text) => {
   if (!text) return text;
-  
+
   const parts = [];
   let lastIndex = 0;
   const regex = /\*\*(.*?)\*\*/g;
   let match;
-  
+
   while ((match = regex.exec(text)) !== null) {
-    // Add text before the match
     if (match.index > lastIndex) {
       parts.push(text.substring(lastIndex, match.index));
     }
-    // Add bold text
     parts.push(<strong key={match.index} className="font-bold">{match[1]}</strong>);
     lastIndex = regex.lastIndex;
   }
-  
-  // Add remaining text
+
   if (lastIndex < text.length) {
     parts.push(text.substring(lastIndex));
   }
-  
+
   return parts.length > 0 ? parts : text;
 };
 

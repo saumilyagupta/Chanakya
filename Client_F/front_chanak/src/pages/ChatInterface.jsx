@@ -16,6 +16,7 @@ function ChatInterface() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -238,6 +239,13 @@ function ChatInterface() {
     e.target.style.height = `${Math.min(e.target.scrollHeight, 128)}px`;
   };
 
+  // Reset textarea height when input is cleared (e.g. after send)
+  useEffect(() => {
+    if (!input.trim() && inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+  }, [input]);
+
   // Start voice recording - using only Sarvam AI
   const startRecording = async () => {
     try {
@@ -353,7 +361,7 @@ function ChatInterface() {
   }, [isRecording]);
 
   return (
-    <div className="min-h-screen h-screen bg-[#FFFFFF] flex flex-col relative overflow-hidden">
+    <div className="h-full min-h-0 bg-[#FFFFFF] flex flex-col relative overflow-hidden">
       {/* Background Image with very low opacity */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -851,6 +859,7 @@ function ChatInterface() {
                   )}
                 </button>
                 <textarea
+                  ref={inputRef}
                   value={input}
                   onChange={handleTextareaChange}
                   onKeyDown={handleKeyPress}
@@ -884,9 +893,9 @@ function ChatInterface() {
                   </svg>
                 </button>
               </div>
-              <p className="text-xs text-[#000000] opacity-60 mt-1 text-center">
+              {/* <p className="text-xs text-[#000000] opacity-60 mt-1 text-center">
                 Chanakya can make mistakes. Check important info.
-              </p>
+              </p> */}
             </div>
           </div>
         </main>

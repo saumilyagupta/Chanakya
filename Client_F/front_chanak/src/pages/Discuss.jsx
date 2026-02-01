@@ -82,7 +82,7 @@ function Discuss() {
           <p className="py-8 text-[#6B7280]">Loading…</p>
         ) : (
           <>
-            <ul className="space-y-0 divide-y-2 divide-[#000000] border-2 border-[#000000] bg-[#FFFFFF]">
+            <ul className="space-y-4 list-none p-0 m-0">
               {posts.length === 0 && !error ? (
                 <li className="p-6 text-[#6B7280]">No posts yet. Ask a question!</li>
               ) : (
@@ -90,7 +90,7 @@ function Discuss() {
                   <li key={post.id}>
                     <Link
                       to={`/discuss/${post.id}`}
-                      className="flex gap-3 md:gap-4 p-4 md:p-5 transition-colors no-underline text-[#000000] hover:brightness-95"
+                      className="flex gap-3 md:gap-4 p-4 md:p-5 transition-colors no-underline text-[#000000] hover:brightness-95 border-2 border-[#000000] rounded-lg"
                       style={{
                         backgroundColor: POST_CARD_COLORS[index % POST_CARD_COLORS.length],
                       }}
