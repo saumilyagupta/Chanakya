@@ -12,6 +12,7 @@ from .content_explainer import ContentExplainerTool
 from .classroom_guidance import ClassroomGuidanceTool
 from .expert_teacher import ExpertTeacherTool
 from .general_conversation import GeneralConversationTool
+from .quick_answer import QuickAnswerTool
 
 __all__ = [
     "ActivityGeneratorTool",
@@ -21,4 +22,5 @@ __all__ = [
     "ClassroomGuidanceTool",
     "ExpertTeacherTool",
     "GeneralConversationTool",
+    "QuickAnswerTool",
 ]

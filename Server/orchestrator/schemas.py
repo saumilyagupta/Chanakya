@@ -30,6 +30,11 @@ class OrchestratorInput(BaseModel):
         default=None,
         description="Session ID for conversation tracking"
     )
+    
+    quick_answer_mode: Optional[bool] = Field(
+        default=False,
+        description="Force quick answer mode for fast, short responses"
+    )
 
 
 class ActivityOutput(BaseModel):
