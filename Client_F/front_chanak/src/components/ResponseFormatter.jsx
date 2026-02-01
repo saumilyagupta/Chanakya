@@ -23,6 +23,10 @@ import {
   Zap,
   Handshake,
   ShieldCheck,
+  Video,
+  Globe,
+  FileText,
+  ExternalLink,
   Check,
 } from "lucide-react";
 
@@ -682,46 +686,145 @@ const CrisisHandlerResponse = ({ data }) => (
 );
 
 /**
+ * Resources Section Component
+ * Displays videos, web links, and educational resources from Tavily search
+ */
+const ResourcesSection = ({ resources }) => {
+  if (!resources || resources.total_results === 0) return null;
+
+  const { video_resources = [], web_resources = [], educational_resources = [] } = resources;
+
+  const hasVideos = video_resources.length > 0;
+  const hasWebResources = web_resources.length > 0;
+  const hasEducationalResources = educational_resources.length > 0;
+
+  if (!hasVideos && !hasWebResources && !hasEducationalResources) return null;
+
+  const ResourceCard = ({ resource, icon: Icon, bgColor }) => (
+    <a
+      href={resource.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block border-2 border-[#000000] rounded-lg p-3 shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-0.5 transition-all duration-150"
+      style={{ backgroundColor: bgColor }}
+    >
+      <div className="flex items-start gap-2">
+        <Icon size={16} className="text-[#000000] mt-0.5 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-sm text-[#000000] line-clamp-2 flex items-center gap-1">
+            {resource.title}
+            <ExternalLink size={12} className="flex-shrink-0 opacity-60" />
+          </div>
+          {resource.description && (
+            <p className="text-xs text-[#000000] opacity-70 mt-1 line-clamp-2">
+              {resource.description}
+            </p>
+          )}
+        </div>
+      </div>
+    </a>
+  );
+
+  return (
+    <div className="mt-6 pt-4 border-t-2 border-[#000000] border-dashed">
+      <h3 className="text-lg font-bold text-[#000000] mb-4 flex items-center gap-2">
+        <Globe size={20} /> Additional Resources
+      </h3>
+
+      {/* Video Resources */}
+      {hasVideos && (
+        <div className="mb-4">
+          <h4 className="text-sm font-bold text-[#000000] mb-2 flex items-center gap-2">
+            <Video size={16} /> Videos
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {video_resources.slice(0, 4).map((resource, idx) => (
+              <ResourceCard key={idx} resource={resource} icon={Video} bgColor="#FEE2E2" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Web Resources */}
+      {hasWebResources && (
+        <div className="mb-4">
+          <h4 className="text-sm font-bold text-[#000000] mb-2 flex items-center gap-2">
+            <Globe size={16} /> Web Articles
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {web_resources.slice(0, 4).map((resource, idx) => (
+              <ResourceCard key={idx} resource={resource} icon={Globe} bgColor="#DBEAFE" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Educational Resources */}
+      {hasEducationalResources && (
+        <div className="mb-4">
+          <h4 className="text-sm font-bold text-[#000000] mb-2 flex items-center gap-2">
+            <FileText size={16} /> Educational Materials
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {educational_resources.slice(0, 4).map((resource, idx) => (
+              <ResourceCard key={idx} resource={resource} icon={FileText} bgColor="#D1FAE5" />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * Main ResponseFormatter Component
  */
-const ResponseFormatter = ({ toolUsed, result, text }) => {
+const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
   // If no structured result, show plain text
   if (!result || typeof result !== "object") {
     return <DefaultResponse text={text} />;
   }
 
+  // Helper to wrap response with resources section
+  const withResources = (component) => (
+    <div>
+      {component}
+      <ResourcesSection resources={resources} />
+    </div>
+  );
+
   // Format based on tool type
   switch (toolUsed) {
     case "quick_answer":
-      return <QuickAnswerResponse data={result} />;
+      return withResources(<QuickAnswerResponse data={result} />);
 
     case "general_conversation":
-      return <GeneralConversationResponse data={result} />;
+      return withResources(<GeneralConversationResponse data={result} />);
 
     case "activity_generator":
-      return <ActivityResponse data={result} />;
+      return withResources(<ActivityResponse data={result} />);
 
     case "expert_teacher":
-      return <ExpertTeacherResponse data={result} />;
+      return withResources(<ExpertTeacherResponse data={result} />);
 
     case "content_explainer":
-      return <ContentExplanationResponse data={result} />;
+      return withResources(<ContentExplanationResponse data={result} />);
 
     case "teacher_motivation":
-      return <TeacherMotivationResponse data={result} />;
+      return withResources(<TeacherMotivationResponse data={result} />);
 
     case "crisis_handler":
       // Crisis handler returns activity-like structure
       if (result.activity_name) {
-        return <ActivityResponse data={result} />;
+        return withResources(<ActivityResponse data={result} />);
       }
-      return <CrisisHandlerResponse data={result} />;
+      return withResources(<CrisisHandlerResponse data={result} />);
 
     case "classroom_guidance":
-      return <ClassroomGuidanceResponse data={result} />;
+      return withResources(<ClassroomGuidanceResponse data={result} />);
 
     default:
-      return <DefaultResponse text={text} />;
+      return withResources(<DefaultResponse text={text} />);
   }
 };
 

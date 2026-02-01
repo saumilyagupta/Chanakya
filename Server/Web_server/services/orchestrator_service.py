@@ -163,6 +163,11 @@ class OrchestratorService:
                 # If it's not a dict and not a model, convert to dict
                 result_dict = {"data": str(result_dict)}
             
+            # Extract resources from result if present (they're added by orchestrator)
+            resources = None
+            if isinstance(result_dict, dict) and "resources" in result_dict:
+                resources = result_dict.pop("resources", None)
+            
             response = QueryResponse(
                 success=success,
                 tool_used=result.tool_used,
@@ -171,7 +176,8 @@ class OrchestratorService:
                 confidence=result.confidence,
                 processing_time_ms=processing_time_ms,
                 timestamp=datetime.utcnow(),
-                error=result.error
+                error=result.error,
+                resources=resources
             )
             if self._cache_enabled and self._query_cache is not None and success:
                 key = _query_cache_key(query_request)

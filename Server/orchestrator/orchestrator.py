@@ -24,7 +24,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool, QuickAnswerTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool, QuickAnswerTool, ResourceFinderTool
 
 
 # LangGraph imports
@@ -56,6 +56,10 @@ class OrchestratorState(TypedDict):
     tool_reasoning: Optional[str]
     confidence: float
     
+    # Resource finder flag
+    needs_resources: bool
+    resource_topic: Optional[str]
+    
     retry_count: int
     max_retries: int
     is_valid: bool
@@ -76,6 +80,7 @@ class OrchestratorState(TypedDict):
     
     # Output
     tool_result: Optional[dict]
+    resource_result: Optional[dict]  # Results from resource finder
     error: Optional[str]
     processing_time_ms: float
 
@@ -117,21 +122,34 @@ AVAILABLE TOOLS:
 
 7. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
 
+8. "resource_finder" - **[USE FOR RESOURCE REQUESTS]** Use when the teacher wants:
+   - YouTube videos or video tutorials
+   - Web links, articles, or documentation
+   - Additional resources or materials
+   - Lesson plans or teaching materials
+   - PDFs or downloadable content
+   - Online resources for a topic
+   Keywords that trigger this: "videos", "youtube", "links", "resources", "materials", "pdf", "articles", "web search", "find me", "give me links"
+   This tool searches the web using Tavily API and returns curated educational resources.
+
 FUTURE TOOLS (not yet available, do NOT select these):
 - "assessment_creator" - For creating quizzes/tests
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "general_conversation" or "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance",
+    "selected_tool": "general_conversation" or "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance" or "resource_finder",
     "reasoning": "Brief explanation of why this tool was selected",
     "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge OR conversation type",
-    "confidence": 0.95
+    "confidence": 0.95,
+    "needs_resources": true or false
 }
+
+Note: Set "needs_resources": true if the query ALSO asks for videos, links, or resources in addition to the main query. This will trigger resource_finder as a secondary tool.
 
 EXAMPLES:
 
 Query: "Hi"
-Response: {"selected_tool": "general_conversation", "reasoning": "Simple greeting - needs friendly response", "extracted_topic": "greeting", "confidence": 0.99}
+Response: {"selected_tool": "general_conversation", "reasoning": "Simple greeting - needs friendly response", "extracted_topic": "greeting", "confidence": 0.99, "needs_resources": false}
 
 Query: "Thank you so much!"
 Response: {"selected_tool": "general_conversation", "reasoning": "Expression of gratitude", "extracted_topic": "gratitude", "confidence": 0.99}
@@ -179,16 +197,28 @@ Query: "I'm feeling burnt out and don't want to teach anymore"
 Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing burnout and loss of motivation - needs emotional support", "extracted_topic": "burnout and exhaustion", "confidence": 0.97}
 
 Query: "I feel like I'm failing as a teacher, nothing is working"
-Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing self-doubt and stress - needs encouragement", "extracted_topic": "self-doubt and discouragement", "confidence": 0.96}
+Response: {"selected_tool": "teacher_motivation", "reasoning": "Teacher expressing self-doubt and stress - needs encouragement", "extracted_topic": "self-doubt and discouragement", "confidence": 0.96, "needs_resources": false}
 
 Query: "Students are unable to interpret maps and graphs systematically"
-Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing a pedagogical challenge about student learning skills", "extracted_topic": "interpreting visual data", "confidence": 0.96}
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing a pedagogical challenge about student learning skills", "extracted_topic": "interpreting visual data", "confidence": 0.96, "needs_resources": false}
 
 Query: "Only 2-3 students answer questions in class"
-Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing student engagement issue needing teaching strategies", "extracted_topic": "low participation", "confidence": 0.97}
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describing student engagement issue needing teaching strategies", "extracted_topic": "low participation", "confidence": 0.97, "needs_resources": false}
 
 Query: "How can I make my lessons more interactive?"
-Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95}
+Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95, "needs_resources": false}
+
+Query: "Give me YouTube videos about photosynthesis"
+Response: {"selected_tool": "resource_finder", "reasoning": "Teacher explicitly asking for YouTube videos on a topic", "extracted_topic": "photosynthesis", "confidence": 0.98, "needs_resources": true}
+
+Query: "Find me resources and lesson plans for teaching fractions"
+Response: {"selected_tool": "resource_finder", "reasoning": "Teacher asking for resources and lesson plan materials", "extracted_topic": "teaching fractions", "confidence": 0.97, "needs_resources": true}
+
+Query: "Explain photosynthesis and give me some videos and links"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Educational explanation needed, PLUS resources requested", "extracted_topic": "photosynthesis", "confidence": 0.95, "needs_resources": true}
+
+Query: "What is gravity? Also share some YouTube tutorials"
+Response: {"selected_tool": "expert_teacher", "reasoning": "Knowledge question that needs explanation, plus video resources requested", "extracted_topic": "gravity", "confidence": 0.96, "needs_resources": true}
 
 RULES:
 - Return ONLY valid JSON
@@ -200,6 +230,8 @@ RULES:
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
 - Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed
 - Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategies
+- Use "resource_finder" when ONLY asking for videos/links/resources (no explanation needed)
+- Set "needs_resources": true when query asks for videos, links, resources, materials IN ADDITION to an explanation
 - Extract the topic/concept or crisis situation or motivation issue or teaching challenge or conversation type clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""
 
@@ -300,7 +332,8 @@ class ChanakyaOrchestrator:
             "classroom_guidance": ClassroomGuidanceTool(api_key=api_key),
             "expert_teacher": ExpertTeacherTool(api_key=api_key),
             "general_conversation": GeneralConversationTool(api_key=api_key),
-            "quick_answer": QuickAnswerTool(api_key=api_key)
+            "quick_answer": QuickAnswerTool(api_key=api_key),
+            "resource_finder": ResourceFinderTool()
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -817,6 +850,8 @@ Language:""")]
                 "tool_reasoning": parsed.get("reasoning", "Default selection"),
                 "intent": parsed.get("extracted_topic", query),
                 "confidence": float(parsed.get("confidence", 0.8)),
+                "needs_resources": parsed.get("needs_resources", False),
+                "resource_topic": parsed.get("extracted_topic", query) if parsed.get("needs_resources") else None,
             }
             
         except Exception:
@@ -826,6 +861,8 @@ Language:""")]
                 "tool_reasoning": "Default selection (router error)",
                 "intent": query,
                 "confidence": 0.5,
+                "needs_resources": False,
+                "resource_topic": None,
             }
     
     async def _detect_hallucination(self, activity_output: dict, query: str) -> dict:
@@ -1071,15 +1108,19 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
     async def _execute_tool_node(self, state: OrchestratorState) -> dict:
         """
         Node: Execute the selected tool.
+        Also fetches resources if needs_resources is True.
         """
         tool_name = state["selected_tool"]
         topic = state["intent"] or state["query"]
         context = state.get("context")
+        needs_resources = state.get("needs_resources", False)
+        resource_topic = state.get("resource_topic") or topic
         
         if tool_name not in self.tools:
             self.logger.error("unknown_tool", tool_name=tool_name)
             return {
                 "tool_result": None,
+                "resource_result": None,
                 "error": f"Unknown tool: {tool_name}"
             }
         
@@ -1088,7 +1129,8 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             
             self.logger.info("tool_execution_start",
                 tool=tool_name,
-                topic=topic[:50] if topic else None
+                topic=topic[:50] if topic else None,
+                needs_resources=needs_resources
             )
             
             result = await tool.run(topic, context)
@@ -1106,8 +1148,28 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             else:
                 result_dict = {"output": str(result)}
             
+            # Fetch resources if needed (and not already using resource_finder)
+            resource_result = None
+            if needs_resources and tool_name != "resource_finder" and "resource_finder" in self.tools:
+                try:
+                    self.logger.info("fetching_additional_resources", topic=resource_topic)
+                    resource_finder = self.tools["resource_finder"]
+                    resource_result = await resource_finder.run(resource_topic, context)
+                    
+                    # Convert to dict if needed
+                    if hasattr(resource_result, 'model_dump'):
+                        resource_result = resource_result.model_dump()
+                    
+                    self.logger.info("resources_fetched_successfully",
+                        total_results=resource_result.get("total_results", 0) if resource_result else 0
+                    )
+                except Exception as e:
+                    self.logger.warning("resource_fetch_failed", error=str(e))
+                    resource_result = None
+            
             return {
                 "tool_result": result_dict,
+                "resource_result": resource_result,
                 "error": None
             }
             
@@ -1119,6 +1181,7 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             )
             return {
                 "tool_result": None,
+                "resource_result": None,
                 "error": str(e)
             }
     
@@ -1431,6 +1494,11 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             follow_up_result = final_state.get("follow_up_result")
             if follow_up_result:
                 result["follow_up"] = follow_up_result
+            
+            # Add resource results if present
+            resource_result = final_state.get("resource_result")
+            if resource_result and resource_result.get("total_results", 0) > 0:
+                result["resources"] = resource_result
             
             if final_state.get("selected_tool") == "activity_generator":
                 result = ActivityOutput(**result)

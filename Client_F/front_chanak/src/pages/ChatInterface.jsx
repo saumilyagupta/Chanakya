@@ -740,6 +740,7 @@ function ChatInterface() {
                             toolUsed={message.tool_used}
                             result={message.data?.result}
                             text={message.text}
+                            resources={message.data?.resources}
                           />
                         </div>
                       </div>

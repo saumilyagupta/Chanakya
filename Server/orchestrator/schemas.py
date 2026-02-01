@@ -313,3 +313,55 @@ class ExpertTeacherOutput(BaseModel):
         ge=0.0,
         le=1.0
     )
+
+
+class ResourceLink(BaseModel):
+    """A single resource link (video, article, etc.)."""
+    
+    title: str = Field(..., description="Title of the resource")
+    url: str = Field(..., description="URL to the resource")
+    description: str = Field(default="", description="Brief description")
+    resource_type: str = Field(default="web", description="Type: video, article, pdf, etc.")
+
+
+class ResourceFinderOutput(BaseModel):
+    """
+    Output from the Resource Finder tool.
+    """
+    
+    query: str = Field(
+        ...,
+        description="The topic searched for"
+    )
+    
+    summary: str = Field(
+        default="",
+        description="AI-generated summary of the topic"
+    )
+    
+    web_resources: List[ResourceLink] = Field(
+        default_factory=list,
+        description="General web resources and articles"
+    )
+    
+    video_resources: List[ResourceLink] = Field(
+        default_factory=list,
+        description="Video resources (YouTube, etc.)"
+    )
+    
+    educational_resources: List[ResourceLink] = Field(
+        default_factory=list,
+        description="Educational resources (lesson plans, PDFs, etc.)"
+    )
+    
+    total_results: int = Field(
+        default=0,
+        description="Total number of resources found"
+    )
+    
+    confidence: float = Field(
+        default=0.85,
+        description="Confidence score",
+        ge=0.0,
+        le=1.0
+    )

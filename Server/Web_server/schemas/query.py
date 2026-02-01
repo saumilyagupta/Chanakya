@@ -33,6 +33,7 @@ class QueryResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
     error: Optional[str] = Field(None, description="Error message if query failed")
     from_cache: bool = Field(False, description="True if response was served from cache (no LLM call)")
+    resources: Optional[Dict[str, Any]] = Field(None, description="Additional resources from Tavily search (videos, articles, etc.)")
 
     class Config:
         json_schema_extra = {
