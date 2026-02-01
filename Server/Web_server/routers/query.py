@@ -1,19 +1,134 @@
 """
 Query router for orchestrator integration.
 """
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 import structlog
 import json
+import time
+from datetime import datetime
 from typing import List, Optional
 from services.orchestrator_service import orchestrator_service
 from services.chat_service import ChatService
+from services.vision_service import get_vision_service
 from schemas.query import QueryRequest, QueryResponse
 from routers.users import get_current_user_id
+from config import settings
 
 logger = structlog.get_logger(__name__)
 
 router = APIRouter()
+
+
+@router.post("/vision")
+async def analyze_image(
+    image: UploadFile = File(...),
+    query: str = Form(default="Please analyze this image"),
+    session_id: Optional[str] = Form(default=None),
+    user_id: str = Depends(get_current_user_id)
+):
+    """
+    Analyze an uploaded image using Gemini Vision API.
+    
+    Args:
+        image: The uploaded image file
+        query: User's question about the image
+        session_id: Optional session ID for chat history
+        user_id: Current user ID from authentication
+        
+    Returns:
+        Analysis result from Gemini Vision
+    """
+    start_time = time.time()
+    
+    try:
+        # Validate file type
+        allowed_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+        if image.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid file type. Allowed: {', '.join(allowed_types)}"
+            )
+        
+        # Check file size (max 10MB)
+        contents = await image.read()
+        if len(contents) > 10 * 1024 * 1024:
+            raise HTTPException(
+                status_code=400,
+                detail="Image too large. Maximum size is 10MB."
+            )
+        
+        logger.info("Analyzing image",
+                   filename=image.filename,
+                   size=len(contents),
+                   mime_type=image.content_type,
+                   query=query[:100])
+        
+        # Get vision service
+        vision_service = get_vision_service(settings.GEMINI_API_KEY)
+        
+        # Analyze the image
+        result = await vision_service.analyze_image(
+            image_data=contents,
+            mime_type=image.content_type,
+            query=query
+        )
+        
+        processing_time_ms = (time.time() - start_time) * 1000
+        
+        # Save to chat history if session_id provided
+        if session_id and result.get("success"):
+            # Save user message (with image indicator)
+            await ChatService.save_message(
+                session_id=session_id,
+                user_id=user_id,
+                role="user",
+                content=f"[Image: {image.filename}] {query}"
+            )
+            
+            # Save assistant response
+            await ChatService.save_message(
+                session_id=session_id,
+                user_id=user_id,
+                role="assistant",
+                content=result.get("analysis", ""),
+                tool_used="vision_analysis",
+                confidence=result.get("confidence", 0.9),
+                metadata={
+                    "tool_used": "vision_analysis",
+                    "image_filename": image.filename,
+                    "result": {"response": result.get("analysis", "")},
+                    "confidence": result.get("confidence", 0.9),
+                    "processing_time_ms": processing_time_ms
+                }
+            )
+        
+        logger.info("Image analysis complete", 
+                   processing_time_ms=processing_time_ms,
+                   success=result.get("success"))
+        
+        return {
+            "success": result.get("success", False),
+            "tool_used": "vision_analysis",
+            "reasoning": "Image analysis using Gemini Vision",
+            "result": {
+                "response": result.get("analysis", ""),
+                "image_filename": image.filename
+            },
+            "confidence": result.get("confidence", 0.9),
+            "processing_time_ms": processing_time_ms,
+            "timestamp": datetime.utcnow().isoformat(),
+            "error": result.get("error")
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Image analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Image analysis failed: {str(e)}"
+        )
 
 
 @router.post("/query", response_model=QueryResponse)
