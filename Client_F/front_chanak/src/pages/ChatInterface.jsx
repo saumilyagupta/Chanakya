@@ -158,6 +158,10 @@ function ChatInterface() {
       { id: userMessageId, from: "teacher", text: userMessage },
     ]);
     setInput("");
+    // Add these 3 lines right after setInput("")
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
     setIsLoading(true);
 
     try {
@@ -818,10 +822,10 @@ function ChatInterface() {
                   }}
                   disabled={isProcessingVoice}
                   className={`p-1.5 border-2 border-[#000000] rounded transition-all flex-shrink-0 ${isRecording
-                      ? "bg-red-500 hover:bg-red-600 animate-pulse"
-                      : isProcessingVoice
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-white hover:bg-[#FDE047]"
+                    ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                    : isProcessingVoice
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-white hover:bg-[#FDE047]"
                     }`}
                   title={
                     isRecording
@@ -908,8 +912,8 @@ function ChatInterface() {
                   <button
                     onClick={() => setQuickAnswerMode(!quickAnswerMode)}
                     className={`flex items-center gap-2 px-3 py-1.5 border-2 border-[#000000] rounded-lg font-bold text-sm transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 ${quickAnswerMode
-                        ? "bg-[#A7F3D0] text-[#000000]"
-                        : "bg-white text-[#000000]"
+                      ? "bg-[#A7F3D0] text-[#000000]"
+                      : "bg-white text-[#000000]"
                       }`}
                     title={quickAnswerMode ? "Quick Answer Mode: ON" : "Quick Answer Mode: OFF"}
                   >
@@ -943,7 +947,7 @@ function ChatInterface() {
 
               {/* <p className="text-xs text-[#000000] opacity-60 mt-1 text-center">
                 Chanakya can make mistakes. Check important info.
-              </p> */} 
+              </p> */}
             </div>
           </div>
         </main>
