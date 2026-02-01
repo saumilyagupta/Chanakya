@@ -823,6 +823,18 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
     case "classroom_guidance":
       return withResources(<ClassroomGuidanceResponse data={result} />);
 
+    case "vision_analysis":
+      // Vision analysis response - display as general conversation with image context
+      return withResources(
+        <GeneralConversationResponse 
+          data={{
+            response_type: "general",
+            response: result.response || text,
+            suggested_topics: []
+          }} 
+        />
+      );
+
     default:
       return withResources(<DefaultResponse text={text} />);
   }

@@ -140,4 +140,133 @@ export const deleteSession = async (sessionId) => {
   return response.data;
 };
 
+/**
+ * Analyze image with Gemini Vision
+ */
+export const analyzeImage = async (imageFile, query, sessionId, analysisMode = 'general') => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  formData.append('query', query || 'Please analyze this image');
+  formData.append('analysis_mode', analysisMode);
+  if (sessionId) {
+    formData.append('session_id', sessionId);
+  }
+  
+  const response = await apiClient.post('/api/query/vision', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+/**
+ * Capture image from camera
+ */
+export const captureFromCamera = () => {
+  return new Promise((resolve, reject) => {
+    navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        facingMode: 'environment', // Use back camera on mobile
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      } 
+    })
+    .then(stream => {
+      // Create video element for preview
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.style.width = '100%';
+      video.style.maxWidth = '400px';
+      video.autoplay = true;
+      video.playsInline = true;
+      
+      // Create modal container
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.8); z-index: 9999;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 20px;
+      `;
+      
+      const container = document.createElement('div');
+      container.style.cssText = `
+        background: white; border-radius: 12px; padding: 20px;
+        max-width: 500px; width: 100%;
+        display: flex; flex-direction: column; align-items: center;
+      `;
+      
+      const title = document.createElement('h3');
+      title.textContent = 'Camera Capture';
+      title.style.cssText = 'margin: 0 0 16px 0; color: #333;';
+      
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.cssText = `
+        display: flex; gap: 12px; margin-top: 16px;
+      `;
+      
+      const captureBtn = document.createElement('button');
+      captureBtn.textContent = '📸 Capture';
+      captureBtn.style.cssText = `
+        background: #3b82f6; color: white; border: none;
+        border-radius: 8px; padding: 12px 24px;
+        cursor: pointer; font-size: 16px;
+      `;
+      
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = '❌ Cancel';
+      cancelBtn.style.cssText = `
+        background: #6b7280; color: white; border: none;
+        border-radius: 8px; padding: 12px 24px;
+        cursor: pointer; font-size: 16px;
+      `;
+      
+      // Capture handler
+      captureBtn.onclick = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        canvas.toBlob((blob) => {
+          // Stop camera
+          stream.getTracks().forEach(track => track.stop());
+          document.body.removeChild(modal);
+          
+          // Create file object
+          const file = new File([blob], `camera_capture_${Date.now()}.jpg`, {
+            type: 'image/jpeg'
+          });
+          
+          resolve(file);
+        }, 'image/jpeg', 0.8);
+      };
+      
+      // Cancel handler
+      cancelBtn.onclick = () => {
+        stream.getTracks().forEach(track => track.stop());
+        document.body.removeChild(modal);
+        reject(new Error('Camera capture cancelled'));
+      };
+      
+      // Assemble modal
+      buttonContainer.appendChild(captureBtn);
+      buttonContainer.appendChild(cancelBtn);
+      container.appendChild(title);
+      container.appendChild(video);
+      container.appendChild(buttonContainer);
+      modal.appendChild(container);
+      document.body.appendChild(modal);
+    })
+    .catch(error => {
+      console.error('Camera access error:', error);
+      reject(error);
+    });
+  });
+};
+
 export default apiClient;

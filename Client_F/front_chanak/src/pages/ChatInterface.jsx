@@ -4,6 +4,8 @@ import {
   queryOrchestrator,
   getChatHistory,
   getSessionMessages,
+  analyzeImage,
+  captureFromCamera,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { transcribeAudio, textToSpeechAndPlay } from "../utils/sarvamApi";
@@ -17,6 +19,7 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -31,6 +34,12 @@ function ChatInterface() {
 
   // Quick Answer Mode state
   const [quickAnswerMode, setQuickAnswerMode] = useState(false);
+
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [analysisMode, setAnalysisMode] = useState('general');
+  const [showAnalysisModes, setShowAnalysisModes] = useState(false);
 
   // Load chat history on mount
   useEffect(() => {
@@ -147,17 +156,85 @@ function ChatInterface() {
     }
   }, [messages]);
 
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        return;
+      }
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image is too large. Maximum size is 10MB.');
+        return;
+      }
+      setSelectedImage(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      setShowAnalysisModes(true); // Show analysis mode selector
+    }
+  };
+
+  // Handle camera capture
+  const handleCameraCapture = async () => {
+    try {
+      const capturedImage = await captureFromCamera();
+      setSelectedImage(capturedImage);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(capturedImage);
+      setImagePreview(previewUrl);
+      setShowAnalysisModes(true); // Show analysis mode selector
+    } catch (error) {
+      if (error.message !== 'Camera capture cancelled') {
+        alert('Failed to access camera. Please ensure camera permissions are granted.');
+      }
+    }
+  };
+
+  // Clear selected image
+  const clearImage = () => {
+    setSelectedImage(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    setShowAnalysisModes(false);
+    setAnalysisMode('general');
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
+  };
+
+  // Send message with optional image
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && !selectedImage) || isLoading) return;
 
     const userMessage = input.trim();
     const userMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
     const botMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
+    
+    // Add user message with image preview if present
     setMessages((m) => [
       ...m,
-      { id: userMessageId, from: "teacher", text: userMessage },
+      { 
+        id: userMessageId, 
+        from: "teacher", 
+        text: userMessage || "Please analyze this image",
+        image: imagePreview,
+        imageName: selectedImage?.name
+      },
     ]);
+    
+    const currentImage = selectedImage;
+    const currentImagePreview = imagePreview;
+    const currentAnalysisMode = analysisMode;
+    
     setInput("");
+    clearImage();
     // Add these 3 lines right after setInput("")
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
@@ -172,11 +249,23 @@ function ChatInterface() {
         setCurrentSessionId(sessionId);
       }
 
-      // Call the orchestrator API with session ID
-      const data = await queryOrchestrator(userMessage, {
-        session_id: sessionId,
-        quick_answer_mode: quickAnswerMode,
-      });
+      let data;
+      
+      // If image is selected, use vision API
+      if (currentImage) {
+        data = await analyzeImage(
+          currentImage,
+          userMessage || "Please analyze this image and provide educational insights",
+          sessionId,
+          currentAnalysisMode
+        );
+      } else {
+        // Call the orchestrator API with session ID
+        data = await queryOrchestrator(userMessage, {
+          session_id: sessionId,
+          quick_answer_mode: quickAnswerMode,
+        });
+      }
 
       // Extract text for fallback display
       let botResponseText = "";
@@ -639,6 +728,17 @@ function ChatInterface() {
                     {message.from === "teacher" ? (
                       <div className="flex justify-center mb-4">
                         <div className="bg-[#FDE047] border-2 border-[#000000] rounded-lg px-4 py-2 shadow-[2px_2px_0px_0px_#000000] max-w-xl">
+                          {/* Show image if present */}
+                          {message.image && (
+                            <div className="mb-2">
+                              <img
+                                src={message.image}
+                                alt={message.imageName || "Uploaded image"}
+                                className="max-h-48 w-auto rounded-lg border-2 border-[#000000] mx-auto"
+                              />
+                              <p className="text-xs text-center mt-1 opacity-70">📷 {message.imageName}</p>
+                            </div>
+                          )}
                           <p className="text-sm md:text-base font-medium text-[#000000] text-center">
                             {message.text}
                           </p>
@@ -793,11 +893,82 @@ function ChatInterface() {
           {/* Input Area */}
           <div className="flex-shrink-0 border-t-2 border-[#000000] bg-[#FFFFFF] px-4 py-2">
             <div className="max-w-5xl mx-auto">
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="mb-2 relative inline-block">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto rounded-lg border-2 border-[#000000] shadow-[2px_2px_0px_0px_#000000]"
+                  />
+                  <button
+                    onClick={clearImage}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full border-2 border-[#000000] flex items-center justify-center hover:bg-red-600 transition-colors"
+                    title="Remove image"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <span className="absolute bottom-1 left-1 text-xs bg-black bg-opacity-60 text-white px-1 rounded">
+                    {selectedImage?.name?.slice(0, 15)}...
+                  </span>
+                </div>
+              )}
+              
+              {/* Analysis mode selector - appears when image is selected */}
+              {showAnalysisModes && (
+                <div className="mb-3 p-3 border-2 border-[#000000] rounded-lg bg-[#F0F9FF] shadow-[2px_2px_0px_0px_#000000]">
+                  <label className="text-sm font-bold text-[#000000] mb-2 block">
+                    🔍 Analysis Mode:
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {[
+                      { value: 'general', label: '📚 General', desc: 'All-purpose analysis' },
+                      { value: 'ocr', label: '📝 Text Extraction', desc: 'Extract all text' },
+                      { value: 'handwriting', label: '✍️ Handwriting', desc: 'Analyze student writing' },
+                      { value: 'diagram', label: '📊 Diagram', desc: 'Explain charts/diagrams' },
+                      { value: 'grading', label: '📋 Grade Work', desc: 'Grade student work' },
+                    ].map((mode) => (
+                      <button
+                        key={mode.value}
+                        onClick={() => setAnalysisMode(mode.value)}
+                        className={`p-2 border-2 border-[#000000] rounded-lg text-xs font-bold transition-all shadow-[1px_1px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 ${
+                          analysisMode === mode.value
+                            ? 'bg-[#A7F3D0] text-[#000000]'
+                            : 'bg-white text-[#000000] hover:bg-[#FDE047]'
+                        }`}
+                        title={mode.desc}
+                      >
+                        <div className="text-center">
+                          <div className="text-sm mb-1">{mode.label}</div>
+                          <div className="text-xs opacity-70">{mode.desc}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-[#000000] opacity-60 mt-2 text-center">
+                    Choose analysis type for better results
+                  </p>
+                </div>
+              )}
+              
               <div className="flex items-end gap-3 border-2 border-[#000000] rounded-lg px-3 py-3 bg-white shadow-[2px_2px_0px_0px_#000000]">
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  onChange={handleImageSelect}
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="hidden"
+                />
                 <button
-                  className="p-1.5 border-2 border-[#000000] rounded bg-white hover:bg-[#FDE047] transition-all flex-shrink-0"
-                  title="Attach file"
-                  aria-label="Attach file"
+                  onClick={() => imageInputRef.current?.click()}
+                  className={`p-1.5 border-2 border-[#000000] rounded transition-all flex-shrink-0 ${
+                    selectedImage ? 'bg-[#A7F3D0]' : 'bg-white hover:bg-[#FDE047]'
+                  }`}
+                  title="Attach image"
+                  aria-label="Attach image"
                 >
                   <svg
                     className="w-4 h-4 text-[#000000]"
@@ -809,7 +980,37 @@ function ChatInterface() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </button>
+                
+                {/* Camera capture button */}
+                <button
+                  onClick={handleCameraCapture}
+                  className={`p-1.5 border-2 border-[#000000] rounded transition-all flex-shrink-0 ${
+                    selectedImage ? 'bg-[#A7F3D0]' : 'bg-white hover:bg-[#FDE047]'
+                  }`}
+                  title="Capture from camera"
+                  aria-label="Capture from camera"
+                >
+                  <svg
+                    className="w-4 h-4 text-[#000000]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
                     />
                   </svg>
                 </button>
