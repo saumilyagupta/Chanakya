@@ -24,7 +24,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool, QuickAnswerTool
 
 
 # LangGraph imports
@@ -89,15 +89,23 @@ ROUTER_PROMPT = """You are Chanakya's intelligent router for a classroom support
 Your job is to understand the teacher's query and decide which tool to use.
 
 AVAILABLE TOOLS:
-1. "general_conversation" - **[USE FIRST FOR NON-EDUCATIONAL QUERIES]** Use for:
+1. "general_conversation" - **[USE FOR NON-EDUCATIONAL QUERIES]** Use for:
    - Greetings (hi, hello, good morning, namaste)
    - Gratitude (thank you, thanks, appreciate it)
-   - Unclear/ambiguous queries that need clarification
+   - Unclear/ambiguous queries that need clarification (only when genuinely unclear)
    - Out-of-scope questions (weather, news, personal matters, non-teaching topics)
    - Small talk or casual conversation
    When the query is NOT about teaching, education, or classroom matters, use this tool.
 
-2. "expert_teacher" - **[DEFAULT FOR EDUCATIONAL QUERIES]** Use for ANY educational question, concept explanation, or teaching query. This is a knowledgeable expert teacher with broad subject knowledge that can answer both curriculum and non-curriculum topics. When in doubt about educational content, use this tool.
+2. "expert_teacher" - **[DEFAULT FOR EDUCATIONAL AND KNOWLEDGE QUERIES]** Use for:
+   - ANY educational question, concept explanation, or teaching query
+   - General knowledge questions (who is X, what is Y, explain Z)
+   - Historical figures, scientists, political leaders, inventors
+   - Science concepts, math concepts, geography, history
+   - Current affairs related to education or knowledge
+   - Definitions that need detailed explanation
+   - Simple calculations and quick facts
+   This is a knowledgeable expert teacher with broad subject knowledge that can answer both curriculum and non-curriculum topics. **When in doubt about any knowledge-based content, use this tool.**
 
 3. "content_explainer" - Use ONLY when the teacher specifically mentions NCERT or specifically asks for textbook-based answers. This retrieves information from NCERT textbooks. If uncertain whether content is in NCERT, prefer expert_teacher instead.
 
@@ -137,6 +145,15 @@ Response: {"selected_tool": "general_conversation", "reasoning": "Unclear query 
 Query: "What is photosynthesis?"
 Response: {"selected_tool": "expert_teacher", "reasoning": "General educational question - expert teacher can provide comprehensive answer", "extracted_topic": "photosynthesis", "confidence": 0.97}
 
+Query: "who is narendra modi"
+Response: {"selected_tool": "expert_teacher", "reasoning": "General knowledge question about a person - expert teacher handles GK queries", "extracted_topic": "narendra modi", "confidence": 0.98}
+
+Query: "who discovered gravity"
+Response: {"selected_tool": "expert_teacher", "reasoning": "General knowledge question about historical figure and scientific discovery", "extracted_topic": "gravity discovery", "confidence": 0.97}
+
+Query: "what is the capital of France"
+Response: {"selected_tool": "expert_teacher", "reasoning": "General knowledge geography question", "extracted_topic": "capital of France", "confidence": 0.98}
+
 Query: "Explain Pythagoras theorem to me"
 Response: {"selected_tool": "expert_teacher", "reasoning": "Concept explanation request - expert teacher is best for clear explanations", "extracted_topic": "Pythagoras theorem", "confidence": 0.98}
 
@@ -175,8 +192,9 @@ Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking f
 
 RULES:
 - Return ONLY valid JSON
-- **FIRST check if query is a greeting, gratitude, unclear, or out-of-scope → use "general_conversation"**
-- **DEFAULT to "expert_teacher" for ANY educational content question**
+- **FIRST check if query is a greeting, gratitude, or truly unclear → use "general_conversation"**
+- **DEFAULT to "expert_teacher" for ANY educational content or knowledge question (including GK, calculations, facts)**
+- **Questions like "who is X", "what is Y", "explain Z", "2+2" → ALWAYS use "expert_teacher" NOT general_conversation**
 - Use "content_explainer" ONLY when NCERT is specifically mentioned
 - Use "activity_generator" ONLY when explicitly asking for activities/games
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
@@ -281,7 +299,8 @@ class ChanakyaOrchestrator:
             "content_explainer": ContentExplainerTool(),
             "classroom_guidance": ClassroomGuidanceTool(api_key=api_key),
             "expert_teacher": ExpertTeacherTool(api_key=api_key),
-            "general_conversation": GeneralConversationTool(api_key=api_key)
+            "general_conversation": GeneralConversationTool(api_key=api_key),
+            "quick_answer": QuickAnswerTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -317,6 +336,9 @@ class ChanakyaOrchestrator:
         if any('\u0C00' <= char <= '\u0C7F' for char in text):
             self.logger.info("language_detection", detected='Telugu', method='character_analysis')
             return 'Telugu'
+        if any('\u0C80' <= char <= '\u0CFF' for char in text):
+            self.logger.info("language_detection", detected='Kannada', method='character_analysis')
+            return 'Kannada'
         if any('\u0980' <= char <= '\u09FF' for char in text):
             self.logger.info("language_detection", detected='Bengali', method='character_analysis')
             return 'Bengali'
@@ -377,14 +399,6 @@ Language:""")]
         except Exception as e:
             self.logger.warning("language_detection_failed", error=str(e))
             return 'English'  # Default fallback
-        
-        # Gujarati script range
-        gujarati_chars = sum(1 for char in text if '\u0A80' <= char <= '\u0AFF')
-        if len(text) > 0 and gujarati_chars / len(text) > 0.3:
-            return 'gu'
-        
-        # Default to English
-        return 'en'
     
     async def _translate_text(self, text: str, target_lang: str) -> str:
         """
@@ -708,6 +722,18 @@ Language:""")]
         """
         query = state["query"]
         messages = state.get("messages", [])
+        context = state.get("context", {})
+        
+        # Check if quick_answer_mode is enabled
+        quick_answer_mode = context.get("quick_answer_mode", False)
+        if quick_answer_mode:
+            self.logger.info("quick_answer_mode_enabled", query=query)
+            return {
+                "selected_tool": "quick_answer",
+                "tool_reasoning": "Quick Answer Mode enabled - forcing fast response",
+                "intent": query,
+                "confidence": 1.0,
+            }
         
         # Build context string from previous messages
         context_str = ""
@@ -1338,6 +1364,10 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             input_data.context = {}
         input_data.context['detected_language'] = detected_lang
         
+        # Store quick_answer_mode flag in context
+        if input_data.quick_answer_mode:
+            input_data.context['quick_answer_mode'] = True
+        
         # Initial state
         initial_state: OrchestratorState = {
             "query": input_data.query,
@@ -1540,6 +1570,23 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             query=input_data.query[:100]
         )
         
+        # Detect input language using LLM
+        detected_lang = await self._detect_language(input_data.query)
+        
+        self.logger.info("language_detected",
+            session_id=session_id,
+            language=detected_lang
+        )
+        
+        # Store detected language in context for tools to use
+        if input_data.context is None:
+            input_data.context = {}
+        input_data.context['detected_language'] = detected_lang
+        
+        # Store quick_answer_mode flag in context
+        if input_data.quick_answer_mode:
+            input_data.context['quick_answer_mode'] = True
+        
         # Initial state
         initial_state: OrchestratorState = {
             "query": input_data.query,
@@ -1601,6 +1648,45 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
             
             if final_values.get("selected_tool") == "activity_generator" and result:
                 result = ActivityOutput(**result)
+            
+            # Translate result to original language if needed
+            tool_name = final_values.get("selected_tool", "unknown")
+            if detected_lang != 'English':
+                self.logger.info("translating_result_streaming",
+                    session_id=session_id,
+                    target_lang=detected_lang,
+                    tool=tool_name
+                )
+                
+                # Handle ActivityOutput (from activity_generator, crisis_handler, etc.)
+                if isinstance(result, ActivityOutput):
+                    # Translate activity fields
+                    result.activity_name = await self._translate_text(result.activity_name, detected_lang)
+                    result.description = await self._translate_text(result.description, detected_lang)
+                    result.learning_outcome = await self._translate_text(result.learning_outcome, detected_lang)
+                    
+                    # Translate steps
+                    translated_steps = []
+                    for step in result.steps:
+                        translated_steps.append(await self._translate_text(step, detected_lang))
+                    result.steps = translated_steps
+                    
+                    # Translate materials
+                    translated_materials = []
+                    for material in result.materials_needed:
+                        translated_materials.append(await self._translate_text(material, detected_lang))
+                    result.materials_needed = translated_materials
+                    
+                    # Translate tips if present
+                    if result.tips:
+                        translated_tips = []
+                        for tip in result.tips:
+                            translated_tips.append(await self._translate_text(tip, detected_lang))
+                        result.tips = translated_tips
+                
+                # Handle dict-based results (other tools)
+                elif isinstance(result, dict):
+                    result = await self._translate_dict_result(result, detected_lang, tool_name)
             
             # Update conversation context and save to SQLite
             if result:

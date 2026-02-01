@@ -27,6 +27,9 @@ function ChatInterface() {
   const [chatHistory, setChatHistory] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const nextMessageIdRef = useRef(0);
+  
+  // Quick Answer Mode state
+  const [quickAnswerMode, setQuickAnswerMode] = useState(false);
 
   // Load chat history on mount
   useEffect(() => {
@@ -167,6 +170,7 @@ function ChatInterface() {
       // Call the orchestrator API with session ID
       const data = await queryOrchestrator(userMessage, {
         session_id: sessionId,
+        quick_answer_mode: quickAnswerMode,
       });
 
       // Extract text for fallback display
@@ -310,7 +314,12 @@ function ChatInterface() {
     }
 
     try {
-      const audio = await textToSpeechAndPlay(text, {
+      // Silently limit to 2500 characters (API limit)
+      const truncatedText = text.length > 2500 
+        ? text.substring(0, 2500) 
+        : text;
+
+      const audio = await textToSpeechAndPlay(truncatedText, {
         onPlay: () => setSpeakingMessageId(messageId),
         onEnd: () => {
           setSpeakingMessageId(null);
@@ -884,6 +893,47 @@ function ChatInterface() {
                   </svg>
                 </button>
               </div>
+              
+              {/* Quick Answer Mode Toggle */}
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setQuickAnswerMode(!quickAnswerMode)}
+                    className={`flex items-center gap-2 px-3 py-1.5 border-2 border-[#000000] rounded-lg font-bold text-sm transition-all shadow-[2px_2px_0px_0px_#000000] hover:shadow-[1px_1px_0px_0px_#000000] hover:translate-x-0.5 hover:translate-y-0.5 ${
+                      quickAnswerMode
+                        ? "bg-[#A7F3D0] text-[#000000]"
+                        : "bg-white text-[#000000]"
+                    }`}
+                    title={quickAnswerMode ? "Quick Answer Mode: ON" : "Quick Answer Mode: OFF"}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                    <span>Quick Mode</span>
+                    {quickAnswerMode && (
+                      <span className="text-xs bg-[#000000] text-white px-2 py-0.5 rounded-full">
+                        ON
+                      </span>
+                    )}
+                  </button>
+                  {quickAnswerMode && (
+                    <span className="text-xs text-[#000000] opacity-70">
+                      Fast, short answers
+                    </span>
+                  )}
+                </div>
+              </div>
+              
               <p className="text-xs text-[#000000] opacity-60 mt-1 text-center">
                 Chanakya can make mistakes. Check important info.
               </p>

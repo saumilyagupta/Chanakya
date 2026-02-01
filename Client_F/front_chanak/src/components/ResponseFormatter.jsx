@@ -54,6 +54,37 @@ const parseBoldText = (text) => {
 };
 
 /**
+ * Quick Answer Response
+ * For simple calculations, facts, and short queries
+ */
+const QuickAnswerResponse = ({ data }) => {
+  const answer = data.answer || "";
+
+  return (
+    <div className="space-y-4">
+      <div
+        className="border-2 border-[#000000] p-6 rounded-lg shadow-[3px_3px_0px_0px_#000000]"
+        style={{ backgroundColor: "#A7F3D0" }}
+      >
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <Zap size={24} className="text-[#000000]" />
+          </div>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-[#000000] opacity-70 uppercase tracking-wide mb-2">
+              Quick Answer
+            </div>
+            <p className="text-2xl font-bold text-[#000000] leading-relaxed">
+              {parseBoldText(answer)}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
  * General Conversation Response
  * For greetings, gratitude, clarifications, and out-of-scope queries
  */
@@ -664,6 +695,9 @@ const ResponseFormatter = ({ toolUsed, result, text }) => {
 
   // Format based on tool type
   switch (toolUsed) {
+    case "quick_answer":
+      return <QuickAnswerResponse data={result} />;
+
     case "general_conversation":
       return <GeneralConversationResponse data={result} />;
 
