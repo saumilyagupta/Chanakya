@@ -122,14 +122,14 @@ AVAILABLE TOOLS:
 
 7. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
 
-8. "resource_finder" - **[USE FOR RESOURCE REQUESTS]** Use when the teacher wants:
-   - YouTube videos or video tutorials
-   - Web links, articles, or documentation
-   - Additional resources or materials
+8. "resource_finder" - **[USE ONLY WHEN EXPLICITLY REQUESTED]** Use ONLY when the teacher EXPLICITLY asks for:
+   - YouTube videos or video tutorials (must contain words: "video", "youtube")
+   - Web links or articles (must contain words: "link", "article", "website")
+   - Additional resources or materials (must contain words: "resources", "materials", "find me")
    - Lesson plans or teaching materials
    - PDFs or downloadable content
-   - Online resources for a topic
-   Keywords that trigger this: "videos", "youtube", "links", "resources", "materials", "pdf", "articles", "web search", "find me", "give me links"
+   **CRITICAL**: Do NOT use this tool for general questions or explanations. Only use when the query explicitly requests external resources, links, videos, or articles.
+   Keywords that MUST be present: "videos", "youtube", "links", "link", "resources", "materials", "pdf", "articles", "find me", "give me links", "show me videos"
    This tool searches the web using Tavily API and returns curated educational resources.
 
 FUTURE TOOLS (not yet available, do NOT select these):
@@ -214,11 +214,17 @@ Response: {"selected_tool": "resource_finder", "reasoning": "Teacher explicitly 
 Query: "Find me resources and lesson plans for teaching fractions"
 Response: {"selected_tool": "resource_finder", "reasoning": "Teacher asking for resources and lesson plan materials", "extracted_topic": "teaching fractions", "confidence": 0.97, "needs_resources": true}
 
+Query: "Show me links and articles about water cycle"
+Response: {"selected_tool": "resource_finder", "reasoning": "Teacher explicitly requesting links and articles", "extracted_topic": "water cycle", "confidence": 0.98, "needs_resources": true}
+
 Query: "Explain photosynthesis and give me some videos and links"
 Response: {"selected_tool": "expert_teacher", "reasoning": "Educational explanation needed, PLUS resources requested", "extracted_topic": "photosynthesis", "confidence": 0.95, "needs_resources": true}
 
 Query: "What is gravity? Also share some YouTube tutorials"
 Response: {"selected_tool": "expert_teacher", "reasoning": "Knowledge question that needs explanation, plus video resources requested", "extracted_topic": "gravity", "confidence": 0.96, "needs_resources": true}
+
+Query: "Explain photosynthesis"
+Response: {"selected_tool": "expert_teacher", "reasoning": "General explanation request - no resources explicitly requested", "extracted_topic": "photosynthesis", "confidence": 0.98, "needs_resources": false}
 
 RULES:
 - Return ONLY valid JSON
@@ -230,7 +236,8 @@ RULES:
 - Use "crisis_handler" for ANY immediate behavioral/attention crisis
 - Use "teacher_motivation" for burnout, stress, lack of motivation, feeling overwhelmed
 - Use "classroom_guidance" for pedagogical challenges, student learning difficulties, teaching strategies
-- Use "resource_finder" when ONLY asking for videos/links/resources (no explanation needed)
+- **Use "resource_finder" ONLY when explicitly asking for videos/links/articles/resources with keywords like: "videos", "youtube", "links", "articles", "find me", "show me", "give me links"**
+- **Do NOT use "resource_finder" for general explanation requests - use "expert_teacher" instead**
 - Set "needs_resources": true when query asks for videos, links, resources, materials IN ADDITION to an explanation
 - Extract the topic/concept or crisis situation or motivation issue or teaching challenge or conversation type clearly
 - Set confidence based on how clearly the query matches the tool's purpose"""

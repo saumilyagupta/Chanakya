@@ -736,7 +736,7 @@ function ChatInterface() {
                                 alt={message.imageName || "Uploaded image"}
                                 className="max-h-48 w-auto rounded-lg border-2 border-[#000000] mx-auto"
                               />
-                              <p className="text-xs text-center mt-1 opacity-70">📷 {message.imageName}</p>
+                              <p className="text-xs text-center mt-1 opacity-70"> {message.imageName}</p>
                             </div>
                           )}
                           <p className="text-sm md:text-base font-medium text-[#000000] text-center">

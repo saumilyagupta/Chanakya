@@ -28,6 +28,7 @@ import {
   FileText,
   ExternalLink,
   Check,
+  Search,
 } from "lucide-react";
 
 // Utility function to parse text with bold formatting (**text**) - exported for use in Discuss, etc.
@@ -686,6 +687,169 @@ const CrisisHandlerResponse = ({ data }) => (
 );
 
 /**
+ * Web Search Response
+ * For displaying web search results with AI summary and categorized resources
+ */
+const WebSearchResponse = ({ data }) => {
+  const query = data.query || "";
+  const summary = data.summary || "";
+  const webResources = data.web_resources || [];
+  const videoResources = data.video_resources || [];
+  const educationalResources = data.educational_resources || [];
+  const totalResults = data.total_results || 0;
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-[#BFDBFE] border-2 border-[#000000] p-4 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <Search size={24} className="text-[#000000]" />
+          </div>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-[#000000] opacity-70 uppercase tracking-wide mb-1">
+              Web Search Results
+            </div>
+            <h3 className="text-lg font-bold text-[#000000] mb-2">{query}</h3>
+            {totalResults > 0 && (
+              <div className="text-xs text-[#000000] opacity-60">
+                Found {totalResults} resources
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* AI Summary */}
+      {summary && (
+        <div className="bg-[#FEF08A] border-2 border-[#000000] p-4 rounded-lg">
+          <h4 className="font-bold text-[#000000] mb-2 flex items-center gap-2 text-sm">
+            <Sparkles size={16} /> Summary
+          </h4>
+          <p className="text-sm text-[#000000] leading-relaxed">
+            {parseBoldText(summary)}
+          </p>
+        </div>
+      )}
+
+      {/* Video Resources */}
+      {videoResources.length > 0 && (
+        <div className="bg-[#FBCFE8] border-2 border-[#000000] p-4 rounded-lg">
+          <h4 className="font-bold text-[#000000] mb-3 flex items-center gap-2 text-sm">
+            <Video size={16} /> Educational Videos
+          </h4>
+          <div className="space-y-2">
+            {videoResources.map((resource, idx) => (
+              <a
+                key={idx}
+                href={resource.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border-2 border-[#000000] rounded-lg p-3 bg-white hover:bg-[#FFF1F2] transition-colors shadow-[2px_2px_0px_0px_#000000] hover:shadow-[3px_3px_0px_0px_#000000] hover:-translate-y-0.5"
+              >
+                <div className="flex items-start gap-2">
+                  <Video size={16} className="text-[#000000] mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-[#000000] line-clamp-2 flex items-center gap-1">
+                      {resource.title}
+                      <ExternalLink size={12} className="flex-shrink-0 opacity-60" />
+                    </div>
+                    {resource.description && (
+                      <p className="text-xs text-[#000000] opacity-70 mt-1 line-clamp-2">
+                        {resource.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Educational Resources */}
+      {educationalResources.length > 0 && (
+        <div className="bg-[#A7F3D0] border-2 border-[#000000] p-4 rounded-lg">
+          <h4 className="font-bold text-[#000000] mb-3 flex items-center gap-2 text-sm">
+            <FileText size={16} /> Educational Materials
+          </h4>
+          <div className="space-y-2">
+            {educationalResources.map((resource, idx) => (
+              <a
+                key={idx}
+                href={resource.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border-2 border-[#000000] rounded-lg p-3 bg-white hover:bg-[#F0FDF4] transition-colors shadow-[2px_2px_0px_0px_#000000] hover:shadow-[3px_3px_0px_0px_#000000] hover:-translate-y-0.5"
+              >
+                <div className="flex items-start gap-2">
+                  <FileText size={16} className="text-[#000000] mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-[#000000] line-clamp-2 flex items-center gap-1">
+                      {resource.title}
+                      <ExternalLink size={12} className="flex-shrink-0 opacity-60" />
+                    </div>
+                    {resource.description && (
+                      <p className="text-xs text-[#000000] opacity-70 mt-1 line-clamp-2">
+                        {resource.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Web Articles */}
+      {webResources.length > 0 && (
+        <div className="bg-[#DDD6FE] border-2 border-[#000000] p-4 rounded-lg">
+          <h4 className="font-bold text-[#000000] mb-3 flex items-center gap-2 text-sm">
+            <Globe size={16} /> Related Articles
+          </h4>
+          <div className="space-y-2">
+            {webResources.map((resource, idx) => (
+              <a
+                key={idx}
+                href={resource.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border-2 border-[#000000] rounded-lg p-3 bg-white hover:bg-[#FAF5FF] transition-colors shadow-[2px_2px_0px_0px_#000000] hover:shadow-[3px_3px_0px_0px_#000000] hover:-translate-y-0.5"
+              >
+                <div className="flex items-start gap-2">
+                  <Globe size={16} className="text-[#000000] mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-[#000000] line-clamp-2 flex items-center gap-1">
+                      {resource.title}
+                      <ExternalLink size={12} className="flex-shrink-0 opacity-60" />
+                    </div>
+                    {resource.description && (
+                      <p className="text-xs text-[#000000] opacity-70 mt-1 line-clamp-2">
+                        {resource.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* No Results */}
+      {totalResults === 0 && (
+        <div className="bg-[#F3F4F6] border-2 border-[#000000] p-4 rounded-lg text-center">
+          <p className="text-sm text-[#000000] opacity-60">
+            No search results found for this query.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * Resources Section Component
  * Displays videos, web links, and educational resources from Tavily search
  */
@@ -822,6 +986,9 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
 
     case "classroom_guidance":
       return withResources(<ClassroomGuidanceResponse data={result} />);
+
+    case "resource_finder":
+      return <WebSearchResponse data={result} />;
 
     case "vision_analysis":
       // Vision analysis response - display as general conversation with image context
