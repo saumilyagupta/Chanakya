@@ -61,3 +61,7 @@ sarvamai>=0.1.22
 reportlab>=4.0.0
 python-docx>=1.0.0
 python-pptx>=0.6.21
+
+# PDF compiler pipeline (used by pdf_compiler_service)
+pdfplumber>=0.10.0
+pymupdf>=1.23.0

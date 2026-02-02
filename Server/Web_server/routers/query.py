@@ -11,6 +11,7 @@ from typing import List, Optional
 from services.orchestrator_service import orchestrator_service
 from services.chat_service import ChatService
 from services.vision_service import get_vision_service
+from services.pdf_compiler_service import compile_pdf_async
 from schemas.query import QueryRequest, QueryResponse
 from routers.users import get_current_user_id
 from config import settings
@@ -128,6 +129,75 @@ async def analyze_image(
         raise HTTPException(
             status_code=500,
             detail=f"Image analysis failed: {str(e)}"
+        )
+
+
+PDF_MAX_SIZE_BYTES = 20 * 1024 * 1024  # 20MB
+
+
+@router.post("/pdf")
+async def upload_pdf(
+    pdf: UploadFile = File(...),
+    session_id: Optional[str] = Form(default=None),
+    user_id: str = Depends(get_current_user_id)
+):
+    """
+    Upload a PDF for compilation (type detection, text/vision pipeline, section consolidation).
+    Returns document_id and summary; chat can then answer questions over this document.
+    """
+    try:
+        if pdf.content_type != "application/pdf":
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid file type. Only PDF is allowed."
+            )
+        contents = await pdf.read()
+        if len(contents) > PDF_MAX_SIZE_BYTES:
+            raise HTTPException(
+                status_code=400,
+                detail="PDF too large. Maximum size is 20MB."
+            )
+        logger.info("Compiling PDF", filename=pdf.filename or "upload.pdf", size=len(contents))
+        document_id, summary = await compile_pdf_async(contents, document_id=None, db_path=None)
+        if session_id:
+            await ChatService.save_message(
+                session_id=session_id,
+                user_id=user_id,
+                role="user",
+                content=f"[PDF: {pdf.filename or 'document.pdf'}]"
+            )
+            response_content = f"Document ready. You can ask questions about it.\n\n**Summary:**\n{summary}"
+            await ChatService.save_message(
+                session_id=session_id,
+                user_id=user_id,
+                role="assistant",
+                content=response_content,
+                tool_used="document_ready",
+                confidence=0.95,
+                metadata={
+                    "tool_used": "document_ready",
+                    "document_id": document_id,
+                    "summary": summary,
+                    "filename": pdf.filename or "document.pdf",
+                    "result": {"summary": summary, "document_id": document_id},
+                }
+            )
+        return {
+            "success": True,
+            "document_id": document_id,
+            "summary": summary,
+            "tool_used": "document_ready",
+        }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.error("PDF compile validation error: %s", e)
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("PDF compilation failed: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"PDF processing failed: {str(e)}"
         )
 
 

@@ -11,13 +11,15 @@ class QueryRequest(BaseModel):
     query: str = Field(..., description="The user's query or question")
     context: Optional[Dict[str, Any]] = Field(None, description="Additional context for the query")
     session_id: Optional[str] = Field(None, description="Session ID for tracking conversation history")
+    document_id: Optional[str] = Field(None, description="When set, answer using only this uploaded PDF document (chat document Q&A)")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "query": "How can I handle disruptive students in my classroom?",
                 "context": {"subject": "Mathematics", "grade": "8"},
-                "session_id": "session_123"
+                "session_id": "session_123",
+                "document_id": None
             }
         }
 

@@ -1,10 +1,12 @@
 """
-SQLite database operations for storing documents and embeddings
+SQLite database operations for storing documents and embeddings.
+Also stores PDF compiler page/section results for chat document Q&A.
 """
 
+import json
 import sqlite3
 import numpy as np
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)
@@ -50,6 +52,39 @@ class Database:
         # Create index on source for faster filtering
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_source ON documents(source)
+        """)
+
+        # PDF compiler: page-level results (one row per page per document)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS pdf_page_results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                document_id TEXT NOT NULL,
+                page_number INTEGER NOT NULL,
+                result_json TEXT NOT NULL,
+                confidence_flags TEXT,
+                pipeline_type TEXT NOT NULL,
+                image_ref TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_pdf_page_document_id ON pdf_page_results(document_id)
+        """)
+
+        # PDF compiler: section-level results (consolidated 5-10 pages)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS pdf_section_results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                document_id TEXT NOT NULL,
+                section_index INTEGER NOT NULL,
+                page_start INTEGER NOT NULL,
+                page_end INTEGER NOT NULL,
+                result_json TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_pdf_section_document_id ON pdf_section_results(document_id)
         """)
         
         self.conn.commit()
@@ -229,6 +264,146 @@ class Database:
             })
         
         return results
+
+    # ---------- PDF compiler page/section storage ----------
+
+    def insert_pdf_page_result(
+        self,
+        document_id: str,
+        page_number: int,
+        result_json: Dict[str, Any],
+        pipeline_type: str = "text",
+        confidence_flags: Optional[Dict[str, Any]] = None,
+        image_ref: Optional[str] = None,
+    ) -> int:
+        """Insert a single page result from the PDF compiler."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO pdf_page_results (document_id, page_number, result_json, confidence_flags, pipeline_type, image_ref)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                document_id,
+                page_number,
+                json.dumps(result_json),
+                json.dumps(confidence_flags) if confidence_flags else None,
+                pipeline_type,
+                image_ref,
+            ),
+        )
+        self.conn.commit()
+        return cursor.lastrowid
+
+    def get_pdf_page_results(self, document_id: str) -> List[Dict[str, Any]]:
+        """Get all page results for a document, ordered by page_number."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """
+            SELECT page_number, result_json, pipeline_type, confidence_flags
+            FROM pdf_page_results
+            WHERE document_id = ?
+            ORDER BY page_number
+            """,
+            (document_id,),
+        )
+        rows = cursor.fetchall()
+        results = []
+        for row in rows:
+            results.append({
+                "page_number": row[0],
+                "result": json.loads(row[1]),
+                "pipeline_type": row[2],
+                "confidence_flags": json.loads(row[3]) if row[3] else None,
+            })
+        return results
+
+    def insert_pdf_section_result(
+        self,
+        document_id: str,
+        section_index: int,
+        page_start: int,
+        page_end: int,
+        result_json: Dict[str, Any],
+    ) -> int:
+        """Insert a section consolidation result."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO pdf_section_results (document_id, section_index, page_start, page_end, result_json)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (document_id, section_index, page_start, page_end, json.dumps(result_json)),
+        )
+        self.conn.commit()
+        return cursor.lastrowid
+
+    def get_pdf_section_results(self, document_id: str) -> List[Dict[str, Any]]:
+        """Get all section results for a document, ordered by section_index."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """
+            SELECT section_index, page_start, page_end, result_json
+            FROM pdf_section_results
+            WHERE document_id = ?
+            ORDER BY section_index
+            """,
+            (document_id,),
+        )
+        rows = cursor.fetchall()
+        return [
+            {
+                "section_index": row[0],
+                "page_start": row[1],
+                "page_end": row[2],
+                "result": json.loads(row[3]),
+            }
+            for row in rows
+        ]
+
+    def get_pdf_document_text_for_rag(self, document_id: str, max_chars: Optional[int] = None) -> str:
+        """
+        Get concatenated text from page and section results for a document, for RAG/query.
+        Prefers section content when available; falls back to page content.
+        """
+        sections = self.get_pdf_section_results(document_id)
+        if sections:
+            parts = []
+            for s in sections:
+                r = s["result"]
+                title = r.get("section_title") or ""
+                content = r.get("content") or ""
+                tables = r.get("tables") or []
+                if title:
+                    parts.append(f"## {title}\n{content}")
+                else:
+                    parts.append(content)
+                for t in tables:
+                    parts.append(str(t))
+            text = "\n\n".join(parts)
+        else:
+            pages = self.get_pdf_page_results(document_id)
+            parts = []
+            for p in pages:
+                r = p["result"]
+                for key in ("headings", "content", "paragraphs", "tables"):
+                    val = r.get(key)
+                    if isinstance(val, list):
+                        parts.extend(str(x) for x in val)
+                    elif isinstance(val, str):
+                        parts.append(val)
+            text = "\n\n".join(parts)
+        if max_chars and len(text) > max_chars:
+            text = text[:max_chars] + "..."
+        return text
+
+    def delete_pdf_document_results(self, document_id: str) -> None:
+        """Delete all page and section results for a document (e.g. on recompile)."""
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM pdf_page_results WHERE document_id = ?", (document_id,))
+        cursor.execute("DELETE FROM pdf_section_results WHERE document_id = ?", (document_id,))
+        self.conn.commit()
+        logger.info("Deleted PDF results for document_id=%s", document_id)
     
     def close(self):
         """Close database connection"""
