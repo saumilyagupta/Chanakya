@@ -184,7 +184,11 @@ async def process_query(
             # Extract text response for storage
             response_text = ""
             if isinstance(response.result, dict):
-                response_text = response.result.get("response", str(response.result))
+                # Prefer summary for resource_finder so history shows readable text
+                if response.tool_used == "resource_finder" and response.result.get("summary"):
+                    response_text = response.result.get("summary")
+                else:
+                    response_text = response.result.get("response", str(response.result))
             else:
                 response_text = str(response.result)
             
@@ -199,6 +203,7 @@ async def process_query(
                     "tool_used": response.tool_used,
                     "reasoning": response.reasoning,
                     "result": response.result,  # Save the full result for formatting
+                    "resources": getattr(response, "resources", None),  # For expert_teacher + needs_resources
                     "confidence": response.confidence,
                     "processing_time_ms": response.processing_time_ms,
                     "timestamp": response.timestamp.isoformat() if response.timestamp else None
