@@ -6,16 +6,16 @@ import { discussAPI } from "../utils/apiClient";
 
 const POSTS_PER_PAGE = 8;
 
-// Light palettes used across the project (Header, ActiveListeningMode, etc.)
+// Lighter vibrant palettes for post cards
 const POST_CARD_COLORS = [
-  "#FEF3C7", // amber
-  "#E0F2FE", // blue
-  "#DCFCE7", // green
-  "#EDE9FE", // violet
-  "#FCE7F3", // pink
-  "#F9FAFB", // gray
-  "#E5E7EB", // stone
-  "#FDE047", // yellow (pale)
+  "#FDE68A", // light amber
+  "#BFDBFE", // light blue
+  "#A7F3D0", // light green
+  "#DDD6FE", // light violet
+  "#FBCFE8", // light pink
+  "#FED7AA", // light orange
+  "#FECACA", // light coral
+  "#FEF08A", // light yellow
 ];
 
 function Discuss() {
@@ -95,7 +95,7 @@ function Discuss() {
                         backgroundColor: POST_CARD_COLORS[index % POST_CARD_COLORS.length],
                       }}
                     >
-                      <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#E5E7EB] flex items-center justify-center font-bold text-sm">
+                      <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#60A5FA] flex items-center justify-center font-bold text-sm text-white">
                         {post.author_name
                           ?.split(" ")
                           .map((n) => n[0])
@@ -124,7 +124,7 @@ function Discuss() {
                           {(post.tags || []).map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-0.5 text-xs font-medium border-2 border-[#000000] bg-[#FFFFFF] text-[#000000]"
+                              className="px-2 py-0.5 text-xs font-medium border-2 border-[#000000] bg-[#FDE047] text-[#000000]"
                             >
                               {tag}
                             </span>

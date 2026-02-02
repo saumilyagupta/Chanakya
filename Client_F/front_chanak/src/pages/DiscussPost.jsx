@@ -108,17 +108,16 @@ function DiscussPost() {
 
   return (
     <div className="bg-[#FFFFFF] min-h-screen px-4 md:px-8 py-6 md:py-10">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link
           to="/discuss"
           className="inline-block mb-4 text-sm font-bold text-[#000000] no-underline hover:underline"
         >
           ← Back to Discuss
         </Link>
-        <article className="border-2 border-[#000000] bg-[#ffffff]
- p-4 md:p-6 shadow-[4px_4px_0px_0px_#000000]">
+        <article className="border-2 border-[#000000] bg-[#FFFFFF] p-4 md:p-6 shadow-[4px_4px_0px_0px_#000000]">
           <div className="flex gap-3 mb-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#E5E7EB] flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#000000] bg-[#60A5FA] flex items-center justify-center font-bold text-sm text-white shrink-0">
               {post.author_name?.slice(0, 2).toUpperCase() ?? "?"}
             </div>
             <div>
@@ -146,7 +145,7 @@ function DiscussPost() {
             {(post.tags || []).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 text-xs font-medium border-2 border-[#000000] bg-[#FFFFFF] text-[#000000]"
+                className="px-2 py-0.5 text-xs font-medium border-2 border-[#000000] bg-[#FDE047] text-[#000000]"
               >
                 {tag}
               </span>
@@ -162,8 +161,8 @@ function DiscussPost() {
                   <div
                     key={r.id}
                     className={`p-3 border-2 border-[#000000] ${isChanakya
-                      ? "bg-[#EDF4EC] border-[#000000]"
-                      : "bg-[#F9FAFB]"
+                      ? "bg-[#A7F3D0] border-[#000000]"
+                      : "bg-[#BFDBFE]"
                       }`}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -171,7 +170,7 @@ function DiscussPost() {
                         {isChanakya ? "Chanakya AI" : r.author_name}
                       </p>
                       {isChanakya && (
-                        <span className="px-2 py-0.5 text-xs font-medium border border-[#000000] bg-[#EDF4EC] text-[#80877F] rounded">
+                        <span className="px-2 py-0.5 text-xs font-medium border-2 border-[#000000] bg-[#34D399] text-white rounded">
                           AI Assistant
                         </span>
                       )}
@@ -197,8 +196,8 @@ function DiscussPost() {
                 className="w-full p-3 border-2 border-[#000000] bg-[#FFFFFF] text-[#000000] resize-y"
               />
               {replyBody.trim().toLowerCase().startsWith("@chanakya") && (
-                <div className="mt-2 p-2 bg-[#EDF4EC] border-2 border-[#2563EB] text-sm">
-                  <p className="font-medium text-[#1E40AF]">
+                <div className="mt-2 p-2 bg-[#A7F3D0] border-2 border-[#000000] text-sm">
+                  <p className="font-medium text-[#000000]">
                     🤖 Chanakya AI will respond to your query with the conversation context
                   </p>
                 </div>
