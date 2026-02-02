@@ -115,6 +115,7 @@ function ChatInterface() {
                   tool_used: msg.tool_used || metadata.tool_used,
                   reasoning: metadata.reasoning,
                   result: metadata.result,
+                  resources: metadata.resources ?? null,
                   confidence: msg.confidence || metadata.confidence,
                   timestamp: metadata.timestamp,
                 };
@@ -209,6 +210,15 @@ function ChatInterface() {
     }
   };
 
+  // Convert file to data URL so image stays valid after blob URL is revoked
+  const fileToDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Failed to read image"));
+      reader.readAsDataURL(file);
+    });
+
   // Send message with optional image
   const sendMessage = async () => {
     if ((!input.trim() && !selectedImage) || isLoading) return;
@@ -216,23 +226,33 @@ function ChatInterface() {
     const userMessage = input.trim();
     const userMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
     const botMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
-    
-    // Add user message with image preview if present
+
+    // Use durable data URL for message so image still renders after we revoke the blob
+    let messageImageUrl = imagePreview;
+    if (selectedImage) {
+      try {
+        messageImageUrl = await fileToDataUrl(selectedImage);
+      } catch {
+        messageImageUrl = imagePreview;
+      }
+    }
+
+    // Add user message with image (data URL so it persists after clearImage revokes blob)
     setMessages((m) => [
       ...m,
-      { 
-        id: userMessageId, 
-        from: "teacher", 
+      {
+        id: userMessageId,
+        from: "teacher",
         text: userMessage || "Please analyze this image",
-        image: imagePreview,
-        imageName: selectedImage?.name
+        image: messageImageUrl || undefined,
+        imageName: selectedImage?.name,
       },
     ]);
-    
+
     const currentImage = selectedImage;
     const currentImagePreview = imagePreview;
     const currentAnalysisMode = analysisMode;
-    
+
     setInput("");
     clearImage();
     // Add these 3 lines right after setInput("")
@@ -276,6 +296,9 @@ function ChatInterface() {
           botResponseText = data.result.description;
         } else if (typeof data.result === "string") {
           botResponseText = data.result;
+        } else if (data.result.summary != null && (data.result.web_resources != null || data.result.video_resources != null || data.result.educational_resources != null)) {
+          // Resource-finder style: show summary, resources rendered by ResponseFormatter
+          botResponseText = data.result.summary;
         } else {
           botResponseText = JSON.stringify(data.result, null, 2);
         }
@@ -730,11 +753,11 @@ function ChatInterface() {
                         <div className="bg-[#FDE047] border-2 border-[#000000] rounded-lg px-4 py-2 shadow-[2px_2px_0px_0px_#000000] max-w-xl">
                           {/* Show image if present */}
                           {message.image && (
-                            <div className="mb-2">
+                            <div className="mb-2 flex flex-col items-center">
                               <img
                                 src={message.image}
                                 alt={message.imageName || "Uploaded image"}
-                                className="max-h-48 w-auto rounded-lg border-2 border-[#000000] mx-auto"
+                                className="max-h-64 w-auto max-w-full rounded-lg border-2 border-[#000000] object-contain"
                               />
                               <p className="text-xs text-center mt-1 opacity-70"> {message.imageName}</p>
                             </div>

@@ -368,11 +368,84 @@ const ContentExplanationResponse = ({ data }) => (
   </div>
 );
 
-const DefaultResponse = ({ text }) => (
-  <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-    {parseBoldText(text)}
-  </p>
-);
+/**
+ * Renders plain text with paragraphs and simple lists (• or 1. 2.) for readable structure
+ */
+const DefaultResponse = ({ text }) => {
+  if (!text) return null;
+  const trimmed = String(text).trim();
+  if (!trimmed) return null;
+
+  const lines = trimmed.split(/\n/);
+  const blocks = [];
+  let i = 0;
+  const blockClass = "text-sm md:text-base leading-relaxed";
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    if (!trimmedLine) {
+      i++;
+      continue;
+    }
+    // Numbered list (1. 2. or 1) 2))
+    if (/^\d+[.)]\s/.test(trimmedLine)) {
+      const listItems = [];
+      while (i < lines.length && /^\d+[.)]\s/.test(lines[i].trim())) {
+        listItems.push(lines[i].trim().replace(/^\d+[.)]\s*/, ""));
+        i++;
+      }
+      blocks.push(
+        <ol key={blocks.length} className={`list-decimal list-inside space-y-1 ${blockClass} mb-3`}>
+          {listItems.map((item, idx) => (
+            <li key={idx}>{parseBoldText(item)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+    // Bullet list (• or - or *)
+    if (/^[•\-*]\s/.test(trimmedLine) || /^\*\s/.test(trimmedLine)) {
+      const listItems = [];
+      while (i < lines.length && (/^[•\-*]\s/.test(lines[i].trim()) || /^\*\s/.test(lines[i].trim()))) {
+        listItems.push(lines[i].trim().replace(/^[•\-*]\s*/, ""));
+        i++;
+      }
+      blocks.push(
+        <ul key={blocks.length} className={`list-disc list-inside space-y-1 ${blockClass} mb-3`}>
+          {listItems.map((item, idx) => (
+            <li key={idx}>{parseBoldText(item)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+    // Paragraph: take consecutive non-empty, non-list lines
+    const paraLines = [];
+    while (i < lines.length) {
+      const l = lines[i].trim();
+      if (!l || /^\d+[.)]\s/.test(l) || /^[•\-*]\s/.test(l) || /^\*\s/.test(l)) break;
+      paraLines.push(lines[i]);
+      i++;
+    }
+    if (paraLines.length > 0) {
+      blocks.push(
+        <p key={blocks.length} className={`${blockClass} whitespace-pre-wrap mb-3`}>
+          {parseBoldText(paraLines.join("\n"))}
+        </p>
+      );
+    }
+  }
+
+  if (blocks.length === 0) {
+    return (
+      <p className={`${blockClass} whitespace-pre-wrap`}>
+        {parseBoldText(trimmed)}
+      </p>
+    );
+  }
+  return <div className="space-y-1">{blocks}</div>;
+};
 
 /**
  * Classroom Guidance Response
@@ -943,9 +1016,53 @@ const ResourcesSection = ({ resources }) => {
 /**
  * Main ResponseFormatter Component
  */
+/**
+ * Resource-finder style response: summary + optional resource lists
+ */
+const ResourceFinderResponse = ({ data }) => {
+  const summary = data?.summary ?? "";
+  return (
+    <div className="space-y-4">
+      {summary ? (
+        <div className="border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000] bg-[#DBEAFE]">
+          <p className="text-sm md:text-base text-[#000000] leading-relaxed">
+            {parseBoldText(summary)}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
 const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
-  // If no structured result, show plain text
-  if (!result || typeof result !== "object") {
+  // If result is missing but text looks like stringified resource-finder JSON, parse and render
+  let effectiveResult = result;
+  let effectiveResources = resources;
+  if ((!result || typeof result !== "object") && typeof text === "string" && text.trim().startsWith("{")) {
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed === "object" && "summary" in parsed) {
+        effectiveResult = parsed;
+        effectiveResources = effectiveResources || parsed;
+      }
+    } catch (_) {
+      // not JSON or invalid, keep default rendering
+    }
+  }
+
+  // For resource_finder, result itself holds web_resources/video_resources/educational_resources;
+  // when loading from history, resources may be missing, so use result as resources for the section
+  if (!effectiveResources && effectiveResult && typeof effectiveResult === "object") {
+    const hasResourceArrays =
+      (effectiveResult.web_resources?.length ?? 0) > 0 ||
+      (effectiveResult.video_resources?.length ?? 0) > 0 ||
+      (effectiveResult.educational_resources?.length ?? 0) > 0;
+    if (hasResourceArrays) {
+      effectiveResources = effectiveResult;
+    }
+  }
+
+  if (!effectiveResult || typeof effectiveResult !== "object") {
     return <DefaultResponse text={text} />;
   }
 
@@ -953,39 +1070,39 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
   const withResources = (component) => (
     <div>
       {component}
-      <ResourcesSection resources={resources} />
+      <ResourcesSection resources={effectiveResources} />
     </div>
   );
 
   // Format based on tool type
   switch (toolUsed) {
     case "quick_answer":
-      return withResources(<QuickAnswerResponse data={result} />);
+      return withResources(<QuickAnswerResponse data={effectiveResult} />);
 
     case "general_conversation":
-      return withResources(<GeneralConversationResponse data={result} />);
+      return withResources(<GeneralConversationResponse data={effectiveResult} />);
 
     case "activity_generator":
-      return withResources(<ActivityResponse data={result} />);
+      return withResources(<ActivityResponse data={effectiveResult} />);
 
     case "expert_teacher":
-      return withResources(<ExpertTeacherResponse data={result} />);
+      return withResources(<ExpertTeacherResponse data={effectiveResult} />);
 
     case "content_explainer":
-      return withResources(<ContentExplanationResponse data={result} />);
+      return withResources(<ContentExplanationResponse data={effectiveResult} />);
 
     case "teacher_motivation":
-      return withResources(<TeacherMotivationResponse data={result} />);
+      return withResources(<TeacherMotivationResponse data={effectiveResult} />);
 
     case "crisis_handler":
       // Crisis handler returns activity-like structure
-      if (result.activity_name) {
-        return withResources(<ActivityResponse data={result} />);
+      if (effectiveResult.activity_name) {
+        return withResources(<ActivityResponse data={effectiveResult} />);
       }
-      return withResources(<CrisisHandlerResponse data={result} />);
+      return withResources(<CrisisHandlerResponse data={effectiveResult} />);
 
     case "classroom_guidance":
-      return withResources(<ClassroomGuidanceResponse data={result} />);
+      return withResources(<ClassroomGuidanceResponse data={effectiveResult} />);
 
     case "resource_finder":
       return <WebSearchResponse data={result} />;
@@ -996,13 +1113,20 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
         <GeneralConversationResponse 
           data={{
             response_type: "general",
-            response: result.response || text,
+            response: effectiveResult.response || text,
             suggested_topics: []
           }} 
         />
       );
 
+    case "resource_finder":
+      return withResources(<ResourceFinderResponse data={effectiveResult} />);
+
     default:
+      // Parsed JSON may be resource-finder shape without tool_used set
+      if (effectiveResult.summary != null && (effectiveResult.web_resources != null || effectiveResult.video_resources != null || effectiveResult.educational_resources != null)) {
+        return withResources(<ResourceFinderResponse data={effectiveResult} />);
+      }
       return withResources(<DefaultResponse text={text} />);
   }
 };
