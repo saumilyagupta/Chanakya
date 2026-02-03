@@ -1104,9 +1104,6 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
     case "classroom_guidance":
       return withResources(<ClassroomGuidanceResponse data={effectiveResult} />);
 
-    case "resource_finder":
-      return <WebSearchResponse data={result} />;
-
     case "vision_analysis":
       // Vision analysis response - display as general conversation with image context
       return withResources(
