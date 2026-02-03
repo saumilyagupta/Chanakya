@@ -493,7 +493,7 @@ async def transcribe_with_sarvam(audio_content: bytes) -> Optional[str]:
         prompt = "Please transcribe this audio recording accurately. Only output the transcribed text, nothing else."
         
         response = client.models.generate_content(
-            model='gemini-2.0-flash-001',
+            model='gemini-2.5-flash',
             contents=[prompt, audio_file]
         )
         

@@ -65,3 +65,4 @@ python-pptx>=0.6.21
 # PDF compiler pipeline (used by pdf_compiler_service)
 pdfplumber>=0.10.0
 pymupdf>=1.23.0
+llama-cloud-services>=0.1.0

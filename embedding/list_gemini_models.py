@@ -12,7 +12,7 @@ load_dotenv()
 
 # Suppress warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
-import google.generativeai as genai
+from google import genai
 
 # Configure API
 api_key = os.getenv("GEMINI_API_KEY")
@@ -20,7 +20,7 @@ if not api_key:
     print("Error: GEMINI_API_KEY not found in .env file")
     exit(1)
 
-genai.configure(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
 # List available models
 print("=" * 60)
@@ -29,14 +29,14 @@ print("=" * 60)
 print()
 
 try:
-    models = genai.list_models()
+    models = client.models.list()
     for model in models:
-        if 'generateContent' in model.supported_generation_methods:
-            print(f"Model: {model.name}")
+        print(f"Model: {model.name}")
+        if hasattr(model, 'display_name'):
             print(f"  Display Name: {model.display_name}")
+        if hasattr(model, 'description'):
             print(f"  Description: {model.description}")
-            print(f"  Supported Methods: {model.supported_generation_methods}")
-            print()
+        print()
 except Exception as e:
     print(f"Error listing models: {e}")
     print()
@@ -44,17 +44,18 @@ except Exception as e:
     
     # Try common model names
     common_models = [
-        "gemini-pro",
-        "gemini-1.5-pro",
-        "gemini-1.5-flash",
-        "models/gemini-pro",
         "models/gemini-1.5-pro",
         "models/gemini-1.5-flash",
+        "models/gemini-2.5-flash",
+        "models/gemini-2.5-pro",
     ]
     
     for model_name in common_models:
         try:
-            model = genai.GenerativeModel(model_name)
+            response = client.models.generate_content(
+                model=model_name,
+                contents="test"
+            )
             print(f"✓ {model_name} - Available")
         except Exception as err:
             print(f"✗ {model_name} - Not available: {str(err)[:50]}")

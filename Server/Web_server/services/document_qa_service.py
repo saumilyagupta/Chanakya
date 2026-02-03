@@ -51,7 +51,7 @@ def get_document_answer(
     api_key = api_key or os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY is required for document Q&A")
-    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.0-flash-001")
+    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.5-flash")
     if not model.startswith("models/"):
         model = f"models/{model}"
     db_path = db_path or os.getenv("PDF_COMPILER_DB_PATH")

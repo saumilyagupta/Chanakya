@@ -70,7 +70,7 @@ def consolidate_section(
         page_start: 1-based start page index (for labeling).
         page_end: 1-based end page index.
         api_key: Gemini API key (default: GEMINI_API_KEY).
-        model: Gemini model (default: GEMINI_PDF_MODEL or gemini-2.0-flash-001).
+        model: Gemini model (default: GEMINI_PDF_MODEL or gemini-2.5-flash).
 
     Returns:
         {"section_title": str, "content": str, "tables": list}.
@@ -78,7 +78,7 @@ def consolidate_section(
     api_key = api_key or os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY is required for section consolidation")
-    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.0-flash-001")
+    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.5-flash")
     if not model.startswith("models/"):
         model = f"models/{model}"
 
@@ -142,7 +142,7 @@ def run_section_consolidation(
     {section_index, page_start, page_end, result: {section_title, content, tables}}.
     """
     api_key = api_key or os.getenv("GEMINI_API_KEY")
-    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.0-flash-001")
+    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.5-flash")
     delay = int(os.getenv("PDF_COMPILER_DELAY_SEC", "8")) if delay_sec is None else delay_sec
     sections_out = []
     i = 0

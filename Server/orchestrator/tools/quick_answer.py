@@ -26,7 +26,7 @@ class QuickAnswerTool:
     def __init__(self, api_key: str):
         """Initialize the quick answer tool."""
         self.client = genai.Client(api_key=api_key)
-        self.model_name = "models/gemini-2.0-flash-001"
+        self.model_name = "models/gemini-2.5-flash"
     
     def _evaluate_math(self, query: str) -> Optional[str]:
         """
@@ -104,7 +104,7 @@ Answer:"""
                 ],
                 config=types.GenerateContentConfig(
                     temperature=0.0,  # Zero temperature for deterministic answers
-                    max_output_tokens=50,  # Very short responses
+                    max_output_tokens=250,  # Short but complete responses
                 )
             )
             

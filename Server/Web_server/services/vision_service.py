@@ -6,6 +6,7 @@ Handles image analysis using Gemini Vision API for educational contexts.
 """
 
 import base64
+import time
 import structlog
 from typing import Optional
 from google import genai
@@ -20,8 +21,9 @@ class VisionService:
     def __init__(self, api_key: str):
         """Initialize the vision service with API key."""
         self.client = genai.Client(api_key=api_key)
-        self.model = "gemini-2.0-flash-001"
-        logger.info("VisionService initialized")
+        # Use gemini-2.5-flash (latest stable model)
+        self.model = "models/gemini-2.5-flash"
+        logger.info("VisionService initialized", model=self.model)
     
     async def analyze_image(
         self,
@@ -80,16 +82,33 @@ Use bullet points for clarity when appropriate."""
                 )
             ]
             
-            # Generate response
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_prompt,
-                    temperature=0.7,
-                    max_output_tokens=1000,
-                )
-            )
+            # Generate response with retry logic for rate limits
+            max_retries = 3
+            retry_delay = 2
+            
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.models.generate_content(
+                        model=self.model,
+                        contents=contents,
+                        config=types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.7,
+                            max_output_tokens=1000,
+                        )
+                    )
+                    break
+                except Exception as e:
+                    error_str = str(e)
+                    if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                        if attempt < max_retries - 1:
+                            wait_time = retry_delay * (2 ** attempt)
+                            logger.warning(f"Rate limit hit, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries})")
+                            time.sleep(wait_time)
+                        else:
+                            raise
+                    else:
+                        raise
             
             # Extract the response text
             response_text = response.text if response.text else "I couldn't analyze this image. Please try again."

@@ -13,7 +13,8 @@ load_dotenv()
 
 # Suppress FutureWarning about deprecated package BEFORE importing
 warnings.filterwarnings('ignore', category=FutureWarning)
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from .database import Database
 from .embedding_service import EmbeddingService
@@ -26,7 +27,7 @@ class RAGOrchestrator:
     
     def __init__(self, db_path: str = "embedding/ncert_books.db", 
                  gemini_api_key: Optional[str] = None,
-                 model_name: str = "models/gemini-2.0-flash"):
+                 model_name: str = "models/gemini-2.5-flash"):
         """
         Initialize RAG orchestrator
         
@@ -59,50 +60,15 @@ class RAGOrchestrator:
                 "https://makersuite.google.com/app/apikey"
             )
         
-        # Initialize Gemini
-        genai.configure(api_key=self.gemini_api_key)
+        # Initialize Gemini client
+        self.client = genai.Client(api_key=self.gemini_api_key)
         
         # Initialize model - ensure it has models/ prefix if not already present
         if not model_name.startswith("models/"):
             model_name = f"models/{model_name}"
         
         self.model_name = model_name
-        
-        try:
-            self.model = genai.GenerativeModel(model_name)
-            logger.info(f"Successfully initialized Gemini model: {model_name}")
-        except Exception as e:
-            # Try to list available models and suggest alternatives
-            try:
-                logger.warning(f"Failed to initialize model '{model_name}': {e}")
-                logger.info("Listing available models...")
-                available_models = genai.list_models()
-                valid_models = [
-                    m.name for m in available_models 
-                    if 'generateContent' in m.supported_generation_methods
-                ]
-                if valid_models:
-                    logger.error(f"Available models with generateContent support:")
-                    for vm in valid_models[:5]:
-                        logger.error(f"  - {vm}")
-                    # Try the first available model as fallback
-                    fallback_model = valid_models[0]
-                    logger.info(f"Trying fallback model: {fallback_model}")
-                    self.model = genai.GenerativeModel(fallback_model)
-                    self.model_name = fallback_model
-                    logger.info(f"Successfully initialized with fallback model: {fallback_model}")
-                else:
-                    raise ValueError("No models found with generateContent support")
-            except Exception as list_error:
-                logger.error(f"Could not list models: {list_error}")
-                raise ValueError(
-                    f"Could not initialize Gemini model '{model_name}'. "
-                    f"Error: {e}\n"
-                    f"Please check:\n"
-                    f"1. Your API key is valid\n"
-                    f"2. The model name is correct (should be like 'models/gemini-2.0-flash')\n"
-                    f"3. Run 'python embedding/list_gemini_models.py' to see available models"
-                ) from e
+        logger.info(f"Successfully initialized Gemini model: {model_name}")
         
         # Initialize components
         self.database = Database(db_path=db_path)
@@ -259,16 +225,17 @@ Please provide a clear, accurate answer based on the NCERT book excerpts above. 
 
         try:
             # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
+            generation_config = types.GenerateContentConfig(
                 temperature=temperature,
                 top_p=0.95,
                 top_k=40,
                 max_output_tokens=2048,
             )
             
-            response = self.model.generate_content(
-                prompt,
-                generation_config=generation_config
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=generation_config
             )
             
             return response.text

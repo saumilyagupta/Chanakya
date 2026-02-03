@@ -28,7 +28,7 @@ class ChanakyaAIService:
             raise ValueError("GEMINI_API_KEY is required for Chanakya AI")
         
         self.client = genai.Client(api_key=self.api_key)
-        self.model_name = "gemini-2.0-flash-001"
+        self.model_name = "gemini-2.5-flash"
     
     def _build_conversation_context(
         self, 

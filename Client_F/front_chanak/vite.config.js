@@ -12,7 +12,6 @@ export default defineConfig({
   envDir: path.resolve(__dirname, '../../'),
   server: {
     host: true,
-    allowedHosts: ['6b8cf6a266e1.ngrok-free.app'],
     proxy: {
       // Dashboard API endpoints - proxied to unified server
       '/api/dashboard': {

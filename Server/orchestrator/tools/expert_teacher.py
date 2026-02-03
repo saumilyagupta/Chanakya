@@ -28,7 +28,7 @@ class ExpertTeacherTool(BaseTool):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "models/gemini-2.0-flash-001",
+        model_name: str = "models/gemini-2.5-flash",
         temperature: float = 0.7,
     ):
         """

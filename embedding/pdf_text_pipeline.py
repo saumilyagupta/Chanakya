@@ -202,7 +202,7 @@ def run_text_pipeline(
     Args:
         pdf_path: Path to the PDF file.
         api_key: Gemini API key (default: GEMINI_API_KEY env).
-        model: Gemini model name (default: GEMINI_PDF_MODEL or gemini-2.0-flash-001).
+        model: Gemini model name (default: GEMINI_PDF_MODEL or gemini-2.5-flash).
         delay_sec: Seconds between batches of Gemini calls (default: PDF_COMPILER_DELAY_SEC or 8).
         max_concurrent: Max concurrent Gemini calls (default: PDF_COMPILER_MAX_CONCURRENT or 2).
 
@@ -212,7 +212,7 @@ def run_text_pipeline(
     api_key = api_key or os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY is required for text pipeline")
-    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.0-flash-001")
+    model = model or os.getenv("GEMINI_PDF_MODEL", "gemini-2.5-flash")
     if not model.startswith("models/"):
         model = f"models/{model}"
     delay = int(os.getenv("PDF_COMPILER_DELAY_SEC", "8")) if delay_sec is None else delay_sec

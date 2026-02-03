@@ -116,7 +116,7 @@ Return ONLY valid JSON (no markdown code blocks):
 Be encouraging but honest. Give specific, actionable feedback based on the actual transcript content."""
 
         response = client.models.generate_content(
-            model='models/gemini-2.0-flash-001',
+            model='models/gemini-2.5-flash',
             contents=prompt
         )
         content = response.text.strip()

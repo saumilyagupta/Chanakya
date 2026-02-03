@@ -60,7 +60,7 @@ def compile_pdf(
         document_id: If provided, use this; otherwise generate a UUID.
         db_path: SQLite path for page/section storage (default: embedding/ncert_books.db).
         api_key: Gemini API key for section consolidation (default: GEMINI_API_KEY).
-        model: Gemini model for section consolidation (default: GEMINI_PDF_MODEL or gemini-2.0-flash-001).
+        model: Gemini model for section consolidation (default: GEMINI_PDF_MODEL or gemini-2.5-flash).
         section_page_size: Number of pages per section for consolidation (default 7).
 
     Returns:

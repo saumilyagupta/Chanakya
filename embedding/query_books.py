@@ -90,8 +90,8 @@ def main():
     parser.add_argument(
         '--model',
         type=str,
-        default='models/gemini-2.0-flash',
-        help='Gemini model to use (default: models/gemini-2.0-flash, options: models/gemini-2.0-flash, models/gemini-2.5-flash, models/gemini-2.5-pro)'
+        default='models/gemini-2.5-flash',
+        help='Gemini model to use (default: models/gemini-2.5-flash, options: models/gemini-2.5-flash, models/gemini-2.5-pro)'
     )
     parser.add_argument(
         '--interactive',

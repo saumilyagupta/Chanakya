@@ -17,7 +17,8 @@ load_dotenv()
 
 # Suppress warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # Add embedding directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -69,7 +70,7 @@ def format_context(documents: list) -> str:
 
 
 def generate_answer_with_llm(query: str, context: str, gemini_api_key: str, 
-                             model_name: str = "models/gemini-2.0-flash",
+                             model_name: str = "models/gemini-2.5-flash",
                              temperature: float = 0.7) -> str:
     """
     Generate answer using Gemini LLM
@@ -84,14 +85,12 @@ def generate_answer_with_llm(query: str, context: str, gemini_api_key: str,
     Returns:
         Generated answer string
     """
-    # Configure Gemini
-    genai.configure(api_key=gemini_api_key)
+    # Initialize client
+    client = genai.Client(api_key=gemini_api_key)
     
     # Initialize model
     if not model_name.startswith("models/"):
         model_name = f"models/{model_name}"
-    
-    model = genai.GenerativeModel(model_name)
     
     # Create prompt
     prompt = f"""You are a helpful assistant that answers questions based on NCERT (National Council of Educational Research and Training) textbook content.
@@ -107,16 +106,17 @@ Please provide a clear, accurate answer based on the NCERT book excerpts above. 
 
     try:
         # Configure generation parameters
-        generation_config = genai.types.GenerationConfig(
+        generation_config = types.GenerateContentConfig(
             temperature=temperature,
             top_p=0.95,
             top_k=40,
             max_output_tokens=2048,
         )
         
-        response = model.generate_content(
-            prompt,
-            generation_config=generation_config
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=generation_config
         )
         
         return response.text
@@ -127,7 +127,7 @@ Please provide a clear, accurate answer based on the NCERT book excerpts above. 
 
 
 def query_database(db_path: str, query_text: str, top_k: int = 5,
-                   gemini_api_key: str = None, model_name: str = "models/gemini-2.0-flash",
+                   gemini_api_key: str = None, model_name: str = "models/gemini-2.5-flash",
                    temperature: float = 0.7, filters: dict = None):
     """
     Query the database using embeddings and generate answer with LLM
@@ -281,8 +281,8 @@ def main():
     parser.add_argument(
         '--model',
         type=str,
-        default='models/gemini-2.0-flash',
-        help='Gemini model to use (default: models/gemini-2.0-flash)'
+        default='models/gemini-2.5-flash',
+        help='Gemini model to use (default: models/gemini-2.5-flash)'
     )
     parser.add_argument(
         '--gemini-api-key',
