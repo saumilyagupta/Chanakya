@@ -1116,6 +1116,48 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
         />
       );
 
+    case "document_ready":
+      // PDF document uploaded and compiled; show summary (scrollable) and fixed "ask questions" hint
+      return (
+        <div className="space-y-4">
+          <div
+            className="border-2 border-[#000000] p-6 rounded-lg shadow-[3px_3px_0px_0px_#000000] max-h-[60vh] flex flex-col"
+            style={{ backgroundColor: "#D1FAE5" }}
+          >
+            <div className="flex items-start gap-3 flex-shrink-0">
+              <div className="mt-1">
+                <FileText size={24} className="text-[#000000]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-[#000000] opacity-70 uppercase tracking-wide mb-2">
+                  Document ready
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 min-h-0 overflow-y-auto mt-1">
+              <p className="text-[#000000] leading-relaxed whitespace-pre-wrap">
+                {parseBoldText(effectiveResult.summary || text || "You can ask questions about this document.")}
+              </p>
+            </div>
+            <p className="text-sm text-[#000000] opacity-70 mt-3 flex-shrink-0">
+              Ask questions in the chat and I will answer using only this document.
+            </p>
+          </div>
+        </div>
+      );
+
+    case "document_qa":
+      // Answer from uploaded document
+      return withResources(
+        <GeneralConversationResponse
+          data={{
+            response_type: "general",
+            response: effectiveResult.response || text,
+            suggested_topics: []
+          }}
+        />
+      );
+
     case "resource_finder":
       return withResources(<ResourceFinderResponse data={effectiveResult} />);
 

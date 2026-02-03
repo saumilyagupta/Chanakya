@@ -8,5 +8,10 @@ sentence-transformers>=2.2.0
 llama-cloud-services>=0.1.0
 numpy>=1.24.0
 google-generativeai>=0.3.0
+google-genai>=1.0.0
 tqdm>=4.65.0
 python-dotenv>=1.0.0
+
+# PDF compiler pipeline (type detection, text/vision extraction)
+pdfplumber>=0.10.0
+pymupdf>=1.23.0

@@ -22,6 +22,10 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // FormData: omit Content-Type so browser sets multipart/form-data with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => {
@@ -47,10 +51,31 @@ apiClient.interceptors.response.use(
  * Query the orchestrator
  */
 export const queryOrchestrator = async (query, context = {}) => {
-  const response = await apiClient.post('/api/query/query', {
+  const body = {
     query,
     session_id: context.session_id || `session_${Date.now()}`,
     context: context,
+  };
+  if (context.document_id) {
+    body.document_id = context.document_id;
+  }
+  const response = await apiClient.post('/api/query/query', body);
+  return response.data;
+};
+
+/**
+ * Upload PDF for compilation (type detection, text/vision, section consolidation).
+ * Returns { success, document_id, summary } for chat document Q&A.
+ */
+export const uploadPdf = async (pdfFile, sessionId) => {
+  const formData = new FormData();
+  formData.append('pdf', pdfFile);
+  if (sessionId) {
+    formData.append('session_id', sessionId);
+  }
+  const response = await apiClient.post('/api/query/pdf', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 900000, // 15 min - PDF compile can be slow with retries and rate-limit delays
   });
   return response.data;
 };
@@ -141,7 +166,8 @@ export const deleteSession = async (sessionId) => {
 };
 
 /**
- * Analyze image with Gemini Vision
+ * Analyze image with Gemini Vision.
+ * FormData: Content-Type is omitted by request interceptor so browser sends multipart with boundary.
  */
 export const analyzeImage = async (imageFile, query, sessionId, analysisMode = 'general') => {
   const formData = new FormData();
@@ -151,12 +177,8 @@ export const analyzeImage = async (imageFile, query, sessionId, analysisMode = '
   if (sessionId) {
     formData.append('session_id', sessionId);
   }
-  
-  const response = await apiClient.post('/api/query/vision', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+
+  const response = await apiClient.post('/api/query/vision', formData);
   return response.data;
 };
 

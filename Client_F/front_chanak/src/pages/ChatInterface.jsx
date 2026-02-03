@@ -6,6 +6,7 @@ import {
   getSessionMessages,
   analyzeImage,
   captureFromCamera,
+  uploadPdf,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { transcribeAudio, textToSpeechAndPlay } from "../utils/sarvamApi";
@@ -19,7 +20,12 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const imageInputRef = useRef(null);
+  const attachInputRef = useRef(null);
+  const imageInputRef = attachInputRef; // alias for backward compatibility
+
+  // PDF document attachment (chat document Q&A)
+  const [attachedDocumentId, setAttachedDocumentId] = useState(null);
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -140,6 +146,7 @@ function ChatInterface() {
 
   const startNewChat = () => {
     setMessages([]);
+    setAttachedDocumentId(null);
     // Generate a new session ID
     const newSessionId = `session_${Date.now()}`;
     setCurrentSessionId(newSessionId);
@@ -196,6 +203,71 @@ function ChatInterface() {
     }
   };
 
+  // PDF upload: attach document for chat Q&A
+  const handlePdfSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      alert("Please select a PDF file.");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      alert("PDF is too large. Maximum size is 20MB.");
+      return;
+    }
+    const sessionId = currentSessionId || `session_${Date.now()}`;
+    if (!currentSessionId) setCurrentSessionId(sessionId);
+    const userMsgId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
+    setMessages((m) => [
+      ...m,
+      { id: userMsgId, from: "teacher", text: `Uploaded: ${file.name}`, pdfName: file.name },
+    ]);
+    setIsUploadingPdf(true);
+    try {
+      const data = await uploadPdf(file, sessionId);
+      if (data.success && data.document_id) {
+        setAttachedDocumentId(data.document_id);
+        const botMsgId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
+        setMessages((m) => [
+          ...m,
+          {
+            id: botMsgId,
+            from: "bot",
+            text: data.summary || "Document ready. You can ask questions about it.",
+            data: { success: true, tool_used: "document_ready", result: { summary: data.summary, document_id: data.document_id }, confidence: 0.95 },
+            tool_used: "document_ready",
+            confidence: 0.95,
+          },
+        ]);
+      } else {
+        setMessages((m) => [...m, { id: `msg-${Date.now()}`, from: "bot", text: data.error || "PDF processing failed." }]);
+      }
+      await loadChatHistory();
+    } catch (err) {
+      const errMsg = err.response?.data?.detail || err.message || "PDF processing failed.";
+      setMessages((m) => [...m, { id: `msg-${Date.now()}`, from: "bot", text: errMsg }]);
+    } finally {
+      setIsUploadingPdf(false);
+      if (attachInputRef.current) attachInputRef.current.value = "";
+    }
+  };
+
+  // Single attach handler: image or PDF
+  const handleAttachChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isPdf = file.type === "application/pdf";
+    const isImage = ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(file.type);
+    if (isPdf) {
+      await handlePdfSelect({ target: { files: [file] } });
+    } else if (isImage) {
+      handleImageSelect({ target: { files: [file] } });
+    } else {
+      alert("Please select an image (JPEG, PNG, GIF, WebP) or a PDF file.");
+    }
+    e.target.value = "";
+  };
+
   // Clear selected image
   const clearImage = () => {
     setSelectedImage(null);
@@ -205,8 +277,8 @@ function ChatInterface() {
     setImagePreview(null);
     setShowAnalysisModes(false);
     setAnalysisMode('general');
-    if (imageInputRef.current) {
-      imageInputRef.current.value = '';
+    if (attachInputRef.current) {
+      attachInputRef.current.value = '';
     }
   };
 
@@ -221,7 +293,7 @@ function ChatInterface() {
 
   // Send message with optional image
   const sendMessage = async () => {
-    if ((!input.trim() && !selectedImage) || isLoading) return;
+    if ((!input.trim() && !selectedImage) || isLoading || isUploadingPdf) return;
 
     const userMessage = input.trim();
     const userMessageId = `msg-${Date.now()}-${nextMessageIdRef.current++}`;
@@ -280,17 +352,21 @@ function ChatInterface() {
           currentAnalysisMode
         );
       } else {
-        // Call the orchestrator API with session ID
-        data = await queryOrchestrator(userMessage, {
+        // Call the orchestrator API with session ID (include document_id when PDF is attached)
+        const context = {
           session_id: sessionId,
           quick_answer_mode: quickAnswerMode,
-        });
+        };
+        if (attachedDocumentId) context.document_id = attachedDocumentId;
+        data = await queryOrchestrator(userMessage, context);
       }
 
       // Extract text for fallback display
       let botResponseText = "";
       if (data.success && data.result) {
-        if (data.result.explanation) {
+        if (data.result.response != null && data.tool_used === "vision_analysis") {
+          botResponseText = data.result.response;
+        } else if (data.result.explanation) {
           botResponseText = data.result.explanation;
         } else if (data.result.activity_name) {
           botResponseText = data.result.description;
@@ -299,6 +375,8 @@ function ChatInterface() {
         } else if (data.result.summary != null && (data.result.web_resources != null || data.result.video_resources != null || data.result.educational_resources != null)) {
           // Resource-finder style: show summary, resources rendered by ResponseFormatter
           botResponseText = data.result.summary;
+        } else if (data.result.response != null) {
+          botResponseText = data.result.response;
         } else {
           botResponseText = JSON.stringify(data.result, null, 2);
         }
@@ -977,37 +1055,39 @@ function ChatInterface() {
               )}
               
               <div className="flex items-end gap-3 border-2 border-[#000000] rounded-lg px-3 py-3 bg-white shadow-[2px_2px_0px_0px_#000000]">
-                {/* Hidden file input */}
                 <input
                   type="file"
-                  ref={imageInputRef}
-                  onChange={handleImageSelect}
-                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  ref={attachInputRef}
+                  onChange={handleAttachChange}
+                  accept="image/jpeg,image/png,image/gif,image/webp,.pdf,application/pdf"
                   className="hidden"
                 />
                 <button
-                  onClick={() => imageInputRef.current?.click()}
+                  onClick={() => attachInputRef.current?.click()}
+                  disabled={isUploadingPdf}
                   className={`p-1.5 border-2 border-[#000000] rounded transition-all flex-shrink-0 ${
-                    selectedImage ? 'bg-[#A7F3D0]' : 'bg-white hover:bg-[#FDE047]'
-                  }`}
-                  title="Attach image"
-                  aria-label="Attach image"
+                    selectedImage || attachedDocumentId ? "bg-[#A7F3D0]" : "bg-white hover:bg-[#FDE047]"
+                  } ${isUploadingPdf ? "opacity-60 cursor-not-allowed" : ""}`}
+                  title={
+                    isUploadingPdf
+                      ? "Uploading..."
+                      : selectedImage || attachedDocumentId
+                        ? "Image or document attached"
+                        : "Attach image or PDF"
+                  }
+                  aria-label="Attach image or PDF"
                 >
-                  <svg
-                    className="w-4 h-4 text-[#000000]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                  {isUploadingPdf ? (
+                    <svg className="w-4 h-4 text-[#000000] animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 text-[#000000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                    </svg>
+                  )}
                 </button>
-                
                 {/* Camera capture button */}
                 <button
                   onClick={handleCameraCapture}

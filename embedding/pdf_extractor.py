@@ -15,43 +15,51 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# LlamaParse tier options: fast, cost_effective, agentic, agentic_plus
+LLAMAPARSE_TIER_OPTIONS = ("fast", "cost_effective", "agentic", "agentic_plus")
+
 
 class PDFExtractor:
     """Extract text from PDFs using LlamaParse API"""
-    
-    def __init__(self, api_key: Optional[str] = None):
+
+    def __init__(self, api_key: Optional[str] = None, tier: Optional[str] = None):
         """
         Initialize PDF extractor with LlamaParse
-        
+
         Args:
             api_key: LlamaParse API key (if None, reads from LLAMA_CLOUD_API_KEY env var)
+            tier: Parsing tier (if None, reads from LLAMAPARSE_TIER env var; default: fast).
+                Options: fast, cost_effective, agentic, agentic_plus
         """
         self.api_key = api_key or os.getenv("LLAMA_CLOUD_API_KEY")
-        
+
         if not self.api_key:
             raise ValueError(
                 "LlamaParse API key not provided. "
                 "Set LLAMA_CLOUD_API_KEY environment variable or pass api_key parameter. "
                 "Get your API key from: https://cloud.llamaindex.ai/"
             )
-        
+
         # Validate API key format (should not be empty or placeholder)
         if self.api_key.strip() in ["", "your_llama_parse_api_key_here", "your_api_key_here"]:
             raise ValueError(
                 "Invalid LlamaParse API key. Please set a valid API key in .env file. "
                 "Get your API key from: https://cloud.llamaindex.ai/"
             )
-        
-        # Initialize LlamaParse with Fast tier
+
+        raw_tier = (tier or os.getenv("LLAMAPARSE_TIER", "fast")).strip().lower()
+        self.tier = raw_tier if raw_tier in LLAMAPARSE_TIER_OPTIONS else "fast"
+
+        # Initialize LlamaParse with selected tier
         self.parser = LlamaParse(
             api_key=self.api_key,
-            tier="fast",  # Use Fast model for faster parsing
-            version="latest",  # Use latest version
+            tier=self.tier,
+            version="latest",
             max_pages=0,  # 0 means parse all pages
-            precise_bounding_box=True  # Use precise bounding box extraction
+            precise_bounding_box=True,
         )
-        
-        logger.info("PDF extractor initialized with LlamaParse Fast model")
+
+        logger.info("PDF extractor initialized with LlamaParse tier=%s", self.tier)
     
     def extract_text(self, pdf_path: str, max_retries: int = 3) -> List[Dict[str, any]]:
         """

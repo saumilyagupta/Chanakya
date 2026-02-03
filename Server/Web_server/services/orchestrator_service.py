@@ -1,6 +1,7 @@
 """
 Orchestrator service for handling queries with ChanakyaOrchestrator.
 """
+import asyncio
 import sys
 import os
 import json
@@ -19,6 +20,7 @@ import structlog
 from fastapi import HTTPException
 from config import settings
 from schemas.query import QueryRequest, QueryResponse
+from services.document_qa_service import get_document_answer
 
 logger = structlog.get_logger(__name__)
 
@@ -112,6 +114,45 @@ class OrchestratorService:
                 detail="Orchestrator service not initialized. Please try again later."
             )
         
+        # Document Q&A: when document_id is set, answer using only that PDF's content
+        if getattr(query_request, "document_id", None):
+            start_time = time.time()
+            try:
+                loop = asyncio.get_event_loop()
+                answer = await loop.run_in_executor(
+                    None,
+                    get_document_answer,
+                    query_request.document_id,
+                    query_request.query,
+                    settings.GEMINI_API_KEY,
+                    None,
+                    None,
+                )
+                processing_time_ms = (time.time() - start_time) * 1000
+                return QueryResponse(
+                    success=True,
+                    tool_used="document_qa",
+                    reasoning="Answer generated from uploaded document content",
+                    result={"response": answer, "document_id": query_request.document_id},
+                    confidence=0.9,
+                    processing_time_ms=processing_time_ms,
+                    timestamp=datetime.utcnow(),
+                    error=None,
+                )
+            except Exception as e:
+                processing_time_ms = (time.time() - start_time) * 1000
+                logger.error("Document Q&A failed: %s", e, exc_info=True)
+                return QueryResponse(
+                    success=False,
+                    tool_used="document_qa",
+                    reasoning="Document Q&A failed",
+                    result={"response": f"Sorry, I couldn't answer from the document: {str(e)}", "document_id": query_request.document_id},
+                    confidence=0.0,
+                    processing_time_ms=processing_time_ms,
+                    timestamp=datetime.utcnow(),
+                    error=str(e),
+                )
+        
         # Return cached response for repeated identical query (no LLM call)
         if self._cache_enabled and self._query_cache is not None:
             key = _query_cache_key(query_request)
@@ -130,10 +171,14 @@ class OrchestratorService:
                 session_id=query_request.session_id
             )
             
-            # Create orchestrator input
+            # Create orchestrator input (include document_id in context if present for future use)
+            context = dict(query_request.context or {})
+            if getattr(query_request, "document_id", None):
+                context["document_id"] = query_request.document_id
+            
             orchestrator_input = OrchestratorInput(
                 query=query_request.query,
-                context=query_request.context or {},
+                context=context,
                 session_id=query_request.session_id or "default"
             )
             
