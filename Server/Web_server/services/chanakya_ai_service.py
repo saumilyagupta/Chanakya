@@ -104,7 +104,7 @@ Please provide a helpful response based on the conversation context and the user
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     temperature=0.7,
-                    max_output_tokens=800,
+                    max_output_tokens=1300,
                 )
             )
             
