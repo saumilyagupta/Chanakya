@@ -30,7 +30,8 @@ class Settings:
     CORS_ORIGINS: list[str] = os.getenv(
         "CORS_ORIGINS", 
         "http://localhost:5173,http://localhost:5174,http://localhost:3000,https://*.vercel.app,"
-        "http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:3000"
+        "http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:3000,"
+        "https://svelter-nonautomatically-anthony.ngrok-free.dev"
     ).split(",")
     
     # Environment
