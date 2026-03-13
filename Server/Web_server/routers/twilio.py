@@ -124,29 +124,41 @@ async def handle_incoming_call(request: Request):
     Handle incoming voice call - record the message
     This endpoint is called by Twilio when someone calls your Twilio number
     """
-    if not TWILIO_AVAILABLE:
-        raise HTTPException(status_code=503, detail="Twilio SDK not available")
-    
-    # Note: In production, uncomment signature validation
-    # if not validate_twilio_signature(request):
-    #     raise HTTPException(status_code=401, detail="Invalid Twilio signature")
-    
-    # Get form data from Twilio
-    form_data = await request.form()
-    caller_number = form_data.get("From", "unknown")
-    
-    logger.info(f"Incoming call from {caller_number}")
-    
-    # Create TwiML response
-    response = VoiceResponse()
-    
-    # Greet the teacher
-    response.say(
-        "Welcome to Chanakya, your classroom assistant. "
-        "Please ask your question after the beep.",
-        voice="woman",
-        language="en-IN"
-    )
+    try:
+        if not TWILIO_AVAILABLE:
+            logger.error("Twilio SDK not available")
+            error_response = VoiceResponse()
+            error_response.say("Service is currently unavailable. Please try again later.", voice="woman")
+            error_response.hangup()
+            return Response(content=str(error_response), media_type="application/xml")
+        
+        # Note: In production, uncomment signature validation
+        # if not validate_twilio_signature(request):
+        #     raise HTTPException(status_code=401, detail="Invalid Twilio signature")
+        
+        # Get form data from Twilio
+        form_data = await request.form()
+        caller_number = form_data.get("From", "unknown")
+        
+        logger.info(f"Incoming call from {caller_number}")
+        
+        # Create TwiML response
+        response = VoiceResponse()
+        
+        # Greet the teacher
+        response.say(
+            "Welcome to Chanakya, your classroom assistant. "
+            "Please ask your question after the beep.",
+            voice="woman",
+            language="en-IN"
+        )
+    except Exception as e:
+        logger.error(f"Critical error in handle_incoming_call: {str(e)}", exc_info=True)
+        # Always return valid TwiML to avoid 502
+        error_response = VoiceResponse()
+        error_response.say("Sorry, there was an error. Please try again later.", voice="woman")
+        error_response.hangup()
+        return Response(content=str(error_response), media_type="application/xml")
     
     # Record the message
     # Get webhook URL from environment or construct it
@@ -176,16 +188,21 @@ async def handle_recording(request: Request):
     Handle recorded voice message - transcribe and process
     This endpoint is called by Twilio after recording is complete
     """
-    if not TWILIO_AVAILABLE:
-        raise HTTPException(status_code=503, detail="Twilio SDK not available")
-    
-    # Get form data from Twilio
-    form_data = await request.form()
-    recording_url = form_data.get("RecordingUrl")
-    caller_number = form_data.get("From", "unknown")
-    call_sid = form_data.get("CallSid", "unknown")
-    
-    logger.info(f"Processing recording from {caller_number}, CallSid: {call_sid}")
+    try:
+        if not TWILIO_AVAILABLE:
+            logger.error("Twilio SDK not available")
+            return Response(content="<Response><Say>Service unavailable</Say><Hangup/></Response>", media_type="application/xml")
+        
+        # Get form data from Twilio
+        form_data = await request.form()
+        recording_url = form_data.get("RecordingUrl")
+        caller_number = form_data.get("From", "unknown")
+        call_sid = form_data.get("CallSid", "unknown")
+        
+        logger.info(f"Processing recording from {caller_number}, CallSid: {call_sid}")
+    except Exception as e:
+        logger.error(f"Error initializing recording handler: {str(e)}", exc_info=True)
+        return Response(content="<Response><Hangup/></Response>", media_type="application/xml")
     
     # Check if we already processed this call
     if call_sid in processed_calls:

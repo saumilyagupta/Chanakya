@@ -24,7 +24,7 @@ from .schemas import (
     ConversationContext,
     ConversationMessage,
 )
-from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool, QuickAnswerTool, ResourceFinderTool
+from .tools import ActivityGeneratorTool, CrisisHandlerTool, TeacherMotivationTool, ContentExplainerTool, ClassroomGuidanceTool, ExpertTeacherTool, GeneralConversationTool, QuickAnswerTool, ResourceFinderTool, FeedbackResponseTool
 
 
 # LangGraph imports
@@ -122,7 +122,16 @@ AVAILABLE TOOLS:
 
 7. "classroom_guidance" - Use when the teacher describes PEDAGOGICAL challenges, student learning difficulties, teaching strategy questions, or needs practical tips for daily classroom situations. Examples: "students can't interpret graphs", "only few students participate", "how to make lessons interactive", "students memorize but don't understand".
 
-8. "resource_finder" - **[USE ONLY WHEN EXPLICITLY REQUESTED]** Use ONLY when the teacher EXPLICITLY asks for:
+8. "feedback_response" - **[USE FOR TEACHER FEEDBACK]** Use when the teacher provides feedback about an activity, lesson, or teaching approach they tried. Examples:
+   - "the activity was not good"
+   - "students didn't like the activity"
+   - "that worked great!"
+   - "the lesson was confusing"
+   - "students loved it"
+   Keywords: "activity was", "lesson was", "students didn't like", "didn't work", "worked well", "loved it", "hated it", "not good", "feedback about"
+   This tool responds to feedback and stores context for analysis.
+
+9. "resource_finder" - **[USE ONLY WHEN EXPLICITLY REQUESTED]** Use ONLY when the teacher EXPLICITLY asks for:
    - YouTube videos or video tutorials (must contain words: "video", "youtube")
    - Web links or articles (must contain words: "link", "article", "website")
    - Additional resources or materials (must contain words: "resources", "materials", "find me")
@@ -137,9 +146,9 @@ FUTURE TOOLS (not yet available, do NOT select these):
 
 ANALYZE THE QUERY AND RESPOND WITH JSON:
 {
-    "selected_tool": "general_conversation" or "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance" or "resource_finder",
+    "selected_tool": "general_conversation" or "expert_teacher" or "content_explainer" or "activity_generator" or "crisis_handler" or "teacher_motivation" or "classroom_guidance" or "feedback_response" or "resource_finder",
     "reasoning": "Brief explanation of why this tool was selected",
-    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge OR conversation type",
+    "extracted_topic": "The main topic/concept OR crisis situation OR motivation issue OR teaching challenge OR feedback content OR conversation type",
     "confidence": 0.95,
     "needs_resources": true or false
 }
@@ -207,6 +216,18 @@ Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher describi
 
 Query: "How can I make my lessons more interactive?"
 Response: {"selected_tool": "classroom_guidance", "reasoning": "Teacher asking for teaching strategy advice", "extracted_topic": "interactive teaching methods", "confidence": 0.95, "needs_resources": false}
+
+Query: "The activity was not good"
+Response: {"selected_tool": "feedback_response", "reasoning": "Teacher providing negative feedback about an activity", "extracted_topic": "activity feedback", "confidence": 0.98, "needs_resources": false}
+
+Query: "Students didn't like the hands-on activity"
+Response: {"selected_tool": "feedback_response", "reasoning": "Teacher giving feedback that students didn't like an activity", "extracted_topic": "activity feedback", "confidence": 0.97, "needs_resources": false}
+
+Query: "That lesson worked great!"
+Response: {"selected_tool": "feedback_response", "reasoning": "Teacher providing positive feedback about a lesson", "extracted_topic": "lesson feedback", "confidence": 0.98, "needs_resources": false}
+
+Query: "The demonstration was confusing for students"
+Response: {"selected_tool": "feedback_response", "reasoning": "Teacher providing feedback that demonstration was confusing", "extracted_topic": "demonstration feedback", "confidence": 0.96, "needs_resources": false}
 
 Query: "Give me YouTube videos about photosynthesis"
 Response: {"selected_tool": "resource_finder", "reasoning": "Teacher explicitly asking for YouTube videos on a topic", "extracted_topic": "photosynthesis", "confidence": 0.98, "needs_resources": true}
@@ -340,7 +361,8 @@ class ChanakyaOrchestrator:
             "expert_teacher": ExpertTeacherTool(api_key=api_key),
             "general_conversation": GeneralConversationTool(api_key=api_key),
             "quick_answer": QuickAnswerTool(api_key=api_key),
-            "resource_finder": ResourceFinderTool()
+            "resource_finder": ResourceFinderTool(),
+            "feedback_response": FeedbackResponseTool(api_key=api_key)
         }
         
         # Conversation contexts (LRU cache to prevent memory leaks)
@@ -1119,9 +1141,14 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
         """
         tool_name = state["selected_tool"]
         topic = state["intent"] or state["query"]
-        context = state.get("context")
+        context = state.get("context") or {}
         needs_resources = state.get("needs_resources", False)
         resource_topic = state.get("resource_topic") or topic
+        
+        # Add recent messages to context for feedback tool
+        if tool_name == "feedback_response":
+            messages = state.get("messages", [])
+            context["recent_messages"] = messages[-3:] if len(messages) >= 3 else messages
         
         if tool_name not in self.tools:
             self.logger.error("unknown_tool", tool_name=tool_name)
@@ -1154,6 +1181,33 @@ TIPS: {', '.join(activity_output.get('tips', [])) if activity_output.get('tips')
                 result_dict = result
             else:
                 result_dict = {"output": str(result)}
+            
+            # Store feedback context if this is a feedback response
+            if tool_name == "feedback_response" and self.storage:
+                try:
+                    session_id = state.get("session_id")
+                    messages = state.get("messages", [])
+                    
+                    # Get sentiment and response from result
+                    sentiment = result_dict.get("sentiment", "unclear")
+                    response_text = result_dict.get("response", "")
+                    
+                    # Store feedback with last 3 messages
+                    await self.storage.store_feedback_context(
+                        session_id=session_id,
+                        feedback_content=topic,
+                        recent_messages=messages,
+                        sentiment=sentiment,
+                        response=response_text
+                    )
+                    
+                    self.logger.info("feedback_context_stored",
+                        session_id=session_id,
+                        sentiment=sentiment,
+                        message_count=len(messages)
+                    )
+                except Exception as e:
+                    self.logger.warning("feedback_storage_failed", error=str(e))
             
             # Fetch resources if needed (and not already using resource_finder)
             resource_result = None

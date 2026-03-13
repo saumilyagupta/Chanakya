@@ -57,10 +57,31 @@ class ConversationStorage:
                 )
             """)
             
+            # Feedback context table - stores last 3 messages when feedback tool is used
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS feedback_context (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    session_id TEXT NOT NULL,
+                    feedback_content TEXT NOT NULL,
+                    message_1 TEXT,
+                    message_2 TEXT,
+                    message_3 TEXT,
+                    timestamp TEXT NOT NULL,
+                    sentiment TEXT,
+                    response TEXT,
+                    FOREIGN KEY (session_id) REFERENCES conversations(session_id)
+                )
+            """)
+            
             # Create index for faster lookups
             await db.execute("""
                 CREATE INDEX IF NOT EXISTS idx_messages_session 
                 ON messages(session_id)
+            """)
+            
+            await db.execute("""
+                CREATE INDEX IF NOT EXISTS idx_feedback_session 
+                ON feedback_context(session_id)
             """)
             
             await db.commit()
@@ -249,4 +270,99 @@ class ConversationStorage:
                 await db.execute("DELETE FROM conversations WHERE session_id = ?", (session_id,))
             
             await db.commit()
-            return len(sessions)
+            return len(sessions)    
+    async def store_feedback_context(self, session_id: str, feedback_content: str, 
+                                     recent_messages: List[Dict], sentiment: Optional[str] = None,
+                                     response: Optional[str] = None) -> int:
+        """
+        Store feedback along with the last 3 messages for context.
+        
+        Args:
+            session_id: The session ID
+            feedback_content: The feedback text from the teacher
+            recent_messages: List of recent messages (will take last 3)
+            sentiment: Optional sentiment analysis result
+            response: Optional response generated for the feedback
+        
+        Returns:
+            The ID of the stored feedback record
+        """
+        await self._ensure_initialized()
+        now = datetime.utcnow().isoformat()
+        
+        # Extract last 3 messages
+        last_messages = recent_messages[-3:] if len(recent_messages) >= 3 else recent_messages
+        
+        # Pad with None if less than 3 messages
+        msg1 = json.dumps(last_messages[0]) if len(last_messages) > 0 else None
+        msg2 = json.dumps(last_messages[1]) if len(last_messages) > 1 else None
+        msg3 = json.dumps(last_messages[2]) if len(last_messages) > 2 else None
+        
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute("""
+                INSERT INTO feedback_context 
+                (session_id, feedback_content, message_1, message_2, message_3, 
+                 timestamp, sentiment, response)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (session_id, feedback_content, msg1, msg2, msg3, now, sentiment, response))
+            
+            await db.commit()
+            return cursor.lastrowid
+    
+    async def get_feedback_history(self, session_id: Optional[str] = None, 
+                                   limit: int = 10) -> List[Dict]:
+        """
+        Get feedback history, optionally filtered by session.
+        
+        Args:
+            session_id: Optional session ID to filter by
+            limit: Maximum number of records to return
+        
+        Returns:
+            List of feedback records with context
+        """
+        await self._ensure_initialized()
+        
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            
+            if session_id:
+                cursor = await db.execute("""
+                    SELECT * FROM feedback_context
+                    WHERE session_id = ?
+                    ORDER BY id DESC
+                    LIMIT ?
+                """, (session_id, limit))
+            else:
+                cursor = await db.execute("""
+                    SELECT * FROM feedback_context
+                    ORDER BY id DESC
+                    LIMIT ?
+                """, (limit,))
+            
+            rows = await cursor.fetchall()
+            
+            result = []
+            for row in rows:
+                record = {
+                    "id": row["id"],
+                    "session_id": row["session_id"],
+                    "feedback_content": row["feedback_content"],
+                    "timestamp": row["timestamp"],
+                    "sentiment": row["sentiment"],
+                    "response": row["response"],
+                    "context_messages": []
+                }
+                
+                # Parse context messages
+                for i in range(1, 4):
+                    msg = row[f"message_{i}"]
+                    if msg:
+                        try:
+                            record["context_messages"].append(json.loads(msg))
+                        except json.JSONDecodeError:
+                            pass
+                
+                result.append(record)
+            
+            return result

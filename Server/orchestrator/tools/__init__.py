@@ -14,6 +14,7 @@ from .expert_teacher import ExpertTeacherTool
 from .general_conversation import GeneralConversationTool
 from .quick_answer import QuickAnswerTool
 from .resource_finder import ResourceFinderTool
+from .feedback_response import FeedbackResponseTool
 
 __all__ = [
     "ActivityGeneratorTool",
@@ -25,4 +26,5 @@ __all__ = [
     "GeneralConversationTool",
     "QuickAnswerTool",
     "ResourceFinderTool",
+    "FeedbackResponseTool",
 ]

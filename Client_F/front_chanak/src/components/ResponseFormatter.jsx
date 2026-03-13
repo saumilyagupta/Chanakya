@@ -29,6 +29,9 @@ import {
   ExternalLink,
   Check,
   Search,
+  MessageCircle,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 
 // Utility function to parse text with bold formatting (**text**) - exported for use in Discuss, etc.
@@ -760,6 +763,117 @@ const CrisisHandlerResponse = ({ data }) => (
 );
 
 /**
+ * Feedback Response
+ * For responding to teacher feedback about activities and lessons
+ */
+const FeedbackResponseComponent = ({ data }) => {
+  const response = data.response || "";
+  const sentiment = data.sentiment || "unclear";
+  const followUpQuestions = data.follow_up_questions || [];
+  const quickSuggestions = data.quick_suggestions || [];
+
+  // Sentiment colors and icons
+  const sentimentConfig = {
+    positive: {
+      color: "#A7F3D0",
+      icon: <ThumbsUp size={20} className="text-[#000000]" />,
+      label: "Positive Feedback"
+    },
+    negative: {
+      color: "#FED7E2",
+      icon: <ThumbsDown size={20} className="text-[#000000]" />,
+      label: "Constructive Feedback"
+    },
+    mixed: {
+      color: "#FDE047",
+      icon: <MessageCircle size={20} className="text-[#000000]" />,
+      label: "Mixed Feedback"
+    },
+    unclear: {
+      color: "#E0EEEF",
+      icon: <HelpCircle size={20} className="text-[#000000]" />,
+      label: "Feedback Received"
+    }
+  };
+
+  const config = sentimentConfig[sentiment] || sentimentConfig.unclear;
+
+  return (
+    <div className="space-y-4">
+      {/* Main Response with Sentiment */}
+      <div
+        className="border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]"
+        style={{ backgroundColor: config.color }}
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <div className="mt-1">{config.icon}</div>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-[#000000] opacity-70 uppercase tracking-wide mb-2">
+              {config.label}
+            </div>
+          </div>
+        </div>
+        <p className="text-base text-[#000000] leading-relaxed">
+          {parseBoldText(response)}
+        </p>
+      </div>
+
+      {/* Follow-up Questions */}
+      {followUpQuestions && followUpQuestions.length > 0 && (
+        <div className="bg-[#E8D5FF] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+          <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+            <HelpCircle size={20} /> Let me understand better
+          </h4>
+          <ul className="space-y-2">
+            {followUpQuestions.map((question, idx) => (
+              <li key={idx} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-white border-2 border-[#000000] rounded-full flex items-center justify-center text-xs font-bold">
+                  ?
+                </span>
+                <span className="text-sm text-[#000000] flex-1 pt-0.5">
+                  {parseBoldText(question)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Quick Suggestions */}
+      {quickSuggestions && quickSuggestions.length > 0 && (
+        <div className="bg-[#D4F1C5] border-2 border-[#000000] p-5 rounded-lg shadow-[3px_3px_0px_0px_#000000]">
+          <h4 className="text-lg font-bold text-[#000000] mb-3 flex items-center gap-2">
+            <Lightbulb size={20} /> Quick Suggestions to Try
+          </h4>
+          <div className="space-y-3">
+            {quickSuggestions.map((suggestion, idx) => (
+              <div
+                key={idx}
+                className="flex gap-3 bg-white border-2 border-[#000000] p-3 rounded"
+              >
+                <span className="flex-shrink-0 w-7 h-7 bg-[#D4F1C5] border-2 border-[#000000] rounded-full flex items-center justify-center text-sm font-bold">
+                  {idx + 1}
+                </span>
+                <p className="text-sm text-[#000000] flex-1 pt-0.5">
+                  {parseBoldText(suggestion)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Encouragement Footer */}
+      <div className="bg-gradient-to-r from-[#FDE047] to-[#A7F3D0] border-2 border-[#000000] p-4 rounded-lg">
+        <p className="text-sm text-[#000000] text-center font-medium">
+          💡 Your feedback helps me learn and improve! Feel free to share more details.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+/**
  * Web Search Response
  * For displaying web search results with AI summary and categorized resources
  */
@@ -1103,6 +1217,9 @@ const ResponseFormatter = ({ toolUsed, result, text, resources }) => {
 
     case "classroom_guidance":
       return withResources(<ClassroomGuidanceResponse data={effectiveResult} />);
+
+    case "feedback_response":
+      return withResources(<FeedbackResponseComponent data={effectiveResult} />);
 
     case "vision_analysis":
       // Vision analysis response - display as general conversation with image context
